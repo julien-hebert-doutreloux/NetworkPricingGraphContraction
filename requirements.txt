@@ -1,0 +1,8 @@
+pandas
+Pyarrow
+numpy
+matplotlib
+networkx
+more-itertools
+tabulate
+tqdm
