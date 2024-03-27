@@ -1,2 +1,3 @@
 # ignore virtualenv directory
 venv/
+data/

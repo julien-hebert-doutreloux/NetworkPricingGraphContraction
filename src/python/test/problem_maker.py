@@ -1,5 +1,5 @@
 from preamble.preamble import *
-from gamma.common import from_json
+from gamma.common import from_json, set_of_frozenset
 from gamma.gamma import GammaNPP
 from gamma.rules import make_rules, Rules
 
@@ -62,18 +62,20 @@ def main(
     partitions = compatibility_graph.random_partition(num_partitions, max_sub_length)
     
     # trivial partition first
-    partitions.insert(0, [(e, ) for e in edges])
+    partitions.insert(0, set_of_frozenset([(e, ) for e in edges]))
     
     base_filename, file_extension = os.path.splitext(os.path.basename(input_file))
     for i, partition in enumerate(partitions, start=0):
-        partition = list(map(tuple, partition))
-        partition += singleton
+        if i != 0:
+            partition = list(map(tuple, partition))
+            partition += singleton
         
         if (len(edges) != sum(map(len, partition))):
             print(len(edges))
             print(sum(map(len, partition)))
             print(100*"X")
             print("Error : Not a partition")
+            #input('HERE')
             return False
             
         # Gamma
@@ -89,7 +91,7 @@ def main(
         tranformation_file = transformation.export_transformation(export_folder_transformations, filename)
         
         if verbose:
-            transformation.summary()
+            #transformation.summary()
             print(f'NPP JSON file created : {problem_file}')
             print(f'Transformation PKL file created : {tranformation_file}')
             print(100*'#')

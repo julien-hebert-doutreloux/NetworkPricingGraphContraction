@@ -82,6 +82,7 @@ if '__main__' == __name__:
     parser_option_3.add_argument('--export_folder_grid', type=str, required=True, help='Path to the export compute grid')
     parser_option_3.add_argument('--export_folder_problems', type=str, required=True, help='Path to the export NPP json')
     parser_option_3.add_argument('--export_folder_transformations', type=str, required=True, help='Path to the export transformation PKL')
+    parser_option_3.add_argument('--export_folder_results', type=str, required=True, help='Path to prepare result folder')
     parser_option_3.add_argument('--output_filename', type=str, required=True, help='Output filename')
     parser_option_3.add_argument('--verbose', help='Print information')         
     ##########################################################################################################################
@@ -96,6 +97,7 @@ if '__main__' == __name__:
                                         )
                                         
     parser_option_4.add_argument('--input_file', type=str, help='input compute grid file')
+    parser_option_4.add_argument('--n_core', type=int, help='number of cores')
     parser_option_4.add_argument('--verbose', help='Print information')      
     #
     #
@@ -221,6 +223,8 @@ if '__main__' == __name__:
         export_folder_grid = args.export_folder_grid
         export_folder_problems = args.export_folder_problems
         export_folder_transformations = args.export_folder_transformations
+        export_folder_results = args.export_folder_results
+        
         output_filename = args.output_filename
         
         compute_grid_problem_generation(
@@ -230,6 +234,7 @@ if '__main__' == __name__:
                                         export_folder_grid,
                                         export_folder_problems,
                                         export_folder_transformations,
+                                        export_folder_results,                                        
                                         output_filename,
                                         verbose
                                         )
@@ -237,24 +242,36 @@ if '__main__' == __name__:
     elif selected_option == 'option4':
 
         compute_grid = args.input_file
+        n_core = args.n_core
+        
         with open(compute_grid, 'r') as file:
             commands = file.readlines()
+            
+        if n_core>1:
+            # Create a ThreadPoolExecutor with 4 workers
+            with concurrent.futures.ThreadPoolExecutor(max_workers=n_core) as executor:
+                # Create a progress bar with tqdm
+                progress_bar = tqdm(total=len(commands))
+                futures = {executor.submit(subprocess.run, command.strip(), shell=True, capture_output=True): command for command in commands}
+                for future in concurrent.futures.as_completed(futures):
+                    command = futures[future]
+                    try:
+                        result = future.result()
+                        if verbose:
+                            print('Output:', result.stdout.decode())
+                            print('Error:', result.stderr.decode())
+                    except Exception as exc:
+                        print(f'Command {command} failed: {exc}')
+                    progress_bar.update(1)
+        else:
+            for command in tqdm(commands):
+                process = subprocess.Popen(command.strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
 
-        # Create a ThreadPoolExecutor with 4 workers
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-            # Create a progress bar with tqdm
-            progress_bar = tqdm(total=len(commands))
-            futures = {executor.submit(subprocess.run, command.strip(), shell=True, capture_output=True): command for command in commands}
-            for future in concurrent.futures.as_completed(futures):
-                command = futures[future]
-                try:
-                    result = future.result()
-                    if verbose:
-                        print('Output:', result.stdout.decode())
-                        print('Error:', result.stderr.decode())
-                except Exception as exc:
-                    print(f'Command {command} failed: {exc}')
-                progress_bar.update(1)
+                if verbose:
+                    print('Output:', stdout.decode())
+                    print('Error:', stderr.decode())
+                time.sleep(0.1)  # wait for 0.1 seconds before running the next command
             
     elif selected_option == 'option5':
         # Problem generation
