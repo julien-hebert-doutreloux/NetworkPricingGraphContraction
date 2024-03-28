@@ -9,7 +9,7 @@ def process_result_before_vs_after(
     after_graph_result_file:str,
     transformation_file:str,
     export_folder:str,
-    filename:str,
+    output_filename:str,
     verbose=False
     ):
     """
@@ -23,10 +23,10 @@ def process_result_before_vs_after(
         verbose (bool, optional)     : Whether to print verbose output. Defaults to False.
     """
     # Verify the extension
-    if not filename.endswith('.pkl'):
-        filename = filename + '.pkl'
+    if not output_filename.endswith('.pkl'):
+        output_filename = output_filename + '.pkl'
         
-    output_file = os.path.join(export_folder, filename)
+    output_file = os.path.join(export_folder, output_filename)
     
     # Check if the file does not exists
     if not os.path.isfile(before_graph_file):
@@ -114,31 +114,33 @@ def stack_result_into_dataframe(
                                 process_result_file_after:str,
                                 edge_dataframe_file=None,
                                 meta_dataframe_file=None,
-                                verbose=False):
+                                verbose=False
+                            ):
     """
     Compare the results of two process result files and return two pandas dataframes containing the comparison.
     Args:
         process_result_file_before (str): The path to the first process result file to compare.
         process_result_file_after (str): The path to the second process result file to compare.
+        edge_dataframe_file (str): The path to the pkl dataframe about edge (create one if it does not exists)
+        meta_dataframe_file (str): The path to the pkl dataframe about meta data (create one if it does not exists)
         verbose (bool): If True, print the comparison tables to the console. Defaults to False.
-    Returns:
-        tuple: A tuple containing two pandas dataframes. The first dataframe contains the comparison of the edge data,
-            and the second dataframe contains the comparison of the metadata and objective values.
     """
     # Check if the file does not exists
     if not os.path.isfile(process_result_file_before):
         print(f"Error: The specified file does not exists: {process_result_file_before}")
         return False
+        
     if not os.path.isfile(process_result_file_after):
         print(f"Error: The specified file does not exists: {process_result_file_after}")
         return False
     
     if not edge_dataframe_file:
-        base_name = os.path.basename(process_result_file_before)
-        file_name, _ = os.path.splitext(base_name)
-        file_name = file_name.split('-')[1:-1:].join('-') + '-edge.pkl'
-        path = os.path.dirname(process_result_file_before)
-        edge_dataframe_file = os.path.join(path, filename) 
+        # create one at the specified file path
+        #base_name = os.path.basename(process_result_file_before)
+        #file_name, _ = os.path.splitext(base_name)
+        #file_name = file_name.split('-')[1:-1:].join('-') + '-edge.pkl'
+        #path = os.path.dirname(process_result_file_before)
+        #edge_dataframe_file = os.path.join(path, filename) 
         print('The edge_dataframe_file is not specified')
         print(f"following file is created : {edge_dataframe_file}")
         
@@ -147,11 +149,12 @@ def stack_result_into_dataframe(
         return False
         
     if not meta_dataframe_file:
-        base_name = os.path.basename(process_result_file_before)
-        file_name, _ = os.path.splitext(base_name)
-        file_name = file_name.split('-')[1:-1:].join('-') + '-meta.pkl'
-        path = os.path.dirname(process_result_file_before)
-        meta_dataframe_file = os.path.join(path, filename) 
+        # create one at the specified file path
+        #base_name = os.path.basename(process_result_file_before)
+        #file_name, _ = os.path.splitext(base_name)
+        #file_name = file_name.split('-')[1:-1:].join('-') + '-meta.pkl'
+        #path = os.path.dirname(process_result_file_before)
+        #meta_dataframe_file = os.path.join(path, filename) 
         print('The meta_dataframe_file is not specified')
         print(f"following file is created : {meta_dataframe_file}")
         

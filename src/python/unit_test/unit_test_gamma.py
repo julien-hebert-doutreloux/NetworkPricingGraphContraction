@@ -494,7 +494,7 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple1():
         nodes, edges, edge_partition, _ = exemple1()
         gamma = Gamma(nodes, edges, edge_partition)
-        directory = 'other'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_partition'
         gamma.export_transformation(directory, filename)
         
@@ -528,7 +528,7 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple2():
         nodes, edges, edge_partition, _ = exemple2()
         gamma = Gamma(nodes, edges, edge_partition)
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_partition'
         gamma.export_transformation(directory, filename)
         
@@ -555,7 +555,7 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple3():
         nodes, edges, edge_partition, _ = exemple3()
         gamma = Gamma(nodes, edges, edge_partition)
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_partition'
         gamma.export_transformation(directory, filename)
         
@@ -582,7 +582,7 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple5():
         nodes, edges, edge_partition, _ = exemple5()
         gamma = Gamma(nodes, edges, edge_partition)
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_partition'
         gamma.export_transformation(directory, filename)
         
@@ -614,7 +614,7 @@ def UNIT_TEST_export_transformation():
         nodes, edges, edge_partition, _ = exempleX()
         gamma = Gamma(nodes, edges, edge_partition)
         
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_partition'
         gamma.export_transformation(directory, filename)
         
@@ -659,7 +659,7 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exempleXI():
         nodes, edges, edge_partition, _ = exempleXI()
         gamma = Gamma(nodes, edges, edge_partition)
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_partition'
         gamma.export_transformation(directory, filename)
         
@@ -838,7 +838,7 @@ def UNIT_TEST_export():
         
         
         # Export transformed problem
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export'
         output_file = os.path.join(directory, f"{filename}.json")
         
@@ -931,7 +931,7 @@ def UNIT_TEST_export():
         g_gamma = GammaNPP(nodes, edges, edge_partition, problems)
         
         # Export transformed problem
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export'
         output_file = os.path.join(directory, f"{filename}.json")
         g_gamma.export(directory, filename)
@@ -1046,7 +1046,7 @@ def UNIT_TEST_export_transformation_2():
         
     @unit_test_decorator
     def UNIT_TEST_exemple1():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple1
@@ -1056,7 +1056,7 @@ def UNIT_TEST_export_transformation_2():
             
     @unit_test_decorator
     def UNIT_TEST_exemple2():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple2
@@ -1066,7 +1066,7 @@ def UNIT_TEST_export_transformation_2():
         
     @unit_test_decorator
     def UNIT_TEST_exemple3():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple3
@@ -1076,7 +1076,7 @@ def UNIT_TEST_export_transformation_2():
             
     @unit_test_decorator
     def UNIT_TEST_exemple5():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple5
@@ -1087,7 +1087,7 @@ def UNIT_TEST_export_transformation_2():
             
     @unit_test_decorator
     def UNIT_TEST_exempleX():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleX
@@ -1098,7 +1098,7 @@ def UNIT_TEST_export_transformation_2():
             
     @unit_test_decorator
     def UNIT_TEST_exempleXI():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleXI
@@ -1157,7 +1157,7 @@ def UNIT_TEST_from_transformation_pickle():
         
     @unit_test_decorator
     def UNIT_TEST_exemple1():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple1
@@ -1167,7 +1167,7 @@ def UNIT_TEST_from_transformation_pickle():
             
     @unit_test_decorator
     def UNIT_TEST_exemple2():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple2
@@ -1177,7 +1177,7 @@ def UNIT_TEST_from_transformation_pickle():
         
     @unit_test_decorator
     def UNIT_TEST_exemple3():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple3
@@ -1187,7 +1187,7 @@ def UNIT_TEST_from_transformation_pickle():
             
     @unit_test_decorator
     def UNIT_TEST_exemple5():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple5
@@ -1198,7 +1198,7 @@ def UNIT_TEST_from_transformation_pickle():
             
     @unit_test_decorator
     def UNIT_TEST_exempleX():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleX
@@ -1208,7 +1208,7 @@ def UNIT_TEST_from_transformation_pickle():
             
     @unit_test_decorator
     def UNIT_TEST_exempleXI():
-        directory = 'other/unit_test'
+        directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleXI

@@ -84,31 +84,28 @@ function main()
     
     parsed_args = parse_commandline()
     input_file = parsed_args["input"]
-    output_folder = parsed_args["output"]
+    output_file = parsed_args["output"]
 
 	
-	#input_folder = "/home/fiftyfour/Documents/MyProject/to_solve"
-	#output_folder = "/home/fiftyfour/Documents/MyProject/result"
 
-	for input_file in glob("*.json", input_folder)
-		name, extension = splitext(input_file)
+	#for input_file in glob("*.json", input_folder)
+	name, extension = splitext(input_file)
 
-		output_file = joinpath(output_folder, basename(name)* "-R.json")
-		println(input_file)
-		println(output_file)
-		
-		# NPP SOLVING
-		result = solve_and_get_values(input_file)
-		
-		# Access the stored values
-		#println("Prices (t): ", result.tvals)
-		#println("Objective Value: ", result.obj_value)
-		#println("Preprocessing Time: ", result.preprocess_time, " seconds")
-		#println("Solving Time: ", result.solve_time, " seconds")
-		
-		# Save the result to a file
-		save_result(result, output_file)
-	end
+	println(input_file)
+	println(output_file)
+	
+	# NPP SOLVING
+	result = solve_and_get_values(input_file)
+	
+	# Access the stored values
+	#println("Prices (t): ", result.tvals)
+	#println("Objective Value: ", result.obj_value)
+	#println("Preprocessing Time: ", result.preprocess_time, " seconds")
+	#println("Solving Time: ", result.solve_time, " seconds")
+	
+	# Save the result to a file
+	save_result(result, output_file)
+	#end
 
 end
 

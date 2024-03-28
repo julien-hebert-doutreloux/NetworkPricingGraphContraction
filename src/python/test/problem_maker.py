@@ -9,7 +9,8 @@ def main(
         input_file='',
         export_folder_problems='',
         export_folder_transformations='',
-        verbose=False):
+        verbose=False
+    ):
     
     """
     This function partitions a graph into subsets and exports the resulting transformations and problems.
@@ -20,9 +21,6 @@ def main(
     input_file (str): The path to the input JSON file containing the graph data. Default is an empty string.
     export_folder (str): The path to the output folder where the results will be saved. Default is an empty string.
     verbose (bool): If True, prints some information about the process. Default is True.
-
-    Returns:
-    None
     """
     
     # Check if the file does not exists
@@ -71,11 +69,8 @@ def main(
             partition += singleton
         
         if (len(edges) != sum(map(len, partition))):
-            print(len(edges))
-            print(sum(map(len, partition)))
             print(100*"X")
             print("Error : Not a partition")
-            #input('HERE')
             return False
             
         # Gamma
@@ -87,16 +82,10 @@ def main(
         problem_file = transformation.export(export_folder_problems, filename)
         
         # Export edge partition to pickle
-        filename=f"{number}-T-{base_filename}"
+        filename+="-T"
         tranformation_file = transformation.export_transformation(export_folder_transformations, filename)
         
         if verbose:
             #transformation.summary()
             print(f'NPP JSON file created : {problem_file}')
             print(f'Transformation PKL file created : {tranformation_file}')
-            print(100*'#')
-                
-    # python complete_test.py --num_partition 10 --max_sub_length 3 --input_file '/home/fiftyfour/Documents/Code/other/o50-10.json' --export_folder '/home/fiftyfour/Documents/Code/other' --verbose true
-    
-    
-
