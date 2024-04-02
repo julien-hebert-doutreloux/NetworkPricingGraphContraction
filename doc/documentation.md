@@ -30,6 +30,242 @@ To watch in real time single tread without write out the result
 ```
 
 
+### Option 3 - Compute grid
+The compute grid is a txt file with bash terminal commands like this
+```
+python script.py args1
+python script.py args2
+python script.py args3
+...
+python script.py argsn
+```
+
+The suboptions are the following:
+
+#### 3-1. Problem generation
+The necessary arguments are
+____________________________________________________________________________________________________________________
+| Parameter                     | Description                                                                      |
+|-------------------------------|----------------------------------------------------------------------------------|
+| num_partitions                | The maximum number of partition to compute                                       |
+| max_sub_length                | The maximum length that element in partition are allowed to be                   |
+| input_folder                  | The parent folder of every NPP problems                                          |
+| export_folder_grid            | The folder to export the compute grid                                            |
+| export_folder_problems        | The parent folder to export generated problems when process compute grid         |
+| export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
+| output_filename               | The name of the compute grid file                                                |
+| verbose                       | Whether to print verbose output during processing                                |
+____________________________________________________________________________________________________________________
+
+##### Example
+```bash
+python src/python/main.py option3 3-1 \
+ --num_partitions 100 \
+ --max_sub_length 3 \
+ --input_folder './data/from_github/problems' \
+ --export_folder_grid './data/modified' \
+ --export_folder_problems './data/modified/problems' \
+ --export_folder_transformations './data/modified/transformations' \
+ --output_filename 'compute_grid_problem_generation' \
+ --verbose true
+```
+
+
+#### 3-2. Julia commands (1-batch)
+This option produce an txt file with julia commands of the form:
+```bash
+julia src/julia/script.jl 'input_file.json' 'output_file.json'
+```
+_________________________________________________________________________________________________
+| Parameter             | Description                                                           |
+|-----------------------|-----------------------------------------------------------------------|
+| input_folder          | The parent folder containing json NPP problem                         |
+| export_folder_grid    | The folder to export the compute grid                                 |
+| export_folder_results | The parent folder to export future results when process compute grid  |
+| output_filename       | The name of the compute grid file                                     |
+| verbose               | Whether to print verbose output during processing                     |
+_________________________________________________________________________________________________
+
+##### Example
+```bash
+python src/python/main.py option3 3-2 \
+ --input_folder './data/modified/problems' \
+ --export_folder_grid './data/modified' \
+ --export_folder_results './data/modified/results' \
+ --output_filename 'compute_grid_julia' \
+ --verbose true
+```
+
+
+#### 3-3. Julia commands (n-batch)
+This option works with the same arguments the previous one. The exception is that the julia command forms are:
+```bash
+julia src/julia/script.jl 'csv_grid.csv'
+```
+
+_________________________________________________________________________________________________
+| Parameter             | Description                                                           |
+|-----------------------|-----------------------------------------------------------------------|
+| input_folder          | The parent folder containing json NPP problem                         |
+| export_folder_grid    | The folder to export the compute grid                                 |
+| export_folder_results | The parent folder to export future results when process compute grid  |
+| output_filename       | The name of the compute grid file                                     |
+| batch_size            | Number of problem inside one batch                                    |
+| verbose               | Whether to print verbose output during processing                     |
+_________________________________________________________________________________________________
+The csv grid as two columns: one for the input and one for the output. This is done because the time that Julia needs to initialize is substantial. So by grouping 100 problems and looping over them directly in Julia save initialization time.
+
+##### Example
+```bash
+python src/python/main.py option3 3-3 \
+ --input_folder './data/modified/problems' \
+ --export_folder_grid './data/modified' \
+ --export_folder_results './data/modified/results' \
+ --output_filename 'compute_grid_julia' \
+ --batch_size 100 \
+ --verbose true
+```
+
+
+#### 3-4. Result process
+This option produce a txt file with commands of the form:
+```bash
+python src/python/main.py option5 5-2 \
+ --before_graph_file 'path/to/original_problem.json' \
+ --after_graph_result_file 'path/to/transformed_problem_raw_result.json' \
+ --transformation_file 'path/to/transformation_file.pkl' \
+ --export_folder 'path/to/export_folder' \
+ --output_filename 'filename.pkl' \
+ --verbose True
+```
+The option 5-2 is detailed below.
+
+_______________________________________________________________________________________________
+| Parameter                    | Description                                                  |
+|------------------------------|--------------------------------------------------------------|
+| input_folder_graphs          | The parent folder containing the json npp problem            |
+| input_folder_results         | The parent folder containing the json raw results            |
+| input_folder_transformations | The parent folder containing the pkl transformations         |
+| export_folder_grid           | The folder to export compute grid                            |
+| export_folder_results        | The parent folder to export future processed results         |
+| output_filename              | The name of the compute grid file                            |
+| verbose                      | Whether to print verbose output during processing            |
+_______________________________________________________________________________________________
+
+##### Example
+```bash
+python src/python/main.py option3 3-4 \
+ --input_folder_graphs 'path/to/graphs_folder' \
+ --input_folder_transformations 'path/to/transformations_folder' \
+ --input_folder_results 'path/to/raw_results' \
+ --export_folder_grid 'path/to/export_folder' \
+ --export_folder_results 'path/where/process/are/export_folder' \
+ --output_filename 'filename.txt' \
+ --verbose true
+```
+
+
+#### 3-5. Result stacking
+This option produce a txt file with commands of the form:
+```bash
+python src/python/main.py option5 5-3 \
+ --input_process_result_file_before 'path/to/original_problem_processed_result.pkl' \
+ --input_process_result_file_after 'path/to/transformed_problem_processed_result.pkl' \
+ --export_edge_dataframe_file 'path/to/edge_dataframe_file.pkl' \
+ --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl' \
+ --verbose true
+```
+The option 5-3 is detailed below.
+
+
+##### Example
+```bash
+python src/python/main.py option3 3-5 \
+ --input_folder_processed_results './other/result_processing/result_process' \
+ --export_folder_dataframes './other/result_processing' \
+ --export_folder_grid './other/result_processing' \
+ --output_filename 'compute_grid_stack_result.txt' \
+ --verbose true
+```
+
+### Option 4 - Processing compute grid 
+...
+
+
+
+### Option 5 - Individual process
+
+#### 5-1. Problem generation
+This option generate NPP graph transformation.
+____________________________________________________________________________________________________________________
+| Parameter                     | Description                                                                      |
+|-------------------------------|----------------------------------------------------------------------------------|
+| num_partitions                | The maximum number of partition to compute                                       |
+| max_sub_length                | The maximum length that element in partition are allowed to be                   |
+| input_folder                  | The parent folder of every NPP problems                                          |
+| export_folder_problems        | The parent folder to export generated problems when process compute grid         |
+| export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
+| verbose                       | Whether to print verbose output during processing                                |
+____________________________________________________________________________________________________________________
+
+
+##### Example
+```bash
+python src/python/main.py option5 5-1 \
+ --num_partitions 100 \
+ --max_sub_length 4 \
+ --input_file 'path/to/npp_graph_problem.json' \
+ --export_folder_problems 'path/to/export_folder_problem' \
+ --export_folder_transformations 'path/to/export_folder_transformations' \
+ --verbose true
+```
+
+#### 5-2. Process result
+This option is meant to process the raw result from a problem in the perspective of the original problem.
+_______________________________________________________________________________________________
+| Parameter                    | Description                                                  |
+|------------------------------|--------------------------------------------------------------|
+| before_graph_file            | File path of the NPP problem before transformation           |
+| after_graph_result_file      | Raw result file path of the transformed NPP problem          |
+| transformation_file          | File path of the pkl transformation                          |
+| export_folder_results        | The parent folder to export processed results                |
+| verbose                      | Whether to print verbose output during processing            |
+_______________________________________________________________________________________________
+
+##### Example
+```bash
+python src/python/main.py option5 5-2 \
+ --before_graph_file 'path/to/original_graph.json' \
+ --after_graph_result_file 'path/to/transformed_graph_raw_result.json' \
+ --transformation_file 'path/to/transformation_file.pkl' \
+ --export_folder_results 'path/to/export_folder' \
+ --verbose true
+```
+
+
+
+#### 5-3. Result stack
+This option is meat to stack processed result into two dataframe. The first dataframe contain optimal values for the tolled edge of the transformed problem. The second dataframe contain time date and the optimal objective.
+______________________________________________________________________________________________________________
+| Parameter                         | Description                                                            |
+|-----------------------------------|------------------------------------------------------------------------|
+| input_process_result_file_before  | Processed result file path of the NPP problem before transformation    |
+| input_process_result_file_after   | Processed result file path of the NPP problem after transformation     |
+| export_edge_dataframe_file        | File path for the edge dataframe                                       |
+| export_meta_dataframe_file        | File path of the meta dataframe                                        |
+| verbose                           | Whether to print verbose output during processing                      |
+______________________________________________________________________________________________________________
+
+
+##### Example
+```bash
+python src/python/main.py option5 5-3 \
+ --input_process_result_file_before 'path/to/original_problem_processed_result.pkl' \
+ --input_process_result_file_after 'path/to/transformed_problem_processed_result.pkl' \
+ --export_edge_dataframe_file 'path/to/edge_dataframe_file.pkl' \
+ --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl' \
+ --verbose true
+```
 
 
 
@@ -56,3 +292,20 @@ Every function that plot things.
 
 ## /analysis
 This module is use to bridge the result from the julia's solver NetPricing (https://github.com/minhcly95/NetPricing.jl) and the different transformation produce by the gamma module. 
+
+
+
+## File naming scheme
+
+_______________________________________________________________________________________________________
+|Naming                    | Description                                                               |
+|--------------------------|---------------------------------------------------------------------------|
+|xxxxxx-NPP-yyyyyy         | normal npp problem                                                        |
+|xxxxxx-NPP-yyyyyy-R       | revised npp problem                                                       |
+|xxxxxx-NPP-yyyyyy-T       | transformation file                                                       |
+|xxxxxx-NPP-yyyyyy-(R-)RR  | raw result                                                                |
+|xxxxxx-NPP-yyyyyy-(R-)PR  | process result that compare the original problem with the transformed one |
+|(R)                       | Revised problem                                                           |
+|xxxxx                     | unique id from 0 to 10000                                                 |
+|yyyyy                     | problem name                                                              |
+_______________________________________________________________________________________________________

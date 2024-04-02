@@ -2,23 +2,38 @@ from config import *
 from unit_test.unit_test import main as unit_test
 from test.test_approx_max_clique import main as test_approx_max_clique
 
-from test.result_processing import process_result_before_vs_after
+from test.result_processing import \
+                                process_result_before_vs_after,\
+                                process_result_before_vs_after_batch,\
+                                stack_result_into_dataframe,\
+                                stack_result_into_dataframe_batch
+                                
 from test.problem_maker import main as problem_maker
 from test.test import main as test
-from test.compute_grid import compute_grid_problem_generation, compute_grid_julia, compute_grid_process_result_before_vs_after
+from test.compute_grid import \
+                                compute_grid_problem_generation,\
+                                compute_grid_individual_julia,\
+                                compute_grid_process_result_before_vs_after,\
+                                compute_grid_stack_result_into_dataframe
 
 # Option
 # X 1) unit test
 # X 2) networkx.approximation.max_clique vs my.max_clique performance test
 # 3) compute grid
 # X 3.1) problems generation
-# X 3.2) julia commands
-#   3.3) result process
-#   3.4) result stacking
+# X 3.2) julia commands individual (1-batch)
+# X 3.3) julia commands n-batch
+# X 3.4) result process
+# X 3.5) result process n-batch
+# X 3.6) result stacking
+# X 3.7) result stacking n-batch
 # X 4) process compute grid
 # 5) indivual result_process
-#   5.1) process_result_before_vs_after
-#   5.2) stack_result_into_dataframe
+# X 5.1) problem generation
+# X 5.2) process raw data
+# X 5.3) process raw data batch
+# X 5.4) stack process data
+# X 5.5) stack process data
 # 6) plot
 #   6.1) plot graph
 #   6.2) ...
@@ -50,9 +65,11 @@ if '__main__' == __name__:
     # Option 4 - Process compute grid
     option_4(subparsers)
     
-    # Option 5 - individual problem maker
+    # Option 5 - individual process
     option_5(subparsers)
     
+    # Option 8- test
+    option_8(subparsers)
     
     args = parser.parse_args(sys.argv[1:])
     selected_option = args.selected_option
@@ -104,22 +121,24 @@ if '__main__' == __name__:
                                             export_folder_transformations,
                                             output_filename,
                                             verbose
-                                            )
-        elif selected_option_3 == '3-2':
+                                        )
+                                        
+        elif selected_option_3 in ['3-2', '3-3']:
             input_folder = args.input_folder
             export_folder_grid = args.export_folder_grid
             export_folder_results = args.export_folder_results
             output_filename = args.output_filename
-            
-            compute_grid_julia(
-                                input_folder,
-                                export_folder_grid,
-                                export_folder_results,
-                                output_filename,
-                                verbose
-                                )
+            batch_size = args.batch_size if args.batch_size else 1 
+            compute_grid_individual_julia(
+                                            input_folder,
+                                            export_folder_grid,
+                                            export_folder_results,
+                                            output_filename,
+                                            batch_size,
+                                            verbose
+                                        )
                                 
-        elif selected_option_3 == '3-3':
+        elif selected_option_3 in ['3-4', '3-5']:
         
             input_folder_graphs = args.input_folder_graphs
             input_folder_transformations = args.input_folder_transformations
@@ -127,21 +146,42 @@ if '__main__' == __name__:
             export_folder_grid = args.export_folder_grid
             export_folder_results = args.export_folder_results
             output_filename = args.output_filename
+            batch_size = args.batch_size if args.batch_size else 1 
             
             compute_grid_process_result_before_vs_after(
-                                                        input_folder_graphs,
-                                                        input_folder_transformations,
-                                                        input_folder_results,
+                                                            input_folder_graphs,
+                                                            input_folder_transformations,
+                                                            input_folder_results,
+                                                            export_folder_grid,
+                                                            export_folder_results,
+                                                            output_filename,
+                                                            batch_size,
+                                                            verbose
+                                                        )
+                                                    
+                                                    
+        elif selected_option_3 in ['3-6', '3-7']:
+            input_folder_processed_results=args.input_folder_processed_results
+            export_folder_dataframes = args.export_folder_dataframes
+            export_folder_grid = args.export_folder_grid
+            output_filename = args.output_filename
+            batch_size = args.batch_size if args.batch_size else 1
+            
+            compute_grid_stack_result_into_dataframe(
+                                                        input_folder_processed_results,
+                                                        export_folder_dataframes,
                                                         export_folder_grid,
-                                                        export_folder_results,
                                                         output_filename,
+                                                        batch_size,
                                                         verbose
                                                     )
+                
+                                                    
+            
     elif selected_option == 'option4':
         # Process compute grid for the problem generation
         compute_grid = args.input_file
         n_core = args.n_core
-        
         with open(compute_grid, 'r') as file:
             commands = file.readlines()
             
@@ -158,17 +198,23 @@ if '__main__' == __name__:
                         if verbose:
                             print('Output:', result.stdout.decode())
                             print('Error:', result.stderr.decode())
+                            
                     except Exception as exc:
                         print(f'Command {command} failed: {exc}')
                     progress_bar.update(1)
         else:
             for command in tqdm(commands):
-                process = subprocess.Popen(command.strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
+                #process = subprocess.Popen(command.strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                #stdout, stderr = process.communicate()
+                process = subprocess.Popen(command.strip(), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                process.wait()
 
-                if verbose:
-                    print('Output:', stdout.decode())
-                    print('Error:', stderr.decode())
+
+                #if verbose:
+                #    print('Output:', stdout.decode())
+                #    print('Error:', stderr.decode())
+                    
+                    
                 #time.sleep(0.1)  # laptop in fire
                 
     elif selected_option == 'option5':
@@ -205,19 +251,38 @@ if '__main__' == __name__:
                                             output_filename,
                                             verbose,
                                         )
-        #elif selected_option_5 == '5-3':
-        #    process_result_file_before = args.process_result_file_before
-        #    process_result_file_after = args.process_result_file_after
-        #    edge_dataframe_file = args.edge_dataframe_file
-        #    meta_dataframe_file = args.meta_dataframe_file
-        #    
-        #    process_result_before_vs_after(
-        #                                    process_result_file_before,
-        #                                    process_result_file_after,
-        #                                    edge_dataframe_file,
-        #                                    meta_dataframe_file,
-        #                                    verbose
-        #                                )
+                                        
+        elif selected_option_5 == '5-3':
+            input_file = args.input_file
+            
+            process_result_before_vs_after_batch(
+                                            input_file,
+                                            verbose,
+                                        )
+                                        
+        elif selected_option_5 == '5-4':
+            input_process_result_file_before = args.input_process_result_file_before
+            input_process_result_file_after = args.input_process_result_file_after
+            export_edge_dataframe_file = args.export_edge_dataframe_file
+            export_meta_dataframe_file = args.export_meta_dataframe_file
+            
+            stack_result_into_dataframe(
+                                            input_process_result_file_before,
+                                            input_process_result_file_after,
+                                            export_edge_dataframe_file,
+                                            export_meta_dataframe_file,
+                                            verbose
+                                        )
+        elif selected_option_5 == '5-5':
+            input_file = args.input_file
+            
+            stack_result_into_dataframe_batch(
+                                            input_file,
+                                            verbose,
+                                        )
+                                        
+    if selected_option == 'option8':
+        test(verbose)
     
 
 # xxxxxx-NPP-yyyyyy         := normal npp problem
@@ -236,8 +301,11 @@ if '__main__' == __name__:
 # Option 3
 # python src/python/main.py option3 3-1 --num_partitions 100 --max_sub_length 3 --input_folder './data/from_github/problems' --export_folder_grid './data/modified' --export_folder_problems './data/modified/problems' --export_folder_transformations './data/modified/transformations' --output_filename 'compute_grid_problem_generation' --verbose true
 # python src/python/main.py option3 3-2 --input_folder './data/modified/problems' --export_folder_grid './data/modified' --export_folder_results './data/modified/results' --output_filename 'compute_grid_julia' --verbose true
-# python src/python/main.py option3 3-3 --input_folder_graphs './data/modified/problems' --input_folder_transformations './data/modified/transformations' --input_folder_results './data/modified/results' --export_folder_grid './data/modified' --export_folder_results './data/modified/result_process' --output_filename 'compute_grid_result_process' --verbose true
+# python src/python/main.py option3 3-3 --input_folder './data/modified/problems' --export_folder_grid './data/modified' --export_folder_results './data/modified/results' --output_filename 'compute_grid_julia' --verbose true
+# python src/python/main.py option3 3-4 --input_folder_graphs './data/modified/problems' --input_folder_transformations './data/modified/transformations' --input_folder_results './data/modified/results' --export_folder_grid './data/modified' --export_folder_results './data/modified/result_process' --output_filename 'compute_grid_result_process' --verbose true
 
+# Option 4
+# python src/python/main.py option4 --input_file './data/modified/compute_grid_problem_generation.txt' --n_core 1 --verbose true
 
 # Option 5
 # python src/python/main.py option5 5-1 --num_partitions 10 --max_sub_length 3 --input_file './other/i30-01.json' --export_folder_problems './other/i30-01/problems' --export_folder_transformations './other/i30-01/transformations' --verbose true
@@ -246,7 +314,20 @@ if '__main__' == __name__:
 
 # Exemple avec other
 # python src/python/main.py option3 3-2 --input_folder './other/i30-01/problems' --export_folder_grid './other/i30-01/' --export_folder_results './other/i30-01/results' --output_filename 'compute_grid_julia_i30-01' --verbose true
+# python src/python/main.py option3 3-3 --input_folder './other/i30-01/problems' --export_folder_grid './other/i30-01/' --export_folder_results './other/i30-01/results' --output_filename 'compute_grid_julia_i30-01' --verbose true
 # python src/python/main.py option4 --input_file './other/i30-01/compute_grid_julia_i30-01.txt' --n_core 1
-# python src/python/main.py option3 3-3 --input_folder_graphs './other/i30-01/problems' --input_folder_transformations './other/i30-01/transformations' --input_folder_results './other/i30-01/results' --export_folder_grid './other/i30-01' --export_folder_results './other/i30-01/result_process' --output_filename 'compute_grid_result_process_i30-01' --verbose true
+# python src/python/main.py option3 3-4 --input_folder_graphs './other/i30-01/problems' --input_folder_transformations './other/i30-01/transformations' --input_folder_results './other/i30-01/results' --export_folder_grid './other/i30-01' --export_folder_results './other/i30-01/result_process' --output_filename 'compute_grid_result_process_i30-01' --verbose true
 
 
+# python src/python/main.py option3 3-3 --input_folder './other/result_processing/graphs' --export_folder_grid './other/result_processing/' --export_folder_results './other/result_processing/results' --output_filename 'compute_grid_julia' --verbose true
+# python src/python/main.py option4 --input_file './other/result_processing/compute_grid_julia.txt' --n_core 1
+
+
+# 1) Create problem generation compute grid
+# 2) Process problem generation compute grid
+
+#python src/python/main.py option5 5-1 --num_partitions 100 --max_sub_length 4 --input_file './data/from_github/problems/progressive/i45-10.json' --export_folder_problems './other/result_processing/graphs' --export_folder_transformations './other/result_processing/transformations' --verbose true
+# python src/python/main.py option3 3-2 --input_folder './other/result_processing/graphs' --export_folder_grid './other/result_processing/' --export_folder_results './other/result_processing/results' --output_filename 'compute_grid_julia' --verbose true
+# python src/python/main.py option3 3-4 --input_folder_graphs './other/i30-01/problems' --input_folder_transformations './other/i30-01/transformations' --input_folder_results './other/i30-01/results' --export_folder_grid './other/i30-01' --export_folder_results './other/i30-01/result_process' --output_filename 'compute_grid_result_process_i30-01' --verbose true
+
+# python src/python/main.py option3 3-4 --input_folder_graphs './other/result_processing/graphs' --input_folder_transformations './other/result_processing/transformations' --input_folder_results './other/result_processing/results' --export_folder_grid './other/result_processing' --export_folder_results './other/result_processing/result_process' --output_filename 'compute_grid_result_process' --verbose true

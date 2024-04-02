@@ -380,14 +380,20 @@ class Gamma(Algebra):
         return output_file
     
     @classmethod
-    def from_transformation_pickle(cls, nodes, edges, transformation_file):
+    def from_transformation_pickle(cls, nodes, edges, transformation_file, **kwargs):
         with open(transformation_file, 'rb') as f:
             transformation = pickle.load(f)
         
         index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
         
         edge_partition = [tuple(map(index_edge, cls)) for cls in transformation['RA']]
-        return cls(nodes, edges, edge_partition)
+        return cls(nodes, edges, edge_partition, **kwargs)
+    
+    
+    def to_networkx(self):
+        G = nx.MultiDiGraph()
+        G.add_edges_from(map(lambda x: (x.src, x.dst), self.A_))
+        return G
         
     def summary(self):
         # Before transformation
@@ -526,7 +532,7 @@ class GammaNPP(Gamma):
         return os.path.join(directory, filename)
                 
                 
-                
+       
     # not tested
     @classmethod      
     def revised_problem_from_result(cls, before_json, transformation_file, after_result):

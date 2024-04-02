@@ -1760,3 +1760,139 @@ if False:
         output_folder, filename = os.path.split(g_file)
         filename, _ = os.path.splitext(filename)
         filename = filename.replace('NPP', 'NPPR')
+        
+
+if False:
+        
+        if selected_option == 'option6':
+            # testing
+            # python src/main.py option6
+            
+        
+        elif selected_option == 'option7':
+            # plot testing
+            # python src/main.py option7 --input_file ...
+            input_file = args.input_file
+            test(input_file)
+            
+            
+        elif selected_option == 'option8':
+            # result_processing
+            before_graph_file = args.before_graph_file
+            after_graph_result_file = args.after_graph_result_file
+            transformation_file = args.transformation_file
+            export_folder = args.export_folder
+            filename = args.filename
+            
+            """
+            python src/main.py option8\
+            --before_graph_file 'other/result_processing/graph/000000-NPP-i30-01.json' \
+            --after_graph_result_file 'other/result_processing/result/000002-NPP-i30-01-R.json' \
+            --transformation_file 'other/result_processing/transformation/000002-T-i30-01.pkl' \
+            --export_folder 'other/result_processing/result_process' \
+            --filename '000002-NPP-i30-01-PR' \
+            --verbose true
+            """
+            process_result_before_vs_after(before_graph_file, after_graph_result_file, transformation_file, export_folder, filename, verbose)
+            
+            
+        elif selected_option == 'option9':
+            """
+            python src/main.py option9 \
+             --result_file_before 'other/result_processing/result_process/000000-NPP-i30-01-PR.pkl' \
+             --result_file_after 'other/result_processing/result_process/000002-NPP-i30-01-PR.pkl' \
+             --verbose true
+            """
+            result_file_before = args.result_file_before
+            result_file_after = args.result_file_after
+            
+            
+        compare(result_file_before, result_file_after, verbose)
+        
+        
+def option_6(subparsers_):
+    name = 'option6'
+    description = textwrap.dedent("Individual Problem Maker")
+    help = 'unit_test.test.py'
+    parser_ = subparsers_.add_parser(
+                                    name=name,
+                                    description=description,
+                                    formatter_class=argparse.RawTextHelpFormatter,
+                                    help=help
+                                )
+                                    
+    parser_.add_argument('--num_partitions', type=int, default=100, help='Number of partitions to create (default: 100)')
+    parser_.add_argument('--max_sub_length', type=int, default=3, help='Maximum length allowed of each element in the partition (default: 3)')
+    parser_.add_argument('--input_file', type=str, required=True, help='Path to the input JSON file')
+    parser_.add_argument('--export_folder_problems', type=str, required=True, help='Path to the export NPP json')
+    parser_.add_argument('--export_folder_transformations', type=str, required=True, help='Path to the export transformation PKL')
+    parser_.add_argument('--verbose', help='Print information')     
+    
+    
+    
+    
+    # Import example
+    nodes, edges, problems = from_json(input_file)
+    
+    multi_digraph = nx.MultiDiGraph()
+    multi_digraph.add_nodes_from(nodes)
+    for edge in edges:
+        src = edge.src
+        dst = edge.dst
+        print(edge())
+        label = edge.label
+        multi_digraph.add_edge(src, dst, key=label)
+    
+    basename, extension = os.path.splitext(os.path.basename(input_file))
+    print(basename)
+    plot_graph(multi_digraph, output_path='figure/', filename=basename)
+    
+    
+def option_8(subparsers_):
+    name = 'option8'
+    description = textwrap.dedent("Result processing")
+    help = 'test.result_processing.py'
+    parser_ = subparsers_.add_parser(
+                                    name=name,
+                                    description=description,
+                                    formatter_class=argparse.RawTextHelpFormatter,
+                                    help=help
+                                )
+                                
+    subparsers__= parser_.add_subparsers(
+                                        dest='selected_option_8',
+                                        help='Option',
+                                        required=True
+                                    )
+    def option_8_1(subparsers_):
+        name = 'option8-1'
+        description = textwrap.dedent("Before vs after result processing (individual)")
+        help = 'test.result_processing.process_result_before_vs_after'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+                                        
+        parser_.add_argument('--before_graph_file', type=str, help='Original graph json file')
+        parser_.add_argument('--after_graph_result_file', type=str, help='transformed graph result file')
+        parser_.add_argument('--transformation_file', type=str, help='transformation pkl file')
+        parser_.add_argument('--export_folder_result', type=str, help='folder where the process result go')
+        parser_.add_argument('--filename', type=str, help='filename of the process result')
+        parser_.add_argument('--verbose', help='Print information')
+        
+    def option_8_2(subparsers_):
+        name = 'option9'
+        description = textwrap.dedent("stack_result_into_dataframe")
+        help = 'test.result_processing.stack_result_into_dataframe'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--result_file_before', type=str, help='Original graph json file')
+        parser_.add_argument('--result_file_after', type=str, help='transformed graph result file')
+        parser_.add_argument('--verbose', help='Print information')
+        

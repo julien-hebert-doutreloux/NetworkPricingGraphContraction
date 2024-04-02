@@ -27,7 +27,7 @@ def make_rules(edges_list:iter) -> dict:
         return ((edge1.dst == edge2.dst) or (edge1.src == edge2.src))
     
     def are_compatible(edge1:Edge, edge2:Edge) -> bool:
-        return H1_condition(edge1, edge2) and H3_condition(edge1, edge2)  and H4_condition(edge1, edge2) #and H2_condition(edge1, edge2)
+        return H1_condition(edge1, edge2) and H3_condition(edge1, edge2) # and H4_condition(edge1, edge2) #and H2_condition(edge1, edge2)
     
     if H3:
         prepartition = list(filter(lambda x: x.toll, edges_list))

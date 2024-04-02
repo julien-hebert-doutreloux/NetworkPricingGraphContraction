@@ -1,8 +1,8 @@
-using JSON, ArgParse, BenchmarkTools, Glob
+using JSON, BenchmarkTools, CSV, DataFrames, Distributed
 using NetPricing, JuMP, Gurobi
 
 # Single core limitation
-ENV["JULIA_NUM_THREADS"] = "1"
+#ENV["JULIA_NUM_THREADS"] = "1"
 
 # Define a struct to store the results
 struct OptimizationResult
@@ -20,6 +20,7 @@ function save_result(result::OptimizationResult, filename::AbstractString)
     end
 end
 
+
 function solve_and_get_values(file::AbstractString)
     # Import a problem from a file
     prob = read_problem(file)
@@ -28,11 +29,15 @@ function solve_and_get_values(file::AbstractString)
     # obligatoire
     preprocess_time = @elapsed begin
         # Preprocess the problem for each commodity
-        pprobs = preprocess(prob, maxpaths = 100)
+        pprobs = preprocess(prob, maxpaths = 1000)
     end
 	
     # Create a model
     model, forms = std_model(pprobs)
+    
+     # Set GurobiSolver parameters
+    set_optimizer(model, Gurobi.Optimizer)
+    set_optimizer_attribute(model, "TimeLimit", 100) # stop the process after 100 second
     
     # Measure solving time
     solve_time = @elapsed begin
@@ -67,52 +72,59 @@ function solve_and_get_values(file::AbstractString)
     return OptimizationResult(tvals, obj_value, preprocess_time, solve_time, freq_dict)
 end
 
-function parse_commandline()
-    s = ArgParseSettings()
 
-	@add_arg_table s begin
-		"--input", "-i" 
-		    help = "Input json file problem"
-		"--output", "-o"
-		    help = "Output folder"
+
+function NPP(input_file, output_file, verbose=false)
+   	try
+		# NPP SOLVING
+		result = solve_and_get_values(input_file)
+	
+		# Access the stored values
+		if verbose
+			println("Prices (t): ", result.tvals)
+			println("Objective Value: ", result.obj_value)
+			println("Preprocessing Time: ", result.preprocess_time, " seconds")
+			println("Solving Time: ", result.solve_time, " seconds")
+		end
+		
+		# Save the result to a file
+		save_result(result, output_file)
+	catch
+		# code to handle any exception
+		println("An error occurred.",input_file)
+		return
 	end
-
-    return parse_args(s)
 end
 
-function main()
+
+function main(args)
     
-    parsed_args = parse_commandline()
-    input_file = parsed_args["input"]
-    output_file = parsed_args["output"]
+    if length(args) == 2
+        input_file = args[1]
+        output_file = args[2]
+        NPP(input_file, output_file)
+        
+    elseif length(args) == 1
+        input_file = args[1]
+        data = CSV.read(input_file, DataFrame)
 
-	
-
-	#for input_file in glob("*.json", input_folder)
-	name, extension = splitext(input_file)
-
-	println(input_file)
-	println(output_file)
-	
-	# NPP SOLVING
-	result = solve_and_get_values(input_file)
-	
-	# Access the stored values
-	#println("Prices (t): ", result.tvals)
-	#println("Objective Value: ", result.obj_value)
-	#println("Preprocessing Time: ", result.preprocess_time, " seconds")
-	#println("Solving Time: ", result.solve_time, " seconds")
-	
-	# Save the result to a file
-	save_result(result, output_file)
-	#end
-
+        for row in eachrow(data)
+            input_file = row.input_file
+            output_file = row.output_file
+            println(input_file )
+            println(output_file)
+            NPP(input_file, output_file)
+        end
+    else
+    	println("invalid")
+    end
 end
 
-# Run the script only if it is the main program
 if Main == @__MODULE__
-    main()
+    main(ARGS)
 end
 
-# Example usage
-# $ julia script.jl -i '/path/to/file.json' -o '/path/to/output.json'
+# Example usage 
+# $ julia script.jl '/path/to/existing_file.json' '/path/to/future_output.json'
+# or
+# $ julia script.jl '/path/to/existing_file.csv'
