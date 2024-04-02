@@ -9,3 +9,5 @@ src/python/preamble/__pycache__/
 src/python/plot/__pycache__/
 src/python/graph/__pycache__/
 src/python/gamma/__pycache__/
+
+tmp/
