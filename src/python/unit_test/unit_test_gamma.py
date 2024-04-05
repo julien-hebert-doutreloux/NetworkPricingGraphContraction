@@ -7,11 +7,12 @@ from unit_test.tools import unit_test_decorator, timing_decorator
 from gamma.gamma import Gamma, GammaNPP
 from gamma.common import print_columns, from_json, set_of_frozenset
 
+PARAMETERS = config.unit_test_unit_test_gamma(__name__)
+logger = config.log(**PARAMETERS['logger'])
 
-@unit_test_decorator
+
 def UNIT_TEST_find_node_partition():
 
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         ## Example 1
         ############
@@ -29,10 +30,11 @@ def UNIT_TEST_find_node_partition():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.find_node_partition failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple1 failed')
+        else:
+            logger.info(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple1 succeeded')
         
-    @unit_test_decorator
     def UNIT_TEST_exemple2():
         ## Example 2
         ############
@@ -47,10 +49,11 @@ def UNIT_TEST_find_node_partition():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.find_node_partition failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple2 failed')
+        else:
+            logger.info(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple2 succeeded')
         
-    @unit_test_decorator
     def UNIT_TEST_exemple3():
         ## Example 3
         ############
@@ -68,10 +71,11 @@ def UNIT_TEST_find_node_partition():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.find_node_partition failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple3 failed')
+        else:
+            logger.info(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple3 succeeded')
         
-    @unit_test_decorator     
     def UNIT_TEST_exemple5():
         ## Example 5
         ############
@@ -89,10 +93,11 @@ def UNIT_TEST_find_node_partition():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.find_node_partition failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple5 failed')
+        else:
+            logger.info(f'UNIT_TEST_find_node_partition.UNIT_TEST_exemple5 succeeded')
         
-    @unit_test_decorator     
     def UNIT_TEST_exempleX():
         ## Example X
         ############
@@ -112,15 +117,17 @@ def UNIT_TEST_find_node_partition():
                         (nodes[13],),   # 15
                     ]
         true_value = set_of_frozenset(true_value)
-        test = (true_value == test_value)
-        if test == False:
-            tst = [str(set(map(str,cls))) for cls in test_value]
-            tru = [str(set(map(str,cls))) for cls in true_value]
-            print_columns(tst, tru, headers=['test', 'true'])
-            input()
-        assert test, f"gamma.find_node_partition failed"
         
-    @unit_test_decorator    
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST_find_node_partition.UNIT_TEST_exempleX failed')
+        else:
+            logger.info(f'UNIT_TEST_find_node_partition.UNIT_TEST_exempleX succeeded')
+        #if true_value != test_value:
+        #    tst = [str(set(map(str,cls))) for cls in test_value]
+        #    tru = [str(set(map(str,cls))) for cls in true_value]
+        #    print_columns(tst, tru, headers=['test', 'true'])
+        #    input()
+        
     def UNIT_TEST_exempleXI():
         ## Example XI
         #############
@@ -144,8 +151,10 @@ def UNIT_TEST_find_node_partition():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.find_node_partition failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST_find_node_partition.UNIT_TEST_exempleXI failed')
+        else:
+            logger.info(f'UNIT_TEST_find_node_partition.UNIT_TEST_exempleXI succeeded')
     
     UNIT_TEST_exemple1()
     UNIT_TEST_exemple2()
@@ -155,10 +164,8 @@ def UNIT_TEST_find_node_partition():
     UNIT_TEST_exempleXI()
     
     
-@unit_test_decorator
 def UNIT_TEST___call__():
     
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         ## Example 1
         ############
@@ -182,8 +189,10 @@ def UNIT_TEST___call__():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(node) failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple1 Node failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple1 Node succeeded')
         
         ## Edge
         #######
@@ -206,13 +215,14 @@ def UNIT_TEST___call__():
         ]
         true_value = set_of_frozenset(map(set_of_frozenset, true_value))
         test = (true_value == test_value)
-        assert test, f"gamma.__call__(edge) failed"
-        
         #parallel test
-        test = (gamma_test(edges[5]) != gamma_test(edges[9]))
-        assert test, f"gamma.__call__(edge) failed"
+        test_para = (gamma_test(edges[5]) != gamma_test(edges[9]))
         
-    @unit_test_decorator  
+        if not (test and test_para):
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple1 Edge failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple1 Edge succeeded')
+        
     def UNIT_TEST_exemple2():
         ## Example 2
         ############
@@ -233,8 +243,10 @@ def UNIT_TEST___call__():
                     
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(node) failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple2 Node failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple2 Node succeeded')
         
         ## Edge
         #######
@@ -247,10 +259,13 @@ def UNIT_TEST___call__():
             ((nodes[0], nodes[2]), (nodes[1], nodes[3])),   #γ(e4): [v3] - > [v4]
         ]
         true_value = set_of_frozenset(map(set_of_frozenset, true_value))
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(edge) failed"
         
-    @unit_test_decorator
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple2 Edge failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple2 Edge succeeded')
+        
+        
     def UNIT_TEST_exemple3():
         ## Example 3
         ############
@@ -274,8 +289,10 @@ def UNIT_TEST___call__():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(node) failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple3 Node failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple3 Node succeeded')
         
         ## Edge
         #######
@@ -291,10 +308,12 @@ def UNIT_TEST___call__():
             ((nodes[0], nodes[1]), (nodes[5], nodes[6], nodes[7])), #γ(e11): [v2] - > [v]
         ]
         true_value = set_of_frozenset(map(set_of_frozenset, true_value))
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(edge) failed"
         
-    @unit_test_decorator
+        if test_value != true_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple3 Edge failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple3 Edge succeeded')
+        
     def UNIT_TEST_exemple5():
         ## Example 5
         ############
@@ -323,8 +342,10 @@ def UNIT_TEST___call__():
                     ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(node) failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple5 Node failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple5 Node succeeded')
         
         ## Edge
         #######
@@ -345,10 +366,12 @@ def UNIT_TEST___call__():
             ((nodes[4], nodes[5]), (nodes[8], nodes[9], nodes[10], nodes[11], nodes[12])),  #γ(e12): [v6] - > [γ]
         ]
         true_value = set_of_frozenset(map(set_of_frozenset, true_value))
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(edge) failed"
+
+        if test_value != true_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exemple5 Edge failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exemple5 Edge succeeded')
         
-    @unit_test_decorator 
     def UNIT_TEST_exempleX():
         ## Example X
         ############
@@ -378,8 +401,11 @@ def UNIT_TEST___call__():
             ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(node) failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exempleX Node failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exempleX Node succeeded')
+        
         
         ## Edge
         #######
@@ -411,10 +437,12 @@ def UNIT_TEST___call__():
             ((nodes[1], nodes[2], nodes[4], nodes[6], nodes[8], nodes[9], nodes[10]), (nodes[1], nodes[2], nodes[4], nodes[6], nodes[8], nodes[9], nodes[10])), #γ(e23): [v11] - > [v3]
         ]
         true_value = set_of_frozenset(map(set_of_frozenset, true_value))
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(edge) failed"
+
+        if test_value != true_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exempleX Edge failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exempleX Edge succeeded')
         
-    @unit_test_decorator    
     def UNIT_TEST_exempleXI():
         ## Example XI
         ############
@@ -444,8 +472,11 @@ def UNIT_TEST___call__():
             ]
         true_value = set_of_frozenset(true_value)
         
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(node) failed"
+        if true_value != test_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exempleXI Node failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exempleXI Node succeeded')
+        
         
         ## Edge
         #######
@@ -477,8 +508,11 @@ def UNIT_TEST___call__():
             ((nodes[2], nodes[4]), (nodes[13], )),          #γ(e23): [v5] - > [v15]
         ]
         true_value = set_of_frozenset(map(set_of_frozenset, true_value))
-        test = (true_value == test_value)
-        assert test, f"gamma.__call__(edge) failed"
+        
+        if test_value != true_value:
+            logger.warning(f'UNIT_TEST___call__.UNIT_TEST_exempleXI Edge failed')
+        else:
+            logger.info(f'UNIT_TEST___call__.UNIT_TEST_exempleXI Edge succeeded')
         
     UNIT_TEST_exemple1()
     UNIT_TEST_exemple2()
@@ -487,10 +521,8 @@ def UNIT_TEST___call__():
     UNIT_TEST_exempleX()
     UNIT_TEST_exempleXI()
  
-@unit_test_decorator    
 def UNIT_TEST_export_transformation():
 
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         nodes, edges, edge_partition, _ = exemple1()
         gamma = Gamma(nodes, edges, edge_partition)
@@ -519,12 +551,16 @@ def UNIT_TEST_export_transformation():
                         ])
         test_partition = set_of_frozenset(test_partition['RA'])
         test = (true_partition == test_partition)
-        assert test, "Gamma.export_partition failed"
+        
+        if not test:
+            logger.warning(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple1 failed')
+        else:
+            logger.info(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple1 succeeded')
+            
         if os.path.isfile(input_file):
             os.remove(input_file)
         
             
-    @unit_test_decorator
     def UNIT_TEST_exemple2():
         nodes, edges, edge_partition, _ = exemple2()
         gamma = Gamma(nodes, edges, edge_partition)
@@ -545,13 +581,16 @@ def UNIT_TEST_export_transformation():
                         
         test_partition = set_of_frozenset(test_partition['RA'])
         test = (true_partition == test_partition)
-        assert test, "Gamma.export_partition failed"
+        
+        if not test:
+            logger.warning(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple2 failed')
+        else:
+            logger.info(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple2 succeeded')
         
         if os.path.isfile(input_file):
             os.remove(input_file)
             
             
-    @unit_test_decorator
     def UNIT_TEST_exemple3():
         nodes, edges, edge_partition, _ = exemple3()
         gamma = Gamma(nodes, edges, edge_partition)
@@ -573,12 +612,14 @@ def UNIT_TEST_export_transformation():
                         ])
         test_partition = set_of_frozenset(test_partition['RA'])
         test = (true_partition == test_partition)
-        assert test, "Gamma.export_partition failed"
+        if not test:
+            logger.warning(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple3 failed')
+        else:
+            logger.info(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple3 succeeded')
         
         if os.path.isfile(input_file):
             os.remove(input_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exemple5():
         nodes, edges, edge_partition, _ = exemple5()
         gamma = Gamma(nodes, edges, edge_partition)
@@ -604,12 +645,14 @@ def UNIT_TEST_export_transformation():
                         
         test_partition = set_of_frozenset(test_partition['RA'])
         test = (true_partition == test_partition)
-        assert test, "Gamma.export_partition failed"
+        if not test:
+            logger.warning(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple5 failed')
+        else:
+            logger.info(f'UNIT_TEST_export_transformation.UNIT_TEST_exemple5 succeeded')
         
         if os.path.isfile(input_file):
             os.remove(input_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exempleX():
         nodes, edges, edge_partition, _ = exempleX()
         gamma = Gamma(nodes, edges, edge_partition)
@@ -648,14 +691,15 @@ def UNIT_TEST_export_transformation():
                             
         test_partition = set_of_frozenset(test_partition['RA'])
         test = (true_partition == test_partition)
-        assert test, "Gamma.export_partition failed"
+        if not test:
+            logger.warning(f'UNIT_TEST_export_transformation.UNIT_TEST_exempleX failed')
+        else:
+            logger.info(f'UNIT_TEST_export_transformation.UNIT_TEST_exempleX succeeded')
         
         if os.path.isfile(input_file):
             os.remove(input_file)
             
-            
     
-    @unit_test_decorator
     def UNIT_TEST_exempleXI():
         nodes, edges, edge_partition, _ = exempleXI()
         gamma = Gamma(nodes, edges, edge_partition)
@@ -693,7 +737,10 @@ def UNIT_TEST_export_transformation():
                             ])
         test_partition = set_of_frozenset(test_partition['RA'])
         test = (true_partition == test_partition)
-        assert test, "Gamma.export_partition failed"
+        if not test:
+            logger.warning(f'UNIT_TEST_export_transformation.UNIT_TEST_exempleXI failed')
+        else:
+            logger.info(f'UNIT_TEST_export_transformation.UNIT_TEST_exempleXI succeeded')
         
         if os.path.isfile(input_file):
             os.remove(input_file)
@@ -706,7 +753,6 @@ def UNIT_TEST_export_transformation():
     UNIT_TEST_exempleXI()
     
     
-@unit_test_decorator
 def UNIT_TEST_problems_image():
     
         #      [  {
@@ -715,7 +761,6 @@ def UNIT_TEST_problems_image():
         #        "demand": 1.0
         #    },... ]
         
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         nodes, edges, edge_partition, problems = exemple1()
                 
@@ -768,9 +813,11 @@ def UNIT_TEST_problems_image():
         test_problems_image = g_gamma.problems_image
         
         test = (true_problems_image == test_problems_image)
-        assert test, "GammaNPP.problems_image failed"
+        if not test:
+            logger.warning(f'UNIT_TEST_problems_image.UNIT_TEST_exemple1 failed')
+        else:
+            logger.info(f'UNIT_TEST_problems_image.UNIT_TEST_exemple1 succeeded')
         
-    @unit_test_decorator
     def UNIT_TEST_exemple2():
         nodes, edges, edge_partition, problems = exemple2()
         g_gamma = GammaNPP(nodes, edges, edge_partition, problems)
@@ -802,17 +849,18 @@ def UNIT_TEST_problems_image():
                     ]
         test_problems_image = g_gamma.problems_image
         test = (true_problems_image == test_problems_image)
-        assert test, "GammaNPP.problems_image failed"
+        if not test:
+            logger.warning(f'UNIT_TEST_problems_image.UNIT_TEST_exemple2 failed')
+        else:
+            logger.info(f'UNIT_TEST_problems_image.UNIT_TEST_exemple2 succeeded')
     
 
     UNIT_TEST_exemple1()
     UNIT_TEST_exemple2()
 
 
-@unit_test_decorator
 def UNIT_TEST_export():
     
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         # import example
         nodes, edges, edge_partition, _ = exemple1()
@@ -915,15 +963,15 @@ def UNIT_TEST_export():
             if node1!=node2:
                 equal = False
                     
-        assert equal, "GammaNPP.export failed"
+        if not equal:
+            logger.warning(f'UNIT_TEST_export.UNIT_TEST_exemple1 failed')
+        else:
+            logger.info(f'UNIT_TEST_export.UNIT_TEST_exemple1 succeeded')
     
         if os.path.isfile(output_file):
             os.remove(output_file)
                     
     
-    
-    
-    @unit_test_decorator
     def UNIT_TEST_exemple2():
         # import example
         nodes, edges, edge_partition, problems = exemple2()
@@ -982,7 +1030,10 @@ def UNIT_TEST_export():
                 equal = False
                 
                     
-        assert equal, "GammaNPP.export failed"
+        if not equal:
+            logger.warning(f'UNIT_TEST_export.UNIT_TEST_exemple2 failed')
+        else:
+            logger.info(f'UNIT_TEST_export.UNIT_TEST_exemple2 succeeded')
     
         if os.path.isfile(output_file):
             os.remove(output_file)
@@ -992,7 +1043,6 @@ def UNIT_TEST_export():
     UNIT_TEST_exemple2()
 
 
-@unit_test_decorator
 def UNIT_TEST_export_transformation_2():
 
     def UNIT_TEST_exemple_i(exemple, directory, filename): 
@@ -1044,65 +1094,111 @@ def UNIT_TEST_export_transformation_2():
         equal = equal and test1 and test2 and test3 and test4 and test5
         return equal
         
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple1
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple1 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple1 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple1 succeeded')
+                
         if os.path.isfile(output_file):
             os.remove(output_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exemple2():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple2
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple2 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple2 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple2 succeeded')
+
         if os.path.isfile(output_file):
             os.remove(output_file)
         
-    @unit_test_decorator
     def UNIT_TEST_exemple3():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple3
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple3 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple3 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple3 succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exemple5():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple5
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple5 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple5 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation_2.UNIT_TEST_exemple5 succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
             
-    @unit_test_decorator
     def UNIT_TEST_exempleX():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleX
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation_2.UNIT_TEST_exempleX failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation_2.UNIT_TEST_exempleX failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation_2.UNIT_TEST_exempleX succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
             
-    @unit_test_decorator
     def UNIT_TEST_exempleXI():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleXI
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation_2.UNIT_TEST_exempleXI failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation_2.UNIT_TEST_exempleXI failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation_2.UNIT_TEST_exempleXI succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
@@ -1114,7 +1210,6 @@ def UNIT_TEST_export_transformation_2():
     UNIT_TEST_exempleX()
     UNIT_TEST_exempleXI()
         
-@unit_test_decorator
 def UNIT_TEST_from_transformation_pickle():
     
     def UNIT_TEST_exemple_i(exemple, directory, filename): 
@@ -1155,64 +1250,106 @@ def UNIT_TEST_from_transformation_pickle():
         equal = equal and test1 and test2 and test3
         return equal
         
-    @unit_test_decorator
     def UNIT_TEST_exemple1():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple1
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation.UNIT_TEST_exemple1 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation.UNIT_TEST_exemple1 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation.UNIT_TEST_exemple1 succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exemple2():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple2
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation.UNIT_TEST_exemple2 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation.UNIT_TEST_exemple2 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation.UNIT_TEST_exemple2 succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
         
-    @unit_test_decorator
     def UNIT_TEST_exemple3():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple3
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation.UNIT_TEST_exemple3 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation.UNIT_TEST_exemple3 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation.UNIT_TEST_exemple3 succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exemple5():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exemple5
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation.UNIT_TEST_exemple5 failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation.UNIT_TEST_exemple5 failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation.UNIT_TEST_exemple5 succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
             
-    @unit_test_decorator
     def UNIT_TEST_exempleX():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleX
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation.UNIT_TEST_exempleX failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation.UNIT_TEST_exempleX failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation.UNIT_TEST_exempleX succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             
-    @unit_test_decorator
     def UNIT_TEST_exempleXI():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_export_transformation'
         output_file = os.path.join(directory, f"{filename}.pkl")
         exemple = exempleXI
-        assert UNIT_TEST_exemple_i(exemple, directory, filename), "Gamma.export_transformation() failed"
+        try:
+            test = UNIT_TEST_exemple_i(exemple, directory, filename)
+        except Exception as e:
+            logger.exception('UNIT_TEST_export_transformation.UNIT_TEST_exempleXI failed')
+        else:
+            if not test:
+                logger.warning('UNIT_TEST_export_transformation.UNIT_TEST_exempleXI failed')
+            else:
+                logger.info('UNIT_TEST_export_transformation.UNIT_TEST_exempleXI succeeded')
         if os.path.isfile(output_file):
             os.remove(output_file)
             

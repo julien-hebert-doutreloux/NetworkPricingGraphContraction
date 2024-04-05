@@ -2,8 +2,8 @@ from preamble.preamble import *
 from graph.graph import Node, Edge
 # Tool to import and export problem to a compatible format for the NPP
 
-
-
+PARAMETERS = config.gamma_common(__name__)
+logger = config.log(**PARAMETERS['logger'])
 def set_of_frozenset(iterable):
     return { frozenset(x) for x in iterable }
     

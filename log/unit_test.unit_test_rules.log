@@ -1,0 +1,4 @@
+2024-04-05 10:04:30,354:unit_test.unit_test_rules:UNIT_TEST_Rules_valid failed
+2024-04-05 10:05:21,817:unit_test.unit_test_rules:UNIT_TEST_Rules_valid failed
+2024-04-05 10:06:11,517:unit_test.unit_test_rules:UNIT_TEST_Rules_valid failed
+2024-04-05 10:06:11,518:unit_test.unit_test_rules:UNIT_TEST_Rules_ordered_values_by_affinity failed

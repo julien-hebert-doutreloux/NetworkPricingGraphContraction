@@ -8,7 +8,7 @@ def make_rules(edges_list:iter) -> dict:
     # H3 : Tolled element equivalence class hypothesis (True by default)
     # H4 : Local element only (False by default)
     
-    H1, H2, H3, H4 = True, False, True, True
+    H1, H2, H3, H4 = True, False, True, False
     
     def H1_condition(edge1:Edge, edge2:Edge) -> bool:
         # Not continuous

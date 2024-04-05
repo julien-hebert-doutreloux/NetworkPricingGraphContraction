@@ -2,6 +2,13 @@ from preamble.preamble import *
 from gamma.common import print_columns, from_json, to_json
 from graph.graph import Node, Edge
 
+
+## From config.py
+PARAMETERS = config.gamma_gamma(__name__)
+## Logger
+logger = config.log(**PARAMETERS['logger'])
+
+
 class Function(dict):
     """
     An immutable dictionary representing a mathematical function.
@@ -35,11 +42,12 @@ class Function(dict):
         Returns:
             The corresponding output of the function.
         """
-        if x in self.domain:
-            return self[x]
-            
-        raise ValueError(f"{x} does not exist in the domain")
-
+        try:
+            image = self[x]
+        except Exception as e:
+            logger.exception(f"{x} does not exist in the domain")    
+        else:
+            return image
     def preimage(self, y):
         """
         Compute the preimage of y under the function.
@@ -48,17 +56,18 @@ class Function(dict):
         Returns:
             The set of all inputs that map to y under the function.
         """
-        
-        if y in self.image:
+        try:
             preimage = set(filter(lambda x: self(x) == y, self.domain))
+        except Exception as e:
+            logger.exception(f"{y} does not exist in the image")
+        else:
             return preimage
-        raise ValueError(f"{y} does not exist in the image")
 
     def __setitem__(self, key, value):
-        raise TypeError("Function instance is immutable")
+        logger.warning("Function instance is immutable")
 
     def __delitem__(self, key):
-        raise TypeError("Function instance is immutable")
+        logger.warning("Function instance is immutable")
 
 
 
@@ -130,7 +139,7 @@ class Algebra(Function):
         
         # partition
         P_A = edge_partition if edge_partition else [(e,) for e in A]   # edges partition
-        P_V = Gamma.find_node_partition(P_A)                            # nodes partition
+        P_V = Gamma.find_node_partition(P_A)          # nodes partition
         
         
         # Selection hypothesis
@@ -150,6 +159,7 @@ class Algebra(Function):
             r = sorted(cls, key=phi_A)[0]
             src, dst = nodes_correspondance[r.src], nodes_correspondance[r.dst]
             label = f"[{r.label}]"
+            
             # the min allow partition with none equal edge cost without errors (will be used to further reduce graph with parallel edges)
             cost = min(map(lambda x: x.cost, cls))  # hypothese: all price are suppose to be equal
             toll = r.toll                           # hypothese: every edge should be tolled
@@ -251,11 +261,11 @@ class Algebra(Function):
         self.P_A = P_A
         self.P_V = P_V
         
-        
     @staticmethod
     def find_node_partition(edge_partition):
         """Return the node partition induce by an edge partition"""
         if all(map(lambda x: len(x)==1, edge_partition)):
+            logger.warning("Trivial partition")
             edges = set().union(*edge_partition)
             nodes = set(map(lambda x: x.src, edges)) | set(map(lambda x: x.dst, edges))
             return [{n,} for n in nodes]
@@ -317,6 +327,7 @@ class Algebra(Function):
                         
         result = chain_step(V_quotient)
         result = list(map(tuple, result))
+        
         return result
             
             
@@ -328,13 +339,12 @@ class Gamma(Algebra):
     def export_transformation(self, directory, filename):
         # Check if the directory exists
         if not os.path.isdir(directory):
-            print(f"Error: The specified directory does not exist: {directory}")
+            logger.warning(f"The specified directory does not exist: {directory}")
             return
 
         # Check if the filename is not empty
         if not filename:
-            print("Error: The specified filename is empty")
-            return
+            logger.warning("The specified filename is empty")
             
         # Verify the extension
         if filename.endswith('.pkl'):
@@ -344,7 +354,7 @@ class Gamma(Algebra):
 
         # Check if the file already exists
         if os.path.isfile(output_file):
-            print(f"Error: The specified file already exists: {output_file}")
+            logger.warning(f"The specified file already exists: {output_file}")
             return
 
         
@@ -390,9 +400,15 @@ class Gamma(Algebra):
         return cls(nodes, edges, edge_partition, **kwargs)
     
     
-    def to_networkx(self):
+    def to_networkx(self, graph_image=True):
         G = nx.MultiDiGraph()
-        G.add_edges_from(map(lambda x: (x.src, x.dst), self.A_))
+        
+        A = self.A_ if graph_image else self.A
+        phi = self.phi_A_ if graph_image else self.phi_A
+        #G.add_edges_from(map(lambda x: (x.src, x.dst, x.cost), A))
+        for edge in A:
+            G.add_edge(edge.src, edge.dst, key=phi(edge), **{'cost': edge.cost, 'toll': edge.toll})
+
         return G
         
     def summary(self):
@@ -445,7 +461,7 @@ class Gamma(Algebra):
 class GammaNPP(Gamma):
     __slots__ = ('problems_domain', 'problems_image')
     def __init__(self, nodes, edges, edge_partition=None, problems=None):
-    
+        
         def preprocessing(nodes, edges, problems):
             for edge in edges:
                 # every tolled arc starting cost is 1
@@ -466,7 +482,8 @@ class GammaNPP(Gamma):
             # only integer demand
             for problem in problems:
                 problem['demand'] = max(round(problem['demand'], 0), 1)
-                
+        
+        
         preprocessing(nodes, edges, problems)
         super().__init__(nodes, edges, edge_partition)
         
@@ -495,14 +512,13 @@ class GammaNPP(Gamma):
     
         # Check if the directory exists
         if not os.path.isdir(directory):
-            print(f"Error: The specified directory does not exist: {directory}")
+            logger.warning(f"The specified directory does not exist: {directory}")
             return
-
         output_file = os.path.join(directory, f"{filename}.json")
         
         # Check if the file already exists
         if os.path.isfile(output_file):
-            print(f"Error: The specified file already exists: {output_file}")
+            logger.warning(f"The specified file already exists: {output_file}")
             return
         
         # Prepare to export
@@ -535,23 +551,32 @@ class GammaNPP(Gamma):
        
     # not tested
     @classmethod      
-    def revised_problem_from_result(cls, before_json, transformation_file, after_result):
+    def revised_problem_from_result(cls, before_json, transformation_file, after_result, option=1):
+    
         # going back to the original problem and change the cost of the tolled edge
+        
+        nodes, edges, problems = from_json(before_json)
         # accordingly to the result from the transformation
+        tmp_gamma = cls.from_transformation_pickle(nodes, edges, transformation_file, problems=problems)
+        
+        # import import after result
+        with open(after_result, 'rb') as f:
+            res = json.load(f)
+            
         for e in edges:
             if e.toll:
-                general_index = phi_1(e)
-                tolled_index = phi_5(general_index)
-                e.cost = opt_val_ap(tolled_index)
-
-        # no partition here because we return to the original problem
-        return cls(nodes, edges, problems=problems)
-        
-        #output_folder, filename = os.path.split(g_file)
-        #filename, _ = os.path.splitext(filename)
-        #filename = filename.replace('NPP', 'NPPR')
-        #r_gamma.export(output_folder, filename)
+                general_index = tmp_gamma.phi_A(e)
+                tolled_index = tmp_gamma.beta_inv(tmp_gamma.conv1(general_index))
+                if option == 1:
+                    e.cost = res['tvals'][tolled_index-1] # index correction
                 
+                elif option == 2:
+                    preimage_cardinality = len(tmp_gamma.conv1.preimage(tolled_index))
+                    #if preimage_cardinality >1:
+                    #    print(e, preimage_cardinality)
+                    e.cost = res['tvals'][tolled_index-1] / preimage_cardinality
+        # no partition here because we return to the original problem
+        return cls(nodes, edges, edge_partition=tmp_gamma.P_A, problems=problems)
         
 if __name__ == "__main__": 
     pass

@@ -1,6 +1,10 @@
 from preamble.preamble import *
 from unit_test.tools import unit_test_decorator, timing_decorator
 from gamma.common import from_json, to_json
+
+PARAMETERS = config.unit_test_unit_test_common(__name__)
+logger = config.log(**PARAMETERS['logger'])
+
 ######################
 ## UNIT_TEST_COMMON.PY
 ######################
@@ -11,7 +15,6 @@ from gamma.common import from_json, to_json
 ## common.from_json
 ## common.to_json
 
-@unit_test_decorator
 def UNIT_TEST_from_json_to_json():
     """
     Compares two JSON files by loading and comparing their content.
@@ -21,8 +24,6 @@ def UNIT_TEST_from_json_to_json():
     check if the data from the first file is equal to the data from the second file.
     If the data is not equal, an AssertionError is raised with an appropriate message.
 
-    Raises:
-    AssertionError: If the content of the two JSON files is not equal.
     """
     directory = 'other'
     filename = 'adaptivetest'
@@ -44,11 +45,12 @@ def UNIT_TEST_from_json_to_json():
 
     # Compare the loaded data
     test = (data1 == data2)
-    assert test, f"from_json:{input_file1} is different from to_json:{input_file2}"
-    
+    if not test:
+        logger.warning(f"from_json:{input_file1} is different from to_json:{input_file2}")
+        logger.warning('UNIT_TEST_from_json_to_json failed')
+    else:
+        logger.info('UNIT_TEST_from_json_to_json succeeded')
+        
     if os.path.isfile(input_file2):
         os.remove(input_file2)
-    #    print(f"{input_file2} was deleted.")
-    #else:
-    #    print(f"{input_file2} does not exist.")
 

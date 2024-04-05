@@ -1,7 +1,7 @@
 from preamble.preamble import *
 from gamma.common import from_json
 from gamma.gamma import Function, Algebra, Gamma, GammaNPP
-
+from test.shortest_path_rewind import shortest_path_rewind 
 
     
 #process_result_before_vs_after
@@ -9,9 +9,10 @@ def process_result_before_vs_after(
     before_graph_file:str,
     after_graph_result_file:str,
     transformation_file:str,
-    export_folder:str,
-    output_filename:str,
-    verbose=False
+    export_folder:str='',
+    output_filename:str='',
+    verbose=False,
+    to_be_exported=True
     ):
     """
     Process the results of a graph transformation before and after the transformation.
@@ -24,37 +25,39 @@ def process_result_before_vs_after(
         verbose (bool, optional)     : Whether to print verbose output. Defaults to False.
     """
     msg_list = []
-    # Verify the extension
-    if not output_filename.endswith('.pkl'):
-        output_filename = output_filename + '.pkl'
+    if to_be_exported:
+        # Verify the extension
+        if not output_filename.endswith('.pkl'):
+            output_filename = output_filename + '.pkl'
+            
+        output_file = os.path.join(export_folder, output_filename)
         
-    output_file = os.path.join(export_folder, output_filename)
-    
-    # Check if the file does not exists
-    if not os.path.isfile(before_graph_file):
-        print(f"Error: The specified file does not exists: {before_graph_file}")
-        return False
-    if not os.path.isfile(after_graph_result_file):
-        print(f"Error: The specified file does not exists: {after_graph_result_file}")
-        return False
-    if not os.path.isfile(transformation_file):
-        print(f"Error: The specified file does not exists: {transformation_file}")
-        return False
+        # Check if the file does not exists
+        if not os.path.isfile(before_graph_file):
+            print(f"Error: The specified file does not exists: {before_graph_file}")
+            return False
+        if not os.path.isfile(after_graph_result_file):
+            print(f"Error: The specified file does not exists: {after_graph_result_file}")
+            return False
+        if not os.path.isfile(transformation_file):
+            print(f"Error: The specified file does not exists: {transformation_file}")
+            return False
         
-    # Check if the file already exists
-    if os.path.isfile(output_file):
-        msg_list.append(f"Warning: The specified file already exists: {output_file}")
-        #return False
-        
-    # Check if the directory exists
-    if not os.path.isdir(export_folder):
-        print(f"Error: The specified directory does not exist: {export_folder}")
-        return False
+        # Check if the file already exists
+        if os.path.isfile(output_file):
+            msg_list.append(f"Warning: The specified file already exists: {output_file}")
+            #return False
+            
+        # Check if the directory exists
+        if not os.path.isdir(export_folder):
+            print(f"Error: The specified directory does not exist: {export_folder}")
+            return False
     
     # import original graph
     nodes, edges, problems = from_json(before_graph_file)
     # recreate the graph transformation from pickle transformation_file
     g_gamma = GammaNPP.from_transformation_pickle(nodes, edges, transformation_file, problems=problems)
+    
     
     # import result from the after_graph_result_file
     with open(after_graph_result_file, 'rb') as f:
@@ -90,15 +93,15 @@ def process_result_before_vs_after(
     
     edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
     opt_val_ap = lambda i : tvals[g_gamma.conv2(i)-1] # correction index
-    opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]#flow[g_gamma.conv2(i)]
+    opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
     
     # comparaison
-    comp1 = lambda i: sym(opt_val_av(i), opt_val_ap(i))
-    comp2 = lambda i: sym(opt_flow_av(i), opt_flow_ap(i))
+    #comp1 = lambda i: sym(opt_val_av(i), opt_val_ap(i))
+    #comp2 = lambda i: sym(opt_flow_av(i), opt_flow_ap(i))
     
     # % relative error tval and flow
-    rel_error_t = lambda i : round(((opt_val_ap(i) - opt_val_av(i))/opt_val_av(i)), 3)*100 if opt_val_av(i)>0 else np.nan
-    rel_error_f = lambda i : round(((opt_flow_ap(i) - opt_flow_av(i))/opt_flow_av(i)), 3)*100 if opt_flow_av(i)>0 else np.nan
+    #rel_error_t = lambda i : round(((opt_val_ap(i) - opt_val_av(i))/opt_val_av(i)), 3)*100 if opt_val_av(i)>0 else np.nan
+    #rel_error_f = lambda i : round(((opt_flow_ap(i) - opt_flow_av(i))/opt_flow_av(i)), 3)*100 if opt_flow_av(i)>0 else np.nan
         
     reduce_row_fun = (edge_av, edge_ap, opt_val_ap, opt_flow_ap)
     reduce_row = lambda i: [fun(i) for fun in reduce_row_fun]
@@ -110,6 +113,10 @@ def process_result_before_vs_after(
     #msg_list.append(tabulate(data, headers=headers))
     
     
+    
+    
+    
+    ## Other result
     
     ## Path count
     #G = g_gamma.to_networkx()
@@ -123,7 +130,24 @@ def process_result_before_vs_after(
     #    num_distinct_paths = len(paths)
     #    print(num_distinct_paths)
     #    path_counts[(origin, destination)] = num_distinct_paths
-
+    
+    # other result
+    rewind_optimal, rewind_time = shortest_path_rewind(
+                                                    before_graph_file,
+                                                    after_graph_result_file, 
+                                                    transformation_file,
+                                                    verbose
+                                                    )
+    #
+    
+    compression_factors = {}
+    compression_factors[1] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
+    compression_factors[2] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
+    compression_factors[3] = compression_factors[1]*compression_factors[2]
+    compression_factors[4] = len(g_gamma.domain)/len(g_gamma.image)
+    for i in range(5, 10):
+        compression_factors[i] = 2**compression_factors[i-4]
+    
     to_export = {
                 'edge':data,
                 'obj_value':result['obj_value'],
@@ -131,17 +155,18 @@ def process_result_before_vs_after(
                 'solve_time':result['solve_time'],
                 'n_vertex':len(g_gamma.A_),
                 'n_edge':len(g_gamma.V_),
-                #'n_simple_path_for_od':0
+                'compression_factors':compression_factors
+                #'n_simple_path_for_od':0,
                 }
-    
-    # Write the list of sets to the file
-    with open(output_file, 'wb') as f:
-        pickle.dump(to_export, f)  # Fixed variable name here
-    
-    if verbose:
-        print(*msg_list, sep='\n')
-    return output_file
-
+    if to_be_export:
+        # Write the list of sets to the file
+        with open(output_file, 'wb') as f:
+            pickle.dump(to_export, f)  # Fixed variable name here
+        
+        if verbose:
+            print(*msg_list, sep='\n')
+        return output_file
+    return 
 
 def process_result_before_vs_after_batch(input_file:str, verbose:bool=False):
     data = pd.read_csv(input_file)

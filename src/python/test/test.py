@@ -2,7 +2,7 @@ from preamble.preamble import *
 from gamma.common import from_json, set_of_frozenset
 from unit_test.tools import timing_decorator, unit_test_decorator
 from plot.plot_graph import plot_graph, old_plot_graph
-
+from test.shortest_path_rewind import shortest_path_rewind
 
 def bell_number(n):
     if n == 0:
@@ -23,53 +23,67 @@ def bell_number(n):
 @timing_decorator
 def main(verbose):
     filepath = './tmp/edge_dataframe.pkl'
-    filepath = './tmp/meta_dataframe.pkl'
+    #filepath = './tmp/meta_dataframe.pkl'
     df = pd.read_pickle(filepath)
     print(df)
     
     
-    plt.hist(df['objective'], bins=25)
-    plt.xlabel('objective')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of objective')
-    plt.savefig('./figure/objective_distribution.pdf')
-    plt.close()
     
     
     
-    plt.hist(df['solve time'], bins=50)
-    plt.xlabel('Solving time (sec)')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of the solving time')
-    plt.savefig('./figure/solve_time_distribution.pdf')
-    plt.close()
     
     
     
+    
+    
+    
+    shortest_path_rewind(before_graph_file, before_graph_result_file, after_graph_result_file, transformation_file)
+    
+    
+    
+    if False:
+        plt.hist(df['objective'], bins=25)
+        plt.xlabel('objective')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of objective')
+        plt.savefig('./figure/objective_distribution.pdf')
+        plt.close()
         
-    matching_rows = df[df['file'].str.contains('000000')]    
-    _, original_optimal, original_solve_time, original_preprocess_time, original_n_vertex, original_n_edge = matching_rows.values[0]
-    
-    # graphique
-    df['optimal_ratio'] = df['objective']/original_optimal # x
-    df['n_edge_ratio'] = df['number edge']/original_n_edge #y
-    df['n_vertex_ratio'] = df['number vertex']/original_n_vertex # y
-    
-    
-    plt.scatter(df['optimal_ratio'], df['n_vertex_ratio'])
-    plt.xlabel('Optimal Ratio')
-    plt.ylabel('Number of Vertices Ratio')
-    plt.title('Optimal Ratio vs. Number of Vertices Ratio')
-    plt.savefig('./figure/optimal_ratio_vs_n_vertex_ratio.pdf')
-    plt.close()
-    
-    
-    plt.scatter(df['optimal_ratio'], df['n_edge_ratio'])
-    plt.xlabel('Optimal Ratio')
-    plt.ylabel('Number of Edges Ratio')
-    plt.title('Optimal Ratio vs. Number of Edges Ratio')
-    plt.savefig('./figure/optimal_ratio_vs_n_edge_ratio.pdf')
-    plt.close()
+        
+        
+        plt.hist(df['solve time'], bins=50)
+        plt.xlabel('Solving time (sec)')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of the solving time')
+        plt.savefig('./figure/solve_time_distribution.pdf')
+        plt.close()
+        
+        
+        
+            
+        matching_rows = df[df['file'].str.contains('000000')]    
+        _, original_optimal, original_solve_time, original_preprocess_time, original_n_vertex, original_n_edge = matching_rows.values[0]
+        
+        # graphique
+        df['optimal_ratio'] = df['objective']/original_optimal # x
+        df['n_edge_ratio'] = df['number edge']/original_n_edge #y
+        df['n_vertex_ratio'] = df['number vertex']/original_n_vertex # y
+        
+        
+        plt.scatter(df['optimal_ratio'], df['n_vertex_ratio'])
+        plt.xlabel('Optimal Ratio')
+        plt.ylabel('Number of Vertices Ratio')
+        plt.title('Optimal Ratio vs. Number of Vertices Ratio')
+        plt.savefig('./figure/optimal_ratio_vs_n_vertex_ratio.pdf')
+        plt.close()
+        
+        
+        plt.scatter(df['optimal_ratio'], df['n_edge_ratio'])
+        plt.xlabel('Optimal Ratio')
+        plt.ylabel('Number of Edges Ratio')
+        plt.title('Optimal Ratio vs. Number of Edges Ratio')
+        plt.savefig('./figure/optimal_ratio_vs_n_edge_ratio.pdf')
+        plt.close()
     
     
     

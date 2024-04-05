@@ -1,8 +1,10 @@
 from preamble.preamble import *
-
 from unit_test.tools import timing_decorator, unit_test_decorator
 from gamma.gamma import Gamma, Edge, Node
 from gamma.common import set_of_frozenset
+
+PARAMETERS = config.gamma_partition(__name__)
+logger = config.log(**PARAMETERS['logger'])
 
 
 # Tested
@@ -167,7 +169,7 @@ def find_all_compatible_partition_brute_force(rules):
     
     
 # Tested
-def compatible_union_not_brute_force(rules:dict, stop_n=-1, verbose=False):
+def compatible_union_not_brute_force(rules:dict, stop_n=-1):
     """
     Generate all compatible unions of size 1 to n from a given set of rules,
     where a compatible union is a set of elements that can be combined
@@ -182,7 +184,6 @@ def compatible_union_not_brute_force(rules:dict, stop_n=-1, verbose=False):
             are sets of compatible elements.
         stop_n (int): The maximum size of compatible unions to generate.
             Default is -1, which means to generate all possible sizes.
-        verbose (bool): Whether to print progress messages. Default is False.
 
     Yields:
         frozenset: A compatible union of size 1 to n.
@@ -217,9 +218,7 @@ def compatible_union_not_brute_force(rules:dict, stop_n=-1, verbose=False):
     all_unions[1] = {k: v.copy() for k,v in rules.items()}
     last_time = time.time()
 
-    
-    if verbose:
-        print(f"{round(last_time - start_time, 6)} sec -- |{1}-union| = {len(all_unions[1])}")
+    logger.debug(f"{round(last_time - start_time, 6)} sec -- |{1}-union| = {len(all_unions[1])}")
     
     all_unions[2] = {}
     rules_c = {k: v.copy() for k, v in all_unions[1].items()}
@@ -239,9 +238,6 @@ def compatible_union_not_brute_force(rules:dict, stop_n=-1, verbose=False):
             
     last_time = time.time()
     all_unions.pop(1)
-    
-    if verbose:
-        print(f"{round(last_time - start_time, 6)} sec -- |{2}-union| = {len(all_unions[2])}")
     
     
     def perform_unions_recursively(all_unions, n, rules):
@@ -271,8 +267,7 @@ def compatible_union_not_brute_force(rules:dict, stop_n=-1, verbose=False):
             rules_c.pop(u)
             
         last_time = time.time()
-        if verbose:
-            print(f"{round(last_time - start_time, 6)} sec -- |{n}-union| = {len(all_unions[n])}")
+        logger.debug(f"{round(last_time - start_time, 6)} sec -- |{n}-union| = {len(all_unions[n])}")
         
         if any(filter(lambda x: len(x)>0, all_unions[n].values())):
             all_unions.pop(n-1)

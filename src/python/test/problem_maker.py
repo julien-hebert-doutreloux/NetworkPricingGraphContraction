@@ -2,7 +2,10 @@ from preamble.preamble import *
 from gamma.common import from_json, set_of_frozenset
 from gamma.gamma import GammaNPP
 from gamma.rules import make_rules, Rules
+from unit_test.tools import timing_decorator
 
+
+@timing_decorator
 def main(
         num_partitions=1000,
         max_sub_length=3,
@@ -22,7 +25,7 @@ def main(
     export_folder (str): The path to the output folder where the results will be saved. Default is an empty string.
     verbose (bool): If True, prints some information about the process. Default is True.
     """
-    
+    msg_list = []
     # Check if the file does not exists
     if not os.path.isfile(input_file):
         print(f"Error: The specified file does not exists: {input_file}")
@@ -48,8 +51,9 @@ def main(
     minimal = all(map(lambda v: len(v)>1, compatibility_graph.values()))
     
     if not minimal:
-        print("Rules not minimal")
+        msg_list.append("Rules not minimal")
         compatibility_graph = {k:v for k,v in compatibility_graph.items() if len(v)>1}
+        
     compatibility_graph = Rules(compatibility_graph)
     
     
@@ -85,7 +89,9 @@ def main(
         filename+="-T"
         tranformation_file = transformation.export_transformation(export_folder_transformations, filename)
         
+        msg_list.append(f'NPP JSON file created : {problem_file}')
+        msg_list.append(f'Transformation PKL file created : {tranformation_file}')
         if verbose:
             #transformation.summary()
-            print(f'NPP JSON file created : {problem_file}')
-            print(f'Transformation PKL file created : {tranformation_file}')
+            print(*msg_list, sep='\n')
+            

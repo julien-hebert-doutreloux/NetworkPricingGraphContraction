@@ -12,11 +12,11 @@ import subprocess
 import threading
 import argparse
 import textwrap
+import logging
 import random
 import pickle
+import config #<---- config.py where every parameters are
 import json
 import time
 import sys
 import os
-
-

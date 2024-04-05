@@ -1,4 +1,9 @@
-from config import *
+from preamble.preamble import *
+
+PARAMETERS = config.main_main(__name__)
+logger = config.log(**PARAMETERS['logger'])
+
+from menu.menu import *
 from unit_test.unit_test import main as unit_test
 from test.test_approx_max_clique import main as test_approx_max_clique
 
@@ -10,11 +15,14 @@ from test.result_processing import \
                                 
 from test.problem_maker import main as problem_maker
 from test.test import main as test
+from test.shortest_path_rewind import shortest_path_rewind 
 from test.compute_grid import \
                                 compute_grid_problem_generation,\
                                 compute_grid_individual_julia,\
                                 compute_grid_process_result_before_vs_after,\
                                 compute_grid_stack_result_into_dataframe
+                                
+                                
 
 # Option
 # X 1) unit test
@@ -76,15 +84,15 @@ if '__main__' == __name__:
     
     
     ##################################################################
-    if args.verbose:
-        verbose = True if args.verbose.lower() == 'true' else False
-    else:
-        verbose = False
+    #if args.verbose:
+    #    verbose = True if args.verbose.lower() == 'true' else False
+    #else:
+    #    verbose = False
         
-    if verbose:
-        header = ['Key', 'Value']
-        rows = [(k, v) for k, v in args.__dict__.items()]
-        print(tabulate(rows, headers=header))
+    #if verbose:
+    header = ['Key', 'Value']
+    rows = [(k, v) for k, v in args.__dict__.items()]
+    logger.debug('\n'+tabulate(rows, headers=header))
     #################################################################
             
     if selected_option == 'option1':
@@ -195,12 +203,11 @@ if '__main__' == __name__:
                     command = futures[future]
                     try:
                         result = future.result()
-                        if verbose:
-                            print('Output:', result.stdout.decode())
-                            print('Error:', result.stderr.decode())
+                        logger.debug(f'Output : {result.stdout.decode()}')
+                        logger.error(f'Error : {result.stderr.decode()}')
                             
                     except Exception as exc:
-                        print(f'Command {command} failed: {exc}')
+                        logger.exception(f'Command {command} failed: {exc}')
                     progress_bar.update(1)
         else:
             for command in tqdm(commands):
@@ -283,7 +290,7 @@ if '__main__' == __name__:
                                         
     if selected_option == 'option8':
         test(verbose)
-    
+        #shortest_path_rewind(verbose)
 
 # xxxxxx-NPP-yyyyyy         := normal npp problem
 # xxxxxx-NPP-yyyyyy-R       := revised npp problem

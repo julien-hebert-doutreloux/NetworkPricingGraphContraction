@@ -2,12 +2,5 @@
 venv/
 other/
 data/
-src/python/__pycache__/
-src/python/unit_test/__pycache__/
-src/python/test/__pycache__/
-src/python/preamble/__pycache__/
-src/python/plot/__pycache__/
-src/python/graph/__pycache__/
-src/python/gamma/__pycache__/
-
+**/__pycache__/
 tmp/

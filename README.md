@@ -1,5 +1,6 @@
 ## Instructions
-
+### Gurobi install  
+https://www.youtube.com/watch?v=OYuOKXPJ5PI
 ### Install virtualenv
 
 If you don't have `virtualenv` installed, you can install it using the following command:
