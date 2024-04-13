@@ -4,3 +4,4 @@ other/
 data/
 **/__pycache__/
 tmp/
+log/
