@@ -1,4 +1,4 @@
-using JSON, BenchmarkTools, CSV, DataFrames, Distributed
+using JSON, CSV, DataFrames, BenchmarkTools, Distributed
 using NetPricing, JuMP, Gurobi
 
 # Single core limitation
@@ -47,7 +47,7 @@ function solve_and_get_values(file::AbstractString)
 
     # Extract the result
     tvals = value.(model[:t])  # The prices t
-
+	println(tvals)
     # Get the objective value
     obj_value = objective_value(model)
 
@@ -55,7 +55,7 @@ function solve_and_get_values(file::AbstractString)
 	for k in 1:length(forms)
 		primal_repr = primal(forms[k])              # Primal representation
 		prob_k = problem(primal_repr)               # Preprocessed problem of forms[k]
-		Amap = used_arcs(prob_k)					# List of edge index of the solution path 
+		Amap = used_arcs(prob_k)		    # List of edge index of the solution path 
 		#println(Amap)
 		append!(flow, Amap)
 	end

@@ -74,6 +74,7 @@ def gamma_gamma(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'gamma.gamma.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     # OTHER PARAMETERS
@@ -109,7 +110,7 @@ def gamma_partition(name):
     return parameters
     
 # gamma.rules.py
-def gamma_rule(name):
+def gamma_rules(name):
     parameters = {}
     
     # LOGGER PARAMETERS
@@ -291,7 +292,97 @@ def graph_graph(name):
     # OTHER PARAMETERS
     return parameters
     
+##########
+## TEST ##
+##########
 
+# test.compute_grid.py
+def test_compute_grid(name):
+    parameters = {}
 
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'test.compute_grid.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    # OTHER PARAMETERS
+    return parameters
+
+# test.problem_maker.py
+def test_problem_maker(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'test.problem_maker.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    # OTHER PARAMETERS
+    return parameters
+
+# test.result_processing.py
+def test_result_processing(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'test.result_processing.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    # OTHER PARAMETERS
+    return parameters
+
+# test.shortest_path_rewind.py
+def test_shortest_path_rewind(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'test.shortest_path_rewind.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    # OTHER PARAMETERS
+    return parameters
+
+# test.test.py
+def test_test(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'test.test.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    # OTHER PARAMETERS
+    return parameters
+
+# test.test_approx_max_clique.py
+def test_test_approx_max_clique(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'test.test_approx_max_clique.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    # OTHER PARAMETERS
+    return parameters
+    
+    
 ###################################
 # plot

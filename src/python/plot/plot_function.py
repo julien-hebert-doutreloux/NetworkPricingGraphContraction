@@ -57,7 +57,3 @@ def max_clique_time_and_lenght_distribution(option=0):
     axs[1, 1].set_title('Distribution of max_clique time for MY')
 
     plt.savefig(f'figure/comparaison_distribution_{option}.pdf', bbox_inches='tight')
-        
-        
-    
-    

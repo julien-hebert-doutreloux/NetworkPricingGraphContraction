@@ -54,7 +54,6 @@ ________________________________________________________________________________
 | export_folder_problems        | The parent folder to export generated problems when process compute grid         |
 | export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
 | output_filename               | The name of the compute grid file                                                |
-| verbose                       | Whether to print verbose output during processing                                |
 ____________________________________________________________________________________________________________________
 
 ##### Example
@@ -66,8 +65,7 @@ python src/python/main.py option3 3-1 \
  --export_folder_grid './data/modified' \
  --export_folder_problems './data/modified/problems' \
  --export_folder_transformations './data/modified/transformations' \
- --output_filename 'compute_grid_problem_generation' \
- --verbose true
+ --output_filename 'compute_grid_problem_generation'
 ```
 
 
@@ -83,7 +81,6 @@ ________________________________________________________________________________
 | export_folder_grid    | The folder to export the compute grid                                 |
 | export_folder_results | The parent folder to export future results when process compute grid  |
 | output_filename       | The name of the compute grid file                                     |
-| verbose               | Whether to print verbose output during processing                     |
 _________________________________________________________________________________________________
 
 ##### Example
@@ -92,8 +89,7 @@ python src/python/main.py option3 3-2 \
  --input_folder './data/modified/problems' \
  --export_folder_grid './data/modified' \
  --export_folder_results './data/modified/results' \
- --output_filename 'compute_grid_julia' \
- --verbose true
+ --output_filename 'compute_grid_julia'
 ```
 
 
@@ -111,7 +107,6 @@ ________________________________________________________________________________
 | export_folder_results | The parent folder to export future results when process compute grid  |
 | output_filename       | The name of the compute grid file                                     |
 | batch_size            | Number of problem inside one batch                                    |
-| verbose               | Whether to print verbose output during processing                     |
 _________________________________________________________________________________________________
 The csv grid as two columns: one for the input and one for the output. This is done because the time that Julia needs to initialize is substantial. So by grouping 100 problems and looping over them directly in Julia save initialization time.
 
@@ -122,8 +117,7 @@ python src/python/main.py option3 3-3 \
  --export_folder_grid './data/modified' \
  --export_folder_results './data/modified/results' \
  --output_filename 'compute_grid_julia' \
- --batch_size 100 \
- --verbose true
+ --batch_size 100
 ```
 
 
@@ -135,8 +129,7 @@ python src/python/main.py option5 5-2 \
  --after_graph_result_file 'path/to/transformed_problem_raw_result.json' \
  --transformation_file 'path/to/transformation_file.pkl' \
  --export_folder 'path/to/export_folder' \
- --output_filename 'filename.pkl' \
- --verbose True
+ --output_filename 'filename.pkl'
 ```
 The option 5-2 is detailed below.
 
@@ -149,7 +142,6 @@ ________________________________________________________________________________
 | export_folder_grid           | The folder to export compute grid                            |
 | export_folder_results        | The parent folder to export future processed results         |
 | output_filename              | The name of the compute grid file                            |
-| verbose                      | Whether to print verbose output during processing            |
 _______________________________________________________________________________________________
 
 ##### Example
@@ -160,8 +152,7 @@ python src/python/main.py option3 3-4 \
  --input_folder_results 'path/to/raw_results' \
  --export_folder_grid 'path/to/export_folder' \
  --export_folder_results 'path/where/process/are/export_folder' \
- --output_filename 'filename.txt' \
- --verbose true
+ --output_filename 'filename.txt'
 ```
 
 
@@ -172,8 +163,7 @@ python src/python/main.py option5 5-3 \
  --input_process_result_file_before 'path/to/original_problem_processed_result.pkl' \
  --input_process_result_file_after 'path/to/transformed_problem_processed_result.pkl' \
  --export_edge_dataframe_file 'path/to/edge_dataframe_file.pkl' \
- --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl' \
- --verbose true
+ --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl'
 ```
 The option 5-3 is detailed below.
 
@@ -184,8 +174,7 @@ python src/python/main.py option3 3-5 \
  --input_folder_processed_results './other/result_processing/result_process' \
  --export_folder_dataframes './other/result_processing' \
  --export_folder_grid './other/result_processing' \
- --output_filename 'compute_grid_stack_result.txt' \
- --verbose true
+ --output_filename 'compute_grid_stack_result.txt'
 ```
 
 ### Option 4 - Processing compute grid 
@@ -205,7 +194,6 @@ ________________________________________________________________________________
 | input_folder                  | The parent folder of every NPP problems                                          |
 | export_folder_problems        | The parent folder to export generated problems when process compute grid         |
 | export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
-| verbose                       | Whether to print verbose output during processing                                |
 ____________________________________________________________________________________________________________________
 
 
@@ -216,8 +204,7 @@ python src/python/main.py option5 5-1 \
  --max_sub_length 4 \
  --input_file 'path/to/npp_graph_problem.json' \
  --export_folder_problems 'path/to/export_folder_problem' \
- --export_folder_transformations 'path/to/export_folder_transformations' \
- --verbose true
+ --export_folder_transformations 'path/to/export_folder_transformations'
 ```
 
 #### 5-2. Process result
@@ -229,7 +216,6 @@ ________________________________________________________________________________
 | after_graph_result_file      | Raw result file path of the transformed NPP problem          |
 | transformation_file          | File path of the pkl transformation                          |
 | export_folder_results        | The parent folder to export processed results                |
-| verbose                      | Whether to print verbose output during processing            |
 _______________________________________________________________________________________________
 
 ##### Example
@@ -238,8 +224,7 @@ python src/python/main.py option5 5-2 \
  --before_graph_file 'path/to/original_graph.json' \
  --after_graph_result_file 'path/to/transformed_graph_raw_result.json' \
  --transformation_file 'path/to/transformation_file.pkl' \
- --export_folder_results 'path/to/export_folder' \
- --verbose true
+ --export_folder_results 'path/to/export_folder'
 ```
 
 
@@ -253,7 +238,6 @@ ________________________________________________________________________________
 | input_process_result_file_after   | Processed result file path of the NPP problem after transformation     |
 | export_edge_dataframe_file        | File path for the edge dataframe                                       |
 | export_meta_dataframe_file        | File path of the meta dataframe                                        |
-| verbose                           | Whether to print verbose output during processing                      |
 ______________________________________________________________________________________________________________
 
 
@@ -263,8 +247,7 @@ python src/python/main.py option5 5-3 \
  --input_process_result_file_before 'path/to/original_problem_processed_result.pkl' \
  --input_process_result_file_after 'path/to/transformed_problem_processed_result.pkl' \
  --export_edge_dataframe_file 'path/to/edge_dataframe_file.pkl' \
- --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl' \
- --verbose true
+ --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl'
 ```
 
 

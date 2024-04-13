@@ -2,6 +2,9 @@ from preamble.preamble import *
 from gamma.common import set_of_frozenset
 from gamma.gamma import Edge, Node
 
+PARAMETERS = config.gamma_rules(__name__)
+logger = config.log(**PARAMETERS['logger'])
+
 def make_rules(edges_list:iter) -> dict:
     # H1 : Continuity-free edge equivalence class hypothesis (True by default)
     # H2 : Equivalence class assumption for elements of equal value (False by default)
@@ -210,8 +213,7 @@ class Rules(dict):
             
         return max_clique
         
-    def random_partition(self, number_or_partition=1, max_len=3):
-
+    def random_partition(self, number_or_partition:int, max_len:int, max_not_trivial_class:int):
         if max_len == -1:
             max_len = len(self)
         
@@ -221,6 +223,7 @@ class Rules(dict):
         for _ in range(number_or_partition):
             partition = []
             union = set()
+            n_not_trivial_class = 0
             while union != set(self):
 
                 random_generator = random.sample(generators, 1)[-1] - union
@@ -233,18 +236,31 @@ class Rules(dict):
                     
                     random_subset = set(random.sample(list(random_generator), random_size))
                     #input(f"random_subset = {random_subset}")
-                    
+                        
                     # correction des duplicats
                     random_subset -= set().union(*partition)
                     
+                    
                     if random_subset != set():
-                        partition.append(random_subset)
+                    
+                        if len(random_subset)>2:
+                            n_not_trivial_class+=1
+                            
+                        partition += [random_subset]
                         random_generator -= random_subset
                         
                         union |= random_subset
                         
-            partition = set_of_frozenset(partition) 
+                    if n_not_trivial_class == max_not_trivial_class:
+                        partition += [[x] for x in set(self)-union]
+                        union = set(self)
+                        random_generator = False
+                        logger.debug(list(map(lambda x: list(map(str, x)), partition)))
+                        input('To continue press enter')
+            partition = set_of_frozenset(partition)
+            
             if not partition in partitions:
                 partitions.append(partition)
+                partition = []
         
         return partitions

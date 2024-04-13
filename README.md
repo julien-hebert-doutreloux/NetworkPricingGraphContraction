@@ -1,7 +1,55 @@
 ## Instructions
-### Gurobi install  
+
+
+## Gurobi install
+To install and activate Gurobi on linux:
 https://www.youtube.com/watch?v=OYuOKXPJ5PI
-### Install virtualenv
+
+```bash
+julia
+import Pkg; Pkg.add("Gurobi")
+```
+
+### Julia prerequisites
+#### JSON
+```bash
+julia
+import Pkg; Pkg.add("JSON")
+```
+#### CSV
+```bash  
+import Pkg; Pkg.add("CSV")  
+```
+#### DataFrames
+```bash  
+import Pkg; Pkg.add("DataFrames")  
+```
+#### BenchmarkTools
+```bash
+import Pkg; Pkg.add("BenchmarkTools")
+```
+
+### NetPricing (from github)
+```bash
+julia
+]
+add https://github.com/minhcly95/NetPricing.jl
+```
+### JuMP
+
+```bash  
+import Pkg; Pkg.add("JuMP")  
+```
+### Gurobi
+
+```bash  
+import Pkg; Pkg.add("Gurobi")  
+```
+
+
+### Python
+
+#### Install virtualenv
 
 If you don't have `virtualenv` installed, you can install it using the following command:
 
@@ -9,7 +57,7 @@ If you don't have `virtualenv` installed, you can install it using the following
 pip install virtualenv
 ```
 
-### Create a virtual environment
+#### Create a virtual environment
 
 Navigate to your project directory and create a new virtual environment named venv:
 
@@ -18,7 +66,7 @@ cd /path/to/your/project
 virtualenv venv
 ```
 
-### Activate the virtual environment
+#### Activate the virtual environment
 
 Activate the virtual environment using the appropriate command for your operating system:
 

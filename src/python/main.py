@@ -84,12 +84,6 @@ if '__main__' == __name__:
     
     
     ##################################################################
-    #if args.verbose:
-    #    verbose = True if args.verbose.lower() == 'true' else False
-    #else:
-    #    verbose = False
-        
-    #if verbose:
     header = ['Key', 'Value']
     rows = [(k, v) for k, v in args.__dict__.items()]
     logger.debug('\n'+tabulate(rows, headers=header))
@@ -128,7 +122,6 @@ if '__main__' == __name__:
                                             export_folder_problems,
                                             export_folder_transformations,
                                             output_filename,
-                                            verbose
                                         )
                                         
         elif selected_option_3 in ['3-2', '3-3']:
@@ -136,6 +129,7 @@ if '__main__' == __name__:
             export_folder_grid = args.export_folder_grid
             export_folder_results = args.export_folder_results
             output_filename = args.output_filename
+            # eleminate 3-2 with 3-3 and 1 batchsize
             batch_size = args.batch_size if args.batch_size else 1 
             compute_grid_individual_julia(
                                             input_folder,
@@ -143,7 +137,6 @@ if '__main__' == __name__:
                                             export_folder_results,
                                             output_filename,
                                             batch_size,
-                                            verbose
                                         )
                                 
         elif selected_option_3 in ['3-4', '3-5']:
@@ -164,7 +157,6 @@ if '__main__' == __name__:
                                                             export_folder_results,
                                                             output_filename,
                                                             batch_size,
-                                                            verbose
                                                         )
                                                     
                                                     
@@ -181,7 +173,6 @@ if '__main__' == __name__:
                                                         export_folder_grid,
                                                         output_filename,
                                                         batch_size,
-                                                        verbose
                                                     )
                 
                                                     
@@ -190,7 +181,7 @@ if '__main__' == __name__:
         # Process compute grid for the problem generation
         compute_grid = args.input_file
         n_core = args.n_core
-        with open(compute_grid, 'r') as file:
+        with open(compute_grid, 'rb') as file:
             commands = file.readlines()
             
         if n_core>1:
@@ -215,12 +206,10 @@ if '__main__' == __name__:
                 #stdout, stderr = process.communicate()
                 process = subprocess.Popen(command.strip(), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
                 process.wait()
+                
+                #logger.debug(f'Output : {result.stdout.decode()}')
+                #logger.error(f'{result.stderr.decode()}')
 
-
-                #if verbose:
-                #    print('Output:', stdout.decode())
-                #    print('Error:', stderr.decode())
-                    
                     
                 #time.sleep(0.1)  # laptop in fire
                 
@@ -230,6 +219,7 @@ if '__main__' == __name__:
         if selected_option_5 == '5-1':
             num_partitions = args.num_partitions
             max_sub_length = args.max_sub_length
+            max_not_trivial_class = args.max_not_trivial_class
             input_file = args.input_file 
             export_folder_problems = args.export_folder_problems
             export_folder_transformations = args.export_folder_transformations
@@ -237,10 +227,10 @@ if '__main__' == __name__:
             problem_maker(
                             num_partitions,
                             max_sub_length,
+                            max_not_trivial_class,
                             input_file,
                             export_folder_problems,
                             export_folder_transformations,
-                            verbose
                         )
                         
         elif selected_option_5 == '5-2':
@@ -256,7 +246,6 @@ if '__main__' == __name__:
                                             transformation_file,
                                             export_folder_results,
                                             output_filename,
-                                            verbose,
                                         )
                                         
         elif selected_option_5 == '5-3':
@@ -264,7 +253,6 @@ if '__main__' == __name__:
             
             process_result_before_vs_after_batch(
                                             input_file,
-                                            verbose,
                                         )
                                         
         elif selected_option_5 == '5-4':
@@ -278,18 +266,16 @@ if '__main__' == __name__:
                                             input_process_result_file_after,
                                             export_edge_dataframe_file,
                                             export_meta_dataframe_file,
-                                            verbose
                                         )
         elif selected_option_5 == '5-5':
             input_file = args.input_file
             
             stack_result_into_dataframe_batch(
                                             input_file,
-                                            verbose,
                                         )
                                         
     if selected_option == 'option8':
-        test(verbose)
+        test()
         #shortest_path_rewind(verbose)
 
 # xxxxxx-NPP-yyyyyy         := normal npp problem
@@ -299,42 +285,33 @@ if '__main__' == __name__:
 # xxxxxx-NPP-yyyyyy-(R-)PR  := process result that compare the original problem with the transformed one
 
 
-# Option 1
-# python src/main.py option1 --verbose true
-
-# Option 2
-# python src/main.py option2 -f '/home/fiftyfour/Documents/Code/other/d50-12-10.json' -r 1 -i 1 -e '/home/fiftyfour/Documents/Code/result/'
-
-# Option 3
-# python src/python/main.py option3 3-1 --num_partitions 100 --max_sub_length 3 --input_folder './data/from_github/problems' --export_folder_grid './data/modified' --export_folder_problems './data/modified/problems' --export_folder_transformations './data/modified/transformations' --output_filename 'compute_grid_problem_generation' --verbose true
-# python src/python/main.py option3 3-2 --input_folder './data/modified/problems' --export_folder_grid './data/modified' --export_folder_results './data/modified/results' --output_filename 'compute_grid_julia' --verbose true
-# python src/python/main.py option3 3-3 --input_folder './data/modified/problems' --export_folder_grid './data/modified' --export_folder_results './data/modified/results' --output_filename 'compute_grid_julia' --verbose true
-# python src/python/main.py option3 3-4 --input_folder_graphs './data/modified/problems' --input_folder_transformations './data/modified/transformations' --input_folder_results './data/modified/results' --export_folder_grid './data/modified' --export_folder_results './data/modified/result_process' --output_filename 'compute_grid_result_process' --verbose true
-
-# Option 4
-# python src/python/main.py option4 --input_file './data/modified/compute_grid_problem_generation.txt' --n_core 1 --verbose true
-
-# Option 5
-# python src/python/main.py option5 5-1 --num_partitions 10 --max_sub_length 3 --input_file './other/i30-01.json' --export_folder_problems './other/i30-01/problems' --export_folder_transformations './other/i30-01/transformations' --verbose true
-# python src/python/main.py option5 5-1 --process_result_file_before '' --process_result_file_after
 
 
-# Exemple avec other
-# python src/python/main.py option3 3-2 --input_folder './other/i30-01/problems' --export_folder_grid './other/i30-01/' --export_folder_results './other/i30-01/results' --output_filename 'compute_grid_julia_i30-01' --verbose true
-# python src/python/main.py option3 3-3 --input_folder './other/i30-01/problems' --export_folder_grid './other/i30-01/' --export_folder_results './other/i30-01/results' --output_filename 'compute_grid_julia_i30-01' --verbose true
-# python src/python/main.py option4 --input_file './other/i30-01/compute_grid_julia_i30-01.txt' --n_core 1
-# python src/python/main.py option3 3-4 --input_folder_graphs './other/i30-01/problems' --input_folder_transformations './other/i30-01/transformations' --input_folder_results './other/i30-01/results' --export_folder_grid './other/i30-01' --export_folder_results './other/i30-01/result_process' --output_filename 'compute_grid_result_process_i30-01' --verbose true
 
 
-# python src/python/main.py option3 3-3 --input_folder './other/result_processing/graphs' --export_folder_grid './other/result_processing/' --export_folder_results './other/result_processing/results' --output_filename 'compute_grid_julia' --verbose true
-# python src/python/main.py option4 --input_file './other/result_processing/compute_grid_julia.txt' --n_core 1
 
 
-# 1) Create problem generation compute grid
-# 2) Process problem generation compute grid
 
-#python src/python/main.py option5 5-1 --num_partitions 100 --max_sub_length 4 --input_file './data/from_github/problems/progressive/i45-10.json' --export_folder_problems './other/result_processing/graphs' --export_folder_transformations './other/result_processing/transformations' --verbose true
-# python src/python/main.py option3 3-2 --input_folder './other/result_processing/graphs' --export_folder_grid './other/result_processing/' --export_folder_results './other/result_processing/results' --output_filename 'compute_grid_julia' --verbose true
-# python src/python/main.py option3 3-4 --input_folder_graphs './other/i30-01/problems' --input_folder_transformations './other/i30-01/transformations' --input_folder_results './other/i30-01/results' --export_folder_grid './other/i30-01' --export_folder_results './other/i30-01/result_process' --output_filename 'compute_grid_result_process_i30-01' --verbose true
 
-# python src/python/main.py option3 3-4 --input_folder_graphs './other/result_processing/graphs' --input_folder_transformations './other/result_processing/transformations' --input_folder_results './other/result_processing/results' --export_folder_grid './other/result_processing' --export_folder_results './other/result_processing/result_process' --output_filename 'compute_grid_result_process' --verbose true
+
+# il faut adapter le code pour que la borne inferieur de n'importe quelle arcs soient 1
+# en plus des autres changements ...
+#./src/components/graphmodel.jl:        set_lower_bound(x[a], 0)
+#./src/components/graphmodel.jl:        set_lower_bound(x[a], 1)
+#./src/models/dual-representation.jl:    dual.λ = λ = @variable(model, [1:nv], lower_bound = 0, base_name="λ[$k]")
+#./src/models/dual-representation.jl:    dual.L = L = @variable(model, lower_bound = 0, base_name="L[$k]")
+#./src/models/linearizations/commodity-linearization.jl:    tx = @variable(model, [a=a1], lower_bound = 0, base_name="tx[$k]") <--- changement ici
+#./src/models/primal-representation.jl:    primal.x = x = @variable(model, [1:na], lower_bound = 0, upper_bound = 1, base_name="x[$k]")
+#./src/models/primal-representation.jl:    primal.z = z = @variable(model, [1:np], lower_bound = 0, upper_bound = 1, base_name="z[$k]")
+#./src/models/primal-representation.jl:    primal.x = x = @variable(model, [a1], lower_bound = 0, upper_bound = 1, base_name="x[$k]")
+
+
+
+# il faut changer 
+#.src/models/linearizations/commodity-linearization.jl line 33
+# Julien : if else statement is not in the original code 
+#    if isempty(tx)
+#        sumtx = 0.0
+#    else
+#        sumtx = sum(tx)
+#    end

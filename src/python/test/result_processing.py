@@ -3,7 +3,9 @@ from gamma.common import from_json
 from gamma.gamma import Function, Algebra, Gamma, GammaNPP
 from test.shortest_path_rewind import shortest_path_rewind 
 
-    
+PARAMETERS = config.test_result_processing(__name__)
+logger = config.log(**PARAMETERS['logger'])
+
 #process_result_before_vs_after
 def process_result_before_vs_after(
     before_graph_file:str,
@@ -11,8 +13,6 @@ def process_result_before_vs_after(
     transformation_file:str,
     export_folder:str='',
     output_filename:str='',
-    verbose=False,
-    to_be_exported=True
     ):
     """
     Process the results of a graph transformation before and after the transformation.
@@ -22,9 +22,10 @@ def process_result_before_vs_after(
         transformation_file (str)    : The file path of the transformation file.
         export_folder (str)          : The folder path to export the results. Defaults to ''.
         filename (str)               : The filename to use for the exported results. Defaults to ''.
-        verbose (bool, optional)     : Whether to print verbose output. Defaults to False.
     """
-    msg_list = []
+    
+    
+    to_be_exported = export_folder and output_filename
     if to_be_exported:
         # Verify the extension
         if not output_filename.endswith('.pkl'):
@@ -34,29 +35,28 @@ def process_result_before_vs_after(
         
         # Check if the file does not exists
         if not os.path.isfile(before_graph_file):
-            print(f"Error: The specified file does not exists: {before_graph_file}")
+            logger.warning(f"The specified file does not exists: {before_graph_file}")
             return False
         if not os.path.isfile(after_graph_result_file):
-            print(f"Error: The specified file does not exists: {after_graph_result_file}")
+            logger.warning(f"The specified file does not exists: {after_graph_result_file}")
             return False
         if not os.path.isfile(transformation_file):
-            print(f"Error: The specified file does not exists: {transformation_file}")
+            logger.warning(f"The specified file does not exists: {transformation_file}")
             return False
         
         # Check if the file already exists
         if os.path.isfile(output_file):
-            msg_list.append(f"Warning: The specified file already exists: {output_file}")
-            #return False
+            logger.info(f"The specified file already exists: {output_file}")
             
         # Check if the directory exists
         if not os.path.isdir(export_folder):
-            print(f"Error: The specified directory does not exist: {export_folder}")
+            logger.warning(f"The specified directory does not exist: {export_folder}")
             return False
     
     # import original graph
     nodes, edges, problems = from_json(before_graph_file)
     # recreate the graph transformation from pickle transformation_file
-    g_gamma = GammaNPP.from_transformation_pickle(nodes, edges, transformation_file, problems=problems)
+    g_gamma = GammaNPP.from_transformation_pickle(nodes, edges, transformation_file, problems=problems, preprocess=False)
     
     
     # import result from the after_graph_result_file
@@ -68,7 +68,7 @@ def process_result_before_vs_after(
     flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
     
     if set(flow) != set(range(1, len(g_gamma)+1)):
-        msg_list.append('Warning: Flow result incomplete. NaN completion')
+        logger.debug('Flow result incomplete. NaN completion')
             
         diff = set(range(1, len(g_gamma)+1)) - set(flow)
         
@@ -88,11 +88,11 @@ def process_result_before_vs_after(
     
     # (i) based on the index from I_T_AV
     edge_av = lambda i : g_gamma.alpha(i) 
-    opt_val_av = lambda i : tvals_0[i-1] # correction index
+    opt_val_av = lambda i : max(1,tvals_0[i-1]) # index correction and value correction 
     opt_flow_av = lambda i : flow_0[i] 
     
     edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
-    opt_val_ap = lambda i : tvals[g_gamma.conv2(i)-1] # correction index
+    opt_val_ap = lambda i : max(1,tvals[g_gamma.conv2(i)-1])  # index correction and value correction 
     opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
     
     # comparaison
@@ -107,10 +107,9 @@ def process_result_before_vs_after(
     reduce_row = lambda i: [fun(i) for fun in reduce_row_fun]
     data = [reduce_row(i) for i in g_gamma.phi_T_A.image]
     
-    
-    #headers = ('edge', 'γ(edge)', 'opt. value', 'opt. flow')
-    #msg_list.append('Tolled edge')
-    #msg_list.append(tabulate(data, headers=headers))
+    # tolled edges
+    headers = ('edge', 'γ(edge)', 'opt. value', 'opt. flow')
+    logger.debug('\n'+tabulate(data, headers=headers))
     
     
     
@@ -136,10 +135,7 @@ def process_result_before_vs_after(
                                                     before_graph_file,
                                                     after_graph_result_file, 
                                                     transformation_file,
-                                                    verbose
                                                     )
-    #
-    
     compression_factors = {}
     compression_factors[1] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
     compression_factors[2] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
@@ -155,20 +151,19 @@ def process_result_before_vs_after(
                 'solve_time':result['solve_time'],
                 'n_vertex':len(g_gamma.A_),
                 'n_edge':len(g_gamma.V_),
-                'compression_factors':compression_factors
+                'compression_factors':compression_factors,
+                'rewind_optimal':rewind_optimal,
+                'rewind_time':rewind_time,
                 #'n_simple_path_for_od':0,
                 }
-    if to_be_export:
+    if to_be_exported:
         # Write the list of sets to the file
         with open(output_file, 'wb') as f:
             pickle.dump(to_export, f)  # Fixed variable name here
         
-        if verbose:
-            print(*msg_list, sep='\n')
         return output_file
-    return 
 
-def process_result_before_vs_after_batch(input_file:str, verbose:bool=False):
+def process_result_before_vs_after_batch(input_file:str):
     data = pd.read_csv(input_file)
 
     for index, row in data.iterrows():
@@ -178,7 +173,6 @@ def process_result_before_vs_after_batch(input_file:str, verbose:bool=False):
                                         row['after_graph_result_file'],
                                         row['export_folder'],
                                         row['output_filename'],
-                                        verbose
                                         )
                                         
     
@@ -189,7 +183,6 @@ def stack_result_into_dataframe(
                                 input_process_result_file_after:str,
                                 export_edge_dataframe_file:str='',
                                 export_meta_dataframe_file:str='',
-                                verbose:bool=False
                             ):
     """
     Compare the results of two process result files and return two pandas dataframes containing the comparison.
@@ -198,16 +191,14 @@ def stack_result_into_dataframe(
         input_process_result_file_after (str): The file path to the second process result file to compare.
         export_edge_dataframe_file (str): The file path to the pkl dataframe about edge (create one if it does not exists)
         export_meta_dataframe_file (str): The file path to the pkl dataframe about meta data (create one if it does not exists)
-        verbose (bool): If True, print the comparison tables to the console. Defaults to False.
     """
-    msg_list = []
     # Check if the file does not exists
     if not os.path.isfile(input_process_result_file_before):
-        print(f"Error: The specified file does not exists: {process_result_file_before}")
+        logger.warning(f"The specified file does not exists: {process_result_file_before}")
         return False
         
     if not os.path.isfile(input_process_result_file_after):
-        print(f"Error: The specified file does not exists: {process_result_file_after}")
+        logger.warning(f"The specified file does not exists: {process_result_file_after}")
         return False
     
     # retrieve name of the original problem
@@ -229,25 +220,30 @@ def stack_result_into_dataframe(
     # After result
     with open(input_process_result_file_after, 'rb') as f:
         result_after = pickle.load(f)
+        
     edge_after = result_after['edge']
     obj_value_after = result_after['obj_value']
     solve_time_after = result_after['solve_time'] 
     preprocess_time_after = result_after['preprocess_time']
     n_edge = result_after['n_edge']
-    n_vertex = result_after['n_vertex']
     
+    n_vertex = result_after['n_vertex']
+    compression_factors = list(result_after['compression_factors'].values())
+    rewind_optimal = result_after['rewind_optimal']
+    rewind_time = result_after['rewind_time']
+
     # edge result
     combine = lambda i: [filename_after,] + list(edge_before[i][0:1:])+list(edge_before[i][2::])+list(edge_after[i][::])
     data = [combine(i) for i in range(len(edge_after))]
-    headers = ('file', 'edge', 'opt. value', 'opt. flow','edge', 'γ(edge)', 'opt. value', 'opt. flow')
+    headers = ('file', 'edge', 'opt. value', 'opt. flow','edge_ref', '(edge)', '(opt. value)', '(opt. flow)')
     df1 = pd.DataFrame(data, columns=headers)
     
-    #msg_list.append(tabulate(data, headers=headers))
+    logger.debug('\n'+tabulate(data, headers=headers))
     
     
     if not os.path.isfile(export_edge_dataframe_file):
-        msg_list.append(f"Warning: The specified file does not exists: {export_edge_dataframe_file}")
-        msg_list.append(f"Warning: The following file is created : {export_edge_dataframe_file}")
+        logger.warning(f"The specified file does not exists: {export_edge_dataframe_file}")
+        logger.warning(f"The following file is created : {export_edge_dataframe_file}")
         df1.to_pickle(export_edge_dataframe_file)
         
     else:
@@ -255,8 +251,8 @@ def stack_result_into_dataframe(
         
         # verify if the result are already there
         if df['file'].isin([filename_after,]).any():
-            msg_list.append(f"Warning: Result already there. Reference file: {filename_after}")
-            msg_list.append(f"Warning: Overwriting rows")
+            logger.warning(f"Result already in edge_dataframe. Reference file: {filename_after}")
+            logger.warning(f"Overwriting rows")
             df = df[df['file'] != filename_after]
             
         df = pd.concat([df, df1])
@@ -265,16 +261,16 @@ def stack_result_into_dataframe(
     # meta data and objective
     data = [
         #(filename_before, obj_value_before,solve_time_before, preprocess_time_before),
-        (filename_after, obj_value_after, solve_time_after, preprocess_time_after, n_vertex, n_edge),
+        (filename_after, obj_value_after, solve_time_after, preprocess_time_after, n_vertex, n_edge, rewind_optimal, rewind_time, *compression_factors),
     ]
-    headers = ('file', 'objective', 'solve time', 'preprocess time', 'number vertex', 'number edge')
+    headers = ('file', 'objective', 'solve time', 'preprocess time', 'number vertex', 'number edge', 'rewind optimal', 'rewind time', 'c.-f.1', 'c.-f.2', 'c.-f.3', 'c.-f.4', 'c.-f.5', 'c.-f.6', 'c.-f.7', 'c.-f.8',  'c.-f.9',)
     df2 = pd.DataFrame(data, columns=headers)
     
-    #msg_list.append(tabulate(data, headers=headers))
+    logger.debug('\n'+tabulate(data, headers=headers))
         
     if not os.path.isfile(export_meta_dataframe_file):
-        msg_list.append(f"Warning: The specified file does not exists: {export_meta_dataframe_file}")
-        msg_list.append(f"Warning: The following file is created : {export_meta_dataframe_file}")
+        logger.warning(f"The specified file does not exists: {export_meta_dataframe_file}")
+        logger.warning(f"The following file is created : {export_meta_dataframe_file}")
         df2.to_pickle(export_meta_dataframe_file)
         
     else:
@@ -282,20 +278,18 @@ def stack_result_into_dataframe(
         
         # verify if the result are already there
         if df['file'].isin([filename_after,]).any():
-            msg_list.append(f"Warning: Result already there. Reference file: {filename_after}")
-            msg_list.append(f"Warning: Overwriting rows")
+            logger.warning(f"Result already in meta_dataframe. Reference file: {filename_after}")
+            logger.warning(f"Overwriting rows")
             df = df[df['file'] != filename_after]
             
         df = pd.concat([df, df2])
         df.to_pickle(export_meta_dataframe_file)
         
         
-    if verbose:
-        print(*msg_list, sep='\n')
     return export_edge_dataframe_file, export_meta_dataframe_file
     
 
-def stack_result_into_dataframe_batch(input_file:str, verbose:bool=False):
+def stack_result_into_dataframe_batch(input_file:str):
     data = pd.read_csv(input_file)
 
     for index, row in data.iterrows():
@@ -304,7 +298,6 @@ def stack_result_into_dataframe_batch(input_file:str, verbose:bool=False):
                                         row['input_process_result_file_after'],
                                         row['export_edge_dataframe_file'],
                                         row['export_meta_dataframe_file'],
-                                        verbose
                                         )
 
     

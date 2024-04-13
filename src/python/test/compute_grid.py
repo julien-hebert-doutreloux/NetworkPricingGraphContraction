@@ -1,5 +1,7 @@
 from preamble.preamble import *
 
+PARAMETERS = config.test_compute_grid(__name__)
+logger = config.log(**PARAMETERS['logger'])
 def compute_grid_problem_generation(
                                     num_partitions:int=100,
                                     max_sub_length:int=3,
@@ -8,7 +10,6 @@ def compute_grid_problem_generation(
                                     export_folder_problems:str='',
                                     export_folder_transformations:str='',
                                     output_filename:str='',
-                                    verbose:bool=False,
                                 ):
     """
     This function, `compute_grid_problem_generation`, is used to generate a list of commands for processing JSON problem files found in a specified input folder.
@@ -21,7 +22,6 @@ def compute_grid_problem_generation(
         export_folder_problems (str, optional): The path to the folder where the output problem files will be stored. Defaults to ''.
         export_folder_transformations (str, optional): The path to the folder where the output transformation files will be stored. Defaults to ''.
         output_filename (str, optional): The name of the output file. If it does not end with '.txt', it will be appended. Defaults to ''.
-        verbose (bool, optional): If True, it will print out certain messages. Defaults to False.
 
     The function works by iterating over all JSON files in the input folder and its subdirectories. For each file, it creates a command string that calls a Python script with various arguments based on the input parameters and the current file. It then writes these command strings to an output file.
     Within this function, it is supposed that you have a problem folder with categories folders and subcategories folders. 
@@ -37,7 +37,6 @@ def compute_grid_problem_generation(
     # export_folder_transformations ? no -> create folder
     
     command_list = []
-    msg_list = []
     # problem_making
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
@@ -51,15 +50,15 @@ def compute_grid_problem_generation(
                 output_folder_problems = os.path.join(export_folder_problems, *subfolder, base_name)
                 if not os.path.exists(output_folder_problems):
                     os.makedirs(output_folder_problems)
-                    msg_list.append(f"Folder created : {output_folder_problems}")
+                    logger.info(f"Folder created : {output_folder_problems}")
                         
                 # Transformation
                 output_folder_transformations = os.path.join(export_folder_transformations, *subfolder, base_name)
                 if not os.path.exists(output_folder_transformations):
                     os.makedirs(output_folder_transformations)
-                    msg_list.append(f"Folder created : {output_folder_transformations}")
+                    logger.info(f"Folder created : {output_folder_transformations}")
                 
-                command = f"python src/python/main.py option5 5-1 --num_partitions {num_partitions} --max_sub_length {max_sub_length} --input_file {original_problem_path} --export_folder_problems {output_folder_problems} --export_folder_transformations {output_folder_transformations} --verbose {verbose}"
+                command = f"python src/python/main.py option5 5-1 --num_partitions {num_partitions} --max_sub_length {max_sub_length} --input_file {original_problem_path} --export_folder_problems {output_folder_problems} --export_folder_transformations {output_folder_transformations}"
                 command_list.append(command)
     
     if not output_filename.endswith('.txt'):
@@ -71,9 +70,7 @@ def compute_grid_problem_generation(
             f.write(command)
             f.write('\n')
             
-    msg_list.append(f"Compute grid exported : {output_file}")
-    if verbose:
-        print(*msg_list, sep-'\n')
+    logger.info(f"Compute grid exported : {output_file}")
         
     return output_file
     
@@ -84,7 +81,6 @@ def compute_grid_individual_julia(
                                 export_folder_results='',
                                 output_filename='',
                                 batch_size:int=1,
-                                verbose=False,
                             ):
                             
     # Logic for file and folder existence                   
@@ -94,7 +90,6 @@ def compute_grid_individual_julia(
     
     command_list = []
     input_output_list = []
-    msg_list = []
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
             if filename.endswith(".json"):
@@ -107,7 +102,7 @@ def compute_grid_individual_julia(
                 output_folder_results = os.path.join(export_folder_results, *subfolder)
                 if not os.path.exists(output_folder_results):
                     os.makedirs(output_folder_results)
-                    msg_list.append(f"Folder created : {output_folder_results}")
+                    logger.info(f"Folder created : {output_folder_results}")
                         
                 output_result_file = os.path.join(output_folder_results, f"{base_name}-RR.json")
                 command = f"julia src{os.sep}julia{os.sep}script.jl {problem_path} {output_result_file}"
@@ -120,7 +115,7 @@ def compute_grid_individual_julia(
         command_list = []
         split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
         for j, sublist in enumerate(split_list, start=1):
-            output_file = os.path.join(export_folder_grid, f"julia_batch_{i}.csv")
+            output_file = os.path.join(export_folder_grid, f"julia_batch_{j}.csv")
             
             with open(output_file, 'w') as f:
                 f.write('input_file,output_file')
@@ -129,7 +124,7 @@ def compute_grid_individual_julia(
                     f.write(f"{i},{o}")
                     f.write('\n')
             
-            msg_list.append(f"Batch {j} exported: {output_file}")
+            logger.info(f"Batch {j} exported: {output_file}")
             command = f"julia src{os.sep}julia{os.sep}script.jl {output_file}"
             command_list.append(command)
             
@@ -143,9 +138,7 @@ def compute_grid_individual_julia(
             f.write(command)
             f.write('\n')
             
-    msg_list.append(f"Compute grid exported : {output_file}")
-    if verbose:
-        print(*msg_list, sep='\n')
+    logger.info(f"Compute grid exported : {output_file}")
         
     return output_file
 
@@ -157,7 +150,6 @@ def compute_grid_process_result_before_vs_after(
                                                 export_folder_results:str='',
                                                 output_filename:str='',
                                                 batch_size:int=1,
-                                                verbose=False,
                                             ):
     # Logic for file and folder existence                   
     # input_folder_graphs ? no -> return error  
@@ -168,7 +160,6 @@ def compute_grid_process_result_before_vs_after(
     
     command_list = []
     input_output_list = []
-    msg_list = []
     for root, dirs, files in os.walk(input_folder_graphs):
         for filename in files:
             if filename.endswith(".json"):
@@ -184,22 +175,22 @@ def compute_grid_process_result_before_vs_after(
                 tmp_bool_1 = os.path.isfile(input_t_file)
                 tmp_bool_2 = os.path.isfile(input_r_file)
                     
-                if not tmp_bool_1 or not tmp_bool_2:
-                    msg_list.append(f"Error: The problem file is not compatible: {problem_path}")
+                #if not tmp_bool_1 or not tmp_bool_2:
+                #    logger.warning(f"The problem file is not compatible: {problem_path}")
                 if not tmp_bool_1:
-                    msg_list.append(f"Error: The transformation file does not exists: {input_t_file}")
+                    logger.warning(f"The transformation file does not exists: {input_t_file}")
                 if not tmp_bool_2:
-                    msg_list.append(f"Error: The result file does not exists: {input_r_file}")
+                    logger.warning(f"The result file does not exists: {input_r_file}")
                 
                 if tmp_bool_1 and tmp_bool_2:
                     output_folder_results = os.path.join(export_folder_results, *subfolder)
                     
                     if not os.path.exists(output_folder_results):
                         os.makedirs(output_folder_results)
-                        msg_list.append(f"Warning: Folder created : {output_folder_results}")
+                        logger.info(f"Folder created : {output_folder_results}")
                     
                     output_r_file = f"{base_name}-PR.pkl"
-                    command = f"python src/python/main.py option5 5-2 --before_graph_file {input_g_file} --after_graph_result_file {input_r_file} --transformation_file {input_t_file} --export_folder {output_folder_results} --output_filename {output_r_file} --verbose {verbose}"
+                    command = f"python src/python/main.py option5 5-2 --before_graph_file {input_g_file} --after_graph_result_file {input_r_file} --transformation_file {input_t_file} --export_folder {output_folder_results} --output_filename {output_r_file}"
                     command_list.append(command)
                     
                     grtr = (input_g_file, input_r_file, input_t_file,output_folder_results, output_r_file)
@@ -220,8 +211,8 @@ def compute_grid_process_result_before_vs_after(
                     f.write(f"{i},{t},{r},{x},{rr}")
                     f.write('\n')
             
-            msg_list.append(f"Batch {j} exported: {output_file}")
-            command = f"python src{os.sep}python{os.sep}main.py option5 5-3 --input_file {output_file} --verbose {verbose}"
+            logger.info(f"Batch {j} exported: {output_file}")
+            command = f"python src{os.sep}python{os.sep}main.py option5 5-3 --input_file {output_file}"
             command_list.append(command)
     
     
@@ -235,11 +226,8 @@ def compute_grid_process_result_before_vs_after(
             f.write(command)
             f.write('\n')
             
-    msg_list.append(f"Compute grid exported : {output_file}")
+    logger.info(f"Compute grid exported : {output_file}")
     
-    if verbose:
-        print(*msg_list, sep='\n')
-        
     return output_file
     
                 
@@ -249,11 +237,9 @@ def compute_grid_stack_result_into_dataframe(
                                             export_folder_grid:str='',
                                             output_filename:str='',
                                             batch_size:int=1,
-                                            verbose=False,
                                         ):
     command_list = []
     input_output_list = []
-    msg_list = []
     for root, dirs, files in os.walk(input_folder_processed_results):
         for filename in files:
             if filename.endswith(".pkl"):
@@ -267,12 +253,12 @@ def compute_grid_stack_result_into_dataframe(
                 
                 if not os.path.exists(export_folder_dataframes):
                     os.makedirs(export_folder_dataframes)
-                    msg_list.append(f"Warning: Folder created: {export_folder_dataframes}")
+                    logger.info(f"Folder created: {export_folder_dataframes}")
 
                 export_edge_dataframe_file = os.path.join(export_folder_dataframes, "edge_dataframe.pkl")
                 export_meta_dataframe_file = os.path.join(export_folder_dataframes, "meta_dataframe.pkl")
                 
-                command = f"python src/python/main.py option5 5-3 --input_process_result_file_before {processed_result_path_before} --input_process_result_file_after {processed_result_after_path} --export_edge_dataframe_file {export_edge_dataframe_file} --export_meta_dataframe_file {export_meta_dataframe_file} --verbose {verbose}"
+                command = f"python src/python/main.py option5 5-3 --input_process_result_file_before {processed_result_path_before} --input_process_result_file_after {processed_result_after_path} --export_edge_dataframe_file {export_edge_dataframe_file} --export_meta_dataframe_file {export_meta_dataframe_file}"
                 command_list.append(command)
                 input_output_list.append((
                                             processed_result_path_before,
@@ -294,8 +280,8 @@ def compute_grid_stack_result_into_dataframe(
                     f.write(f"{iprfb},{iprfa},{eed},{emd}")
                     f.write('\n')
             
-            msg_list.append(f"Batch {i} exported: {output_file}")
-            command = f"python src{os.sep}python{os.sep}main.py option5 5-5 --input_file {output_file} --verbose {verbose}"
+            logger.info(f"Batch {i} exported: {output_file}")
+            command = f"python src{os.sep}python{os.sep}main.py option5 5-5 --input_file {output_file}"
             command_list.append(command)
     ###       
     if not output_filename.endswith('.txt'):
@@ -307,11 +293,8 @@ def compute_grid_stack_result_into_dataframe(
             f.write(command)
             f.write('\n')
             
-    msg_list.append(f"Compute grid exported : {output_file}")
+    logger.info(f"Compute grid exported : {output_file}")
     
-    if verbose:
-        print(*msg_list, sep='\n')
-        
     return output_file
     
     

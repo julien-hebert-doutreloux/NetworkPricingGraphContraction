@@ -13,7 +13,6 @@ def option_1(subparsers_):
                                     formatter_class=argparse.RawTextHelpFormatter,
                                     help=help
                                 )
-    #parser_.add_argument('--verbose', help='Print information')
     
 def option_2(subparsers_):
     name = 'option2'
@@ -30,7 +29,6 @@ def option_2(subparsers_):
     parser_.add_argument('-r', '--formula_option', choices=['0', '1','2','3','4','5','6','7'], type=str, help='Rules affinity score formula option. See the Rules class')
     parser_.add_argument('-i', '--iteration', type=str, help='Iteration number')
     parser_.add_argument('-e', '--export_path', type=str, help='Result export path')
-    #parser_.add_argument('--verbose', help='Print information')
     
 
 def option_3(subparsers_):
@@ -67,7 +65,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_problems', type=str, required=True, help='Path to the export NPP json')
         parser_.add_argument('--export_folder_transformations', type=str, required=True, help='Path to the export transformation PKL')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        #parser_.add_argument('--verbose', help='Print information')
     
     
     def option_3_2(subparsers_): 
@@ -84,7 +81,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
         parser_.add_argument('--export_folder_results', type=str, required=True, help='prepare parent folder to the export result of julia result')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        #parser_.add_argument('--verbose', help='Print information')
         
         
     def option_3_3(subparsers_): 
@@ -102,7 +98,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_results', type=str, required=True, help='prepare parent folder to the export result of julia result')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
         parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')
-        #parser_.add_argument('--verbose', help='Print information') 
     
     def option_3_4(subparsers_): 
         name = '3-4'
@@ -120,7 +115,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
         parser_.add_argument('--export_folder_results', type=str, required=True, help='parent folder for processed result')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        #parser_.add_argument('--verbose', help='Print information')
         
         
     def option_3_5(subparsers_): 
@@ -140,7 +134,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_results', type=str, required=True, help='parent folder for processed result')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
         parser_.add_argument('--batch_size', type=int, required=True, help='Batch size')
-        #parser_.add_argument('--verbose', help='Print information')
         
     def option_3_6(subparsers_): 
         name = '3-6'
@@ -156,7 +149,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_dataframes', type=str, help='Parent folder to export dataframes')
         parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        #parser_.add_argument('--verbose', help='Print information')
         
         
     def option_3_7(subparsers_): 
@@ -174,7 +166,6 @@ def option_3(subparsers_):
         parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
         parser_.add_argument('--batch_size', type=int, required=True, help='Batch size')
-        #parser_.add_argument('--verbose', help='Print information')
         
     option_3_1(subparsers__)
     option_3_2(subparsers__)
@@ -197,7 +188,6 @@ def option_4(subparsers_):
                                 
     parser_.add_argument('--input_file', type=str, help='input compute grid file')
     parser_.add_argument('--n_core', type=int, help='number of cores')
-    #parser_.add_argument('--verbose', help='Print information')
         
 def option_5(subparsers_):
     name = 'option5'
@@ -228,10 +218,10 @@ def option_5(subparsers_):
                                     )
         parser_.add_argument('--num_partitions', type=int, help='number of random partitions')
         parser_.add_argument('--max_sub_length', type=int, help='maximum length of a subset of a partition')
+        parser_.add_argument('--max_not_trivial_class', type=int, help='maximum number of none trivial equivalence class in partition')
         parser_.add_argument('--input_file', type=str, help='NPP json file path')
         parser_.add_argument('--export_folder_problems', type=str, required=True, help='folder to export NPP json')
         parser_.add_argument('--export_folder_transformations', type=str, required=True, help='folder to export transformation PKL')
-        #parser_.add_argument('--verbose', help='Print information')
     
         
         
@@ -252,7 +242,6 @@ def option_5(subparsers_):
         parser_.add_argument('--transformation_file', type=str, help='transformation pkl file path')
         parser_.add_argument('--export_folder_results', type=str, required=True, help='folder to export the processed results')
         parser_.add_argument('--output_filename', type=str, required=True, help='processed result filename')
-        #parser_.add_argument('--verbose', help='Print information')
         
     def option_5_3(subparsers_): 
         name = '5-3'
@@ -266,7 +255,6 @@ def option_5(subparsers_):
                                     )
                                     
         parser_.add_argument('--input_file', type=str, help='batch file')
-        #parser_.add_argument('--verbose', help='Print information')
         
     def option_5_4(subparsers_): 
         name = '5-4'
@@ -283,7 +271,6 @@ def option_5(subparsers_):
         parser_.add_argument('--input_process_result_file_after', type=str, help='File path to json raw result after transformation')
         parser_.add_argument('--export_edge_dataframe_file', type=str, help='File path to pkl tolled edge dataframe')
         parser_.add_argument('--export_meta_dataframe_file', type=str, required=True, help='File path to pkl meta dataframe')
-        #parser_.add_argument('--verbose', help='Print information')
         
         
     def option_5_5(subparsers_): 
@@ -298,8 +285,6 @@ def option_5(subparsers_):
                                     )
                                     
         parser_.add_argument('--input_file', type=str, help='batch file')
-        #parser_.add_argument('--verbose', help='Print information')
-    
 
     option_5_1(subparsers__)
     option_5_2(subparsers__)
@@ -320,7 +305,6 @@ def option_7(subparsers_):
                                     help=help
                                 )
     parser_.add_argument('--input_file', type=str, help='input the NPP json file')
-    #parser_.add_argument('--verbose', help='Print information')    
     
     
 def option_8(subparsers_):
@@ -333,5 +317,4 @@ def option_8(subparsers_):
                                     formatter_class=argparse.RawTextHelpFormatter,
                                     help=help
                                 )
-    #parser_.add_argument('--verbose', help='Print information')
                                 

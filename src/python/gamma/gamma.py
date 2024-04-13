@@ -460,8 +460,8 @@ class Gamma(Algebra):
 
 class GammaNPP(Gamma):
     __slots__ = ('problems_domain', 'problems_image')
-    def __init__(self, nodes, edges, edge_partition=None, problems=None):
-        
+    def __init__(self, nodes, edges, edge_partition=None, problems=None, preprocess=True):
+        logger.debug(f'preprocess problem : {preprocess}')
         def preprocessing(nodes, edges, problems):
             for edge in edges:
                 # every tolled arc starting cost is 1
@@ -483,8 +483,8 @@ class GammaNPP(Gamma):
             for problem in problems:
                 problem['demand'] = max(round(problem['demand'], 0), 1)
         
-        
-        preprocessing(nodes, edges, problems)
+        if preprocess:
+            preprocessing(nodes, edges, problems)
         super().__init__(nodes, edges, edge_partition)
         
         
@@ -552,7 +552,6 @@ class GammaNPP(Gamma):
     # not tested
     @classmethod      
     def revised_problem_from_result(cls, before_json, transformation_file, after_result, option=1):
-    
         # going back to the original problem and change the cost of the tolled edge
         
         nodes, edges, problems = from_json(before_json)
@@ -562,21 +561,27 @@ class GammaNPP(Gamma):
         # import import after result
         with open(after_result, 'rb') as f:
             res = json.load(f)
-            
+        
         for e in edges:
             if e.toll:
                 general_index = tmp_gamma.phi_A(e)
                 tolled_index = tmp_gamma.beta_inv(tmp_gamma.conv1(general_index))
+                logger.debug(f"general_index = {general_index}")
+                logger.debug(f"tolled_index = {tolled_index}")
                 if option == 1:
-                    e.cost = res['tvals'][tolled_index-1] # index correction
-                
+                    e.cost += res['tvals'][tolled_index-1] # index correction and value correction
+                    logger.debug(f"res['tvals'][tolled_index-1] : {res['tvals'][tolled_index-1]}")
+                    logger.debug(f"e.cost = {e.cost}")
+                    
                 elif option == 2:
                     preimage_cardinality = len(tmp_gamma.conv1.preimage(tolled_index))
-                    #if preimage_cardinality >1:
-                    #    print(e, preimage_cardinality)
-                    e.cost = res['tvals'][tolled_index-1] / preimage_cardinality
+                    e.cost += res['tvals'][tolled_index-1] / preimage_cardinality
+                    logger.debug(f"e.cost = {e.cost}")
+                    
+                logger.debug(f"e = {e}")
+                    
         # no partition here because we return to the original problem
-        return cls(nodes, edges, edge_partition=tmp_gamma.P_A, problems=problems)
+        return cls(nodes, edges, edge_partition=tmp_gamma.P_A, problems=problems, preprocess=False)
         
 if __name__ == "__main__": 
     pass
