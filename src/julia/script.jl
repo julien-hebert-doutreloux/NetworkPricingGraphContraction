@@ -1,4 +1,4 @@
-using JSON, CSV, DataFrames, BenchmarkTools, Distributed
+using JSON, CSV, DataFrames, BenchmarkTools, Distributed, FileIO, Pickle, Unmarshal
 using NetPricing, JuMP, Gurobi
 
 # Single core limitation
@@ -6,6 +6,7 @@ using NetPricing, JuMP, Gurobi
 
 # Define a struct to store the results
 struct OptimizationResult
+	id::AbstractString
     tvals::Vector{Float64}
     obj_value::Float64
     preprocess_time::Float64
@@ -13,18 +14,50 @@ struct OptimizationResult
     flow::Dict
 end
 
+
+# Save result
 # Function to save results to a file
-function save_result(result::OptimizationResult, filename::AbstractString)
+function save_result_individual(result::OptimizationResult, filename::AbstractString)
     open(filename, "w") do file
         JSON.print(file, result)
     end
 end
 
+function save_result_batch(results, filename::AbstractString)
+	# results : array of OptimizationResult
+	# filename : path/to/output.pkl
+	
+	# Convert the results list to a JSON string
+	json_data = JSON.json(results)
 
-function solve_and_get_values(file::AbstractString)
+	# Compress the JSON data into a bytes object
+	# Save the compressed data to a file
+	open(filename, "w") do file
+		write(file, compressed_data)
+	end
+end
+
+
+# Import problem
+function import_problem_from_file(file::AbstractString)
     # Import a problem from a file
     prob = read_problem(file)
-	
+    
+	# Get the file name without the extension
+	id = splitext(basename(file_name))[1]
+	return prob, id
+end
+
+function import_problem_from_str(str::AbstractString)
+	prob = unmarshal(Problem, JSON.parse(str)["problem"])
+	return prob
+end
+
+
+
+
+function solve_and_get_values(prob::Problem, id::AbstractString)
+
     # Measure preprocessing time
     # obligatoire
     preprocess_time = @elapsed begin
@@ -69,55 +102,56 @@ function solve_and_get_values(file::AbstractString)
 		freq_dict[val] += 1
 	end
 	
-    return OptimizationResult(tvals, obj_value, preprocess_time, solve_time, freq_dict)
+    return OptimizationResult(id, tvals, obj_value, preprocess_time, solve_time, freq_dict)
 end
 
 
-
-function NPP(input_file, output_file, verbose=false)
-   	try
-		# NPP SOLVING
-		result = solve_and_get_values(input_file)
-	
-		# Access the stored values
-		if verbose
-			println("Prices (t): ", result.tvals)
-			println("Objective Value: ", result.obj_value)
-			println("Preprocessing Time: ", result.preprocess_time, " seconds")
-			println("Solving Time: ", result.solve_time, " seconds")
-		end
-		
-		# Save the result to a file
-		save_result(result, output_file)
-	catch
-		# code to handle any exception
-		println("An error occurred.",input_file)
-		return
-	end
-end
 
 
 function main(args)
-    
-    if length(args) == 2
-        input_file = args[1]
-        output_file = args[2]
-        NPP(input_file, output_file)
-        
-    elseif length(args) == 1
-        input_file = args[1]
-        data = CSV.read(input_file, DataFrame)
 
-        for row in eachrow(data)
-            input_file = row.input_file
-            output_file = row.output_file
-            println(input_file )
-            println(output_file)
-            NPP(input_file, output_file)
-        end
-    else
-    	println("invalid")
-    end
+    input_file = args[1]
+    output_file = args[2]
+    
+    if endswith(input_file, ".json")
+	    # Individual solver
+		# input file : json
+		# output file: json
+		
+	    result = solve_and_get_values(import_problem_from_file(input_file))
+	    
+	    if result
+    		save_result_individual(result, output_file)
+	    else
+			println("An error occurred.", input_file)
+		end
+	    
+    elseif endswith(input_file, ".pkl") & endswith(output_file, ".pkl") 
+		# Batch solver and one compressed result output file
+		# input file : path/to/input.gz
+		# output file: path/to/output.gz
+		
+		results_array = []
+	    
+		# Read the compressed data from the file
+		data = Pickle.load(open(input_file, "r"))
+		# Loop over the data
+		for item in data
+			k, v = item
+			result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
+			
+			if result
+				append!(results_array, result)
+			else
+				println("An error occurred.", k)
+			end
+		end
+		
+		#save_result_batch(results_array, output_file)
+		
+	else
+		println("An error occurred.", input_file)
+	end
 end
 
 if Main == @__MODULE__
@@ -128,3 +162,10 @@ end
 # $ julia script.jl '/path/to/existing_file.json' '/path/to/future_output.json'
 # or
 # $ julia script.jl '/path/to/existing_file.csv'
+
+
+
+
+
+
+

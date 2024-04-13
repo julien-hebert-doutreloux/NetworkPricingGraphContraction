@@ -1,5 +1,5 @@
 from preamble.preamble import *
-from gamma.common import print_columns, from_json, to_json
+from gamma.common import print_columns, npp_from_json, to_json
 from graph.graph import Node, Edge
 
 
@@ -329,87 +329,7 @@ class Algebra(Function):
         result = list(map(tuple, result))
         
         return result
-            
-            
-            
-class Gamma(Algebra):
-    def __init__(self, nodes, edges, edge_partition=None):
-        super().__init__(nodes, edges, edge_partition)
-    
-    def export_transformation(self, directory, filename):
-        # Check if the directory exists
-        if not os.path.isdir(directory):
-            logger.warning(f"The specified directory does not exist: {directory}")
-            return
-
-        # Check if the filename is not empty
-        if not filename:
-            logger.warning("The specified filename is empty")
-            
-        # Verify the extension
-        if filename.endswith('.pkl'):
-            filename = filename.rstrip('.pkl')
-    
-        output_file = os.path.join(directory, f"{filename}.pkl")
-
-        # Check if the file already exists
-        if os.path.isfile(output_file):
-            logger.warning(f"The specified file already exists: {output_file}")
-            return
-
         
-        transformation = {'V':{}, 'A':{}, 'RV':{}, 'RA':{}}
-        
-        # Vertex domain-image index correspondance
-        transformation['V'] = dict(self.conv3)
-        
-        # Edge domain-image index correspondance
-        transformation['A'] = dict(self.conv1)
-        
-        # Vertex domain index relation
-        transformation['RV'] = [
-                                tuple(
-                                    map(
-                                        self.phi_V, cls
-                                        )
-                                    ) for cls in self.P_V
-                                ]
-                                
-        # Edge domain index relation
-        transformation['RA'] = [
-                                tuple(
-                                    map(
-                                        self.phi_A, cls
-                                        )
-                                    ) for cls in self.P_A
-                                ]
-        # Write the list of sets to the file
-        with open(output_file, 'wb') as f:
-            pickle.dump(transformation, f)
-        
-        return output_file
-    
-    @classmethod
-    def from_transformation_pickle(cls, nodes, edges, transformation_file, **kwargs):
-        with open(transformation_file, 'rb') as f:
-            transformation = pickle.load(f)
-        
-        index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
-        
-        edge_partition = [tuple(map(index_edge, cls)) for cls in transformation['RA']]
-        return cls(nodes, edges, edge_partition, **kwargs)
-    
-    
-    def to_networkx(self, graph_image=True):
-        G = nx.MultiDiGraph()
-        
-        A = self.A_ if graph_image else self.A
-        phi = self.phi_A_ if graph_image else self.phi_A
-        #G.add_edges_from(map(lambda x: (x.src, x.dst, x.cost), A))
-        for edge in A:
-            G.add_edge(edge.src, edge.dst, key=phi(edge), **{'cost': edge.cost, 'toll': edge.toll})
-
-        return G
         
     def summary(self):
         # Before transformation
@@ -456,12 +376,70 @@ class Gamma(Algebra):
         c6 = [f"{k}->{v}" for k,v in self.conv1.items()]
         
         print_columns(c1, c2, c3, c4, c5, c6, headers=['V -> I_V', '~V -> I_{~V}', 'A -> I_A', '~A -> I_{~A}', 'I_V -> I_{~V}', 'I_A -> I_{~A}'])
+            
+            
+class Gamma(Algebra):
+    def __init__(self, nodes, edges, edge_partition=None):
+        super().__init__(nodes, edges, edge_partition)
+    
+    @classmethod
+    def from_transformation_file(cls, nodes, edges, transformation_file, **kwargs):
+        with open(transformation_file, 'rb') as f:
+            transformation = json.load(f)
+        
+        index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
+        edge_partition = [tuple(map(index_edge, cls)) for cls in transformation['RA']]
+        return cls(nodes, edges, edge_partition, **kwargs)
+    
+    def to_networkx(self, graph_image=True):
+        G = nx.MultiDiGraph()
+        
+        A = self.A_ if graph_image else self.A
+        phi = self.phi_A_ if graph_image else self.phi_A
+        #G.add_edges_from(map(lambda x: (x.src, x.dst, x.cost), A))
+        for edge in A:
+            G.add_edge(edge.src, edge.dst, key=phi(edge), **{'cost': edge.cost, 'toll': edge.toll})
+
+        return G
+        
+        
+    def transformation_to_dict(self):
+        transformation = {'V':{}, 'A':{}, 'RV':{}, 'RA':{}}
+        
+        # Vertex domain-image index correspondance
+        transformation['V'] = dict(self.conv3)
+        
+        # Edge domain-image index correspondance
+        transformation['A'] = dict(self.conv1)
+        
+        # Vertex domain index relation
+        transformation['RV'] = [
+                                tuple(
+                                    map(
+                                        self.phi_V, cls
+                                        )
+                                    ) for cls in self.P_V
+                                ]
+                                
+        # Edge domain index relation
+        transformation['RA'] = [
+                                tuple(
+                                    map(
+                                        self.phi_A, cls
+                                        )
+                                    ) for cls in self.P_A
+                                ]
+        return transformation
+        
+    
 
 
 class GammaNPP(Gamma):
     __slots__ = ('problems_domain', 'problems_image')
+    
     def __init__(self, nodes, edges, edge_partition=None, problems=None, preprocess=True):
         logger.debug(f'preprocess problem : {preprocess}')
+        
         def preprocessing(nodes, edges, problems):
             for edge in edges:
                 # every tolled arc starting cost is 1
@@ -485,6 +463,7 @@ class GammaNPP(Gamma):
         
         if preprocess:
             preprocessing(nodes, edges, problems)
+            
         super().__init__(nodes, edges, edge_partition)
         
         
@@ -507,54 +486,15 @@ class GammaNPP(Gamma):
                 index = tmp.index(origin_destination)
                 self.problems_image[index]['demand'] += k['demand']
                 
-        
-    def export(self, directory, filename):
-    
-        # Check if the directory exists
-        if not os.path.isdir(directory):
-            logger.warning(f"The specified directory does not exist: {directory}")
-            return
-        output_file = os.path.join(directory, f"{filename}.json")
-        
-        # Check if the file already exists
-        if os.path.isfile(output_file):
-            logger.warning(f"The specified file already exists: {output_file}")
-            return
-        
-        # Prepare to export
-        nodes = [Node(v) for v in self.phi_V_.values()]
-        edges = [Edge(
-                    src=nodes[self.phi_V_(k.src)-1],
-                    dst=nodes[self.phi_V_(k.dst)-1],
-                    label=v, cost=k.cost, toll=k.toll) 
-                    for k, v in self.phi_A_.items()
-                ]
-        
-        problems = []
-        for k in self.problems_image:
-            problems.append({})
-            problems[-1]['orig'] = nodes[self.phi_V_(k['orig'])-1]
-            problems[-1]['dest'] = nodes[self.phi_V_(k['dest'])-1]
-            problems[-1]['demand'] = k['demand']
-            
-        to_json(
-                nodes,
-                edges,
-                problems,
-                directory,
-                filename
-                )
-                
-        return os.path.join(directory, filename)
-                
-                
        
     # not tested
     @classmethod      
     def revised_problem_from_result(cls, before_json, transformation_file, after_result, option=1):
         # going back to the original problem and change the cost of the tolled edge
         
-        nodes, edges, problems = from_json(before_json)
+        nodes, edges, problems = npp_from_json(before_json)
+        
+        
         # accordingly to the result from the transformation
         tmp_gamma = cls.from_transformation_pickle(nodes, edges, transformation_file, problems=problems)
         
@@ -582,8 +522,51 @@ class GammaNPP(Gamma):
                     
         # no partition here because we return to the original problem
         return cls(nodes, edges, edge_partition=tmp_gamma.P_A, problems=problems, preprocess=False)
+
+    def image_problem_to_dict(self):
+    
+        # Prepare to export
+        nodes = [Node(v) for v in self.phi_V_.values()]
+        edges = [Edge(
+                    src = nodes[self.phi_V_(k.src)-1],
+                    dst = nodes[self.phi_V_(k.dst)-1],
+                    label = v,
+                    cost = k.cost,
+                    toll = k.toll) 
+                    for k, v in self.phi_A_.items()
+                ]
+        
+        problems = []
+        for k in self.problems_image:
+            problems.append({})
+            problems[-1]['orig'] = nodes[self.phi_V_(k['orig'])-1]
+            problems[-1]['dest'] = nodes[self.phi_V_(k['dest'])-1]
+            problems[-1]['demand'] = k['demand']
+            
+            
+        json_dict = {'problem': {}}
+
+        # Nodes
+        json_dict['problem']['V'] = len(nodes)
+
+        # Edges
+        fct = lambda e: {'src': int(str(e.src)), 'dst': int(str(e.dst)), 'cost': e.cost, 'toll': e.toll}
+        json_dict['problem']['A'] = [fct(edge) for edge in edges]
+
+        # Problems
+        fct = lambda p: {'orig': int(str(p['orig'])), 'dest': int(str(p['dest'])), 'demand': p['demand']}
+        json_dict['problem']['K'] = [fct(problem) for problem in problems]
+            
+        return json_dict
+        
+        
+    
+        
+        
         
 if __name__ == "__main__": 
     pass
         
     
+    
+

@@ -90,6 +90,7 @@ if '__main__' == __name__:
     #################################################################
             
     if selected_option == 'option1':
+        
         unit_test()
         
     elif selected_option == 'option2':
@@ -108,7 +109,10 @@ if '__main__' == __name__:
         if selected_option_3 == '3-1':
             num_partitions = args.num_partitions
             max_sub_length = args.max_sub_length
+            min_not_trivial_class = args.min_not_trivial_class
+            max_not_trivial_class = args.max_not_trivial_class
             input_folder = args.input_folder
+            batch_size = args.batch_size
             export_folder_grid = args.export_folder_grid
             export_folder_problems = args.export_folder_problems
             export_folder_transformations = args.export_folder_transformations
@@ -117,6 +121,9 @@ if '__main__' == __name__:
             compute_grid_problem_generation(
                                             num_partitions,
                                             max_sub_length,
+                                            min_not_trivial_class,
+                                            max_not_trivial_class,
+                                            batch_size,
                                             input_folder,
                                             export_folder_grid,
                                             export_folder_problems,
@@ -218,16 +225,22 @@ if '__main__' == __name__:
         
         if selected_option_5 == '5-1':
             num_partitions = args.num_partitions
+            min_sub_length = args.min_sub_length
             max_sub_length = args.max_sub_length
+            min_not_trivial_class = args.min_not_trivial_class
             max_not_trivial_class = args.max_not_trivial_class
+            batch_size = args.batch_size
             input_file = args.input_file 
             export_folder_problems = args.export_folder_problems
             export_folder_transformations = args.export_folder_transformations
                 
             problem_maker(
                             num_partitions,
+                            min_sub_length,
                             max_sub_length,
+                            min_not_trivial_class,
                             max_not_trivial_class,
+                            batch_size,
                             input_file,
                             export_folder_problems,
                             export_folder_transformations,
@@ -276,6 +289,9 @@ if '__main__' == __name__:
                                         
     if selected_option == 'option8':
         test()
+        
+        
+        
         #shortest_path_rewind(verbose)
 
 # xxxxxx-NPP-yyyyyy         := normal npp problem

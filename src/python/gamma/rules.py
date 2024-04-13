@@ -213,9 +213,16 @@ class Rules(dict):
             
         return max_clique
         
-    def random_partition(self, number_or_partition:int, max_len:int, max_not_trivial_class:int):
+    def random_partition(self,
+                            number_or_partition:int, 
+                            min_len:int,
+                            max_len:int,
+                            min_not_trivial_class:int,
+                            max_not_trivial_class:int
+                            ):
         if max_len == -1:
             max_len = len(self)
+        
         
         generators, max_gen = self.approx_max_clique(return_all=True)
         
@@ -224,14 +231,17 @@ class Rules(dict):
             partition = []
             union = set()
             n_not_trivial_class = 0
-            while union != set(self):
-
+            attempt = 0
+            
+            while union != set(self) and attempt < 10000:
+                attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
                 #input(f"random_generator = {random_generator}")
                 
                 if random_generator:
                     max_length = min(len(self) - len(union), len(random_generator), max_len)
-                    random_size = random.randint(1, max_length)
+                    min_length = max(0, min(min_len, max_length))
+                    random_size = random.randint(min_length, max_length)
                     #input(f"random_size = {random_size}")
                     
                     random_subset = set(random.sample(list(random_generator), random_size))
@@ -255,12 +265,23 @@ class Rules(dict):
                         partition += [[x] for x in set(self)-union]
                         union = set(self)
                         random_generator = False
-                        logger.debug(list(map(lambda x: list(map(str, x)), partition)))
-                        input('To continue press enter')
-            partition = set_of_frozenset(partition)
-            
-            if not partition in partitions:
-                partitions.append(partition)
-                partition = []
+                       
+                if not (min_not_trivial_class <= n_not_trivial_class <= max_not_trivial_class):
+                    partition = list(filter(lambda x: len(x) > 1, partition))
+                    union = set(chain.from_iterable(partition))
+              
+              
+            if union == set(self):
+                    
+                partition = set_of_frozenset(partition)
+                
+                if not partition in partitions:
+                
+                    length = len(set(chain.from_iterable(partition)))
+                    readable_partition = list(map(lambda x: list(map(str, x)), partition))
+                    logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
+                    
+                    partitions.append(partition)
+                    partition = []
         
         return partitions

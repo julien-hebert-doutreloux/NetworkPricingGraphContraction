@@ -191,6 +191,8 @@ ________________________________________________________________________________
 |-------------------------------|----------------------------------------------------------------------------------|
 | num_partitions                | The maximum number of partition to compute                                       |
 | max_sub_length                | The maximum length that element in partition are allowed to be                   |
+| min_not_trivial_class         | The minimum number of not trivial equivalence class in partition                 |
+| max_not_trivial_class         | The maximum number of not trivial equivalence class in partition                 |
 | input_folder                  | The parent folder of every NPP problems                                          |
 | export_folder_problems        | The parent folder to export generated problems when process compute grid         |
 | export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
@@ -201,10 +203,14 @@ ________________________________________________________________________________
 ```bash
 python src/python/main.py option5 5-1 \
  --num_partitions 100 \
+ --min_sub_length 4 \
  --max_sub_length 4 \
- --input_file 'path/to/npp_graph_problem.json' \
- --export_folder_problems 'path/to/export_folder_problem' \
- --export_folder_transformations 'path/to/export_folder_transformations'
+ --min_not_trivial_class 3 \
+ --max_not_trivial_class 3 \
+ --batch_size 10 \
+ --input_file './data/from_github/problems/progressive/i30-06.json' \
+ --export_folder_problems './tmp/i30-06/' \
+ --export_folder_transformations './tmp/i30-06/'
 ```
 
 #### 5-2. Process result

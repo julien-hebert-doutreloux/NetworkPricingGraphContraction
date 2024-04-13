@@ -2,7 +2,7 @@ from preamble.preamble import *
 from unit_test.tools import timing_decorator
 from gamma.rules import Rules, readable_rules, make_rules
 from gamma.partition import compatible
-from gamma.common import from_json
+from gamma.common import npp_from_json
 
 @timing_decorator   
 def main(input_file, option, iteration, export_path):
@@ -15,7 +15,7 @@ def main(input_file, option, iteration, export_path):
         path2 = os.path.join(export_path, f"test_approx_max_clique_{filename}_nx_max_clique_approx.txt")
     
     # Import problem
-    nodes, edges, problems = from_json(input_file)
+    nodes, edges, problems = npp_from_json(input_file)
     
     # Preparation
     rules = readable_rules(make_rules(edges))

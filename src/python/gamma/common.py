@@ -9,7 +9,7 @@ def set_of_frozenset(iterable):
     
     
 ## Tested
-def from_json(input_file):
+def npp_from_json(input_file):
     # Pont entre le code de Ming Bui et la transformation
     
     # Verify if the file exist
@@ -41,78 +41,70 @@ def from_json(input_file):
         problems.append(k)
         
     return nodes, edges, problems
-    
+
 ## Tested
 def to_json(
-    nodes: list,
-    edges: list,
-    problems: list,
+    json_dict:dict,
     directory:str,
     filename:str,
     indent: int=2
-) -> dict:
-
-    json_dict = {'problem': {}}
-
-    # Nodes
-    json_dict['problem']['V'] = len(nodes)
-
-    # Edges
-    fct = lambda e: {'src': int(str(e.src)), 'dst': int(str(e.dst)), 'cost': e.cost, 'toll': e.toll}
-    json_dict['problem']['A'] = [fct(edge) for edge in edges]
-
-    # Problems
-    fct = lambda p: {'orig': int(str(p['orig'])), 'dest': int(str(p['dest'])), 'demand': p['demand']}
-    json_dict['problem']['K'] = [fct(problem) for problem in problems]
-
-
+    ):
     
     # Check if directory is specified
     if directory is None:
-        print("Error: The directory parameter is not specified")
+        logger.warning("The directory parameter is not specified")
         return
 
     # Check if filename is specified
     if filename is None:
-        print("Error: The filename parameter is not specified")
+        logger.warning("The filename parameter is not specified")
         return
         
     # Verify the extension
     elif filename.endswith('.json'):
-        print("Error: The filename parameter ends with the extension .json")
+        logger.warning("The filename parameter ends with the extension .json")
         return
         
     # Check if directory is a directory or a file
     if not os.path.isdir(directory):
-        print("Error: The directory parameter is not a directory")
+        logger.warning("The directory parameter is not a directory")
         return
     
     # Use the specified directory and filename
-    filename = filename if filename else 'rebuild_json'
     output_file = os.path.join(directory, f"{filename}.json")
         
-
     # Check if the file already exists
     if os.path.isfile(output_file):
-        print(f"Error: The specified file already exists: {output_file}")
-        return
-
+        logger.warning(f"The specified file already exists: {output_file}")
+        
+    
     # Write the dictionary to the file
     with open(output_file, 'w') as json_file:
         json.dump(json_dict, json_file, indent=indent)
-
-
-    #if os.stat(input_file).st_size == 0:
-    #    print(f"Error: The specified file is empty: {input_file}")
-    #    return
+        logger.info(f'NPP JSON file created : {output_file}')
         
-    return json_dict
+    if os.stat(output_file).st_size == 0:
+        logger.warning(f"The exported file is empty: {output_file}")
+    
+    return output_file
+        
     
 def import_partition(input_file:str):
     with open('file.pkl', 'rb') as f:
         data = pickle.load(f)
     return data
 
+
+
+
+
+
+def json_compression(id_problem_lt:list, output_file:str):
+    # output_file : path/to/output.pkl
+    # Write the JSON string to a file
+    with open(output_file, "wb") as f:
+        pickle.dump(id_problem_lt, f)
+        
 
 # Information tools
 def print_columns(*lists, headers=None):

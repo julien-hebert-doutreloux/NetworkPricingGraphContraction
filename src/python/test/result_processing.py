@@ -1,5 +1,5 @@
 from preamble.preamble import *
-from gamma.common import from_json
+from gamma.common import npp_from_json
 from gamma.gamma import Function, Algebra, Gamma, GammaNPP
 from test.shortest_path_rewind import shortest_path_rewind 
 
@@ -54,7 +54,7 @@ def process_result_before_vs_after(
             return False
     
     # import original graph
-    nodes, edges, problems = from_json(before_graph_file)
+    nodes, edges, problems = npp_from_json(before_graph_file)
     # recreate the graph transformation from pickle transformation_file
     g_gamma = GammaNPP.from_transformation_pickle(nodes, edges, transformation_file, problems=problems, preprocess=False)
     

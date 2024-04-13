@@ -5,7 +5,7 @@ from preamble.preamble import *
 from unit_test.examples import *
 from unit_test.tools import unit_test_decorator, timing_decorator
 from gamma.gamma import Gamma, GammaNPP
-from gamma.common import print_columns, from_json, set_of_frozenset
+from gamma.common import print_columns, npp_from_json, set_of_frozenset, to_json
 
 PARAMETERS = config.unit_test_unit_test_gamma(__name__)
 logger = config.log(**PARAMETERS['logger'])
@@ -526,14 +526,17 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple1():
         nodes, edges, edge_partition, _ = exemple1()
         gamma = Gamma(nodes, edges, edge_partition)
+        
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_partition'
-        gamma.export_transformation(directory, filename)
         
-        input_file = os.path.join(directory, f"{filename}.pkl")
+        transformation = gamma.transformation_to_dict()
+        input_file = to_json(transformation, directory, filename)
+        
+        #input_file = os.path.join(directory, f"{filename}.pkl")
         
         with open(input_file, 'rb') as f:
-            test_partition = pickle.load(f)
+            test_partition = json.load(f)
         
         true_partition = set_of_frozenset( [
                             (1,),
@@ -564,14 +567,17 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple2():
         nodes, edges, edge_partition, _ = exemple2()
         gamma = Gamma(nodes, edges, edge_partition)
+        
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_partition'
-        gamma.export_transformation(directory, filename)
         
-        input_file = os.path.join(directory, f"{filename}.pkl")
+        transformation = gamma.transformation_to_dict()
+        input_file = to_json(transformation, directory, filename)
+        
+        #input_file = os.path.join(directory, f"{filename}.pkl")
         
         with open(input_file, 'rb') as f:
-            test_partition = pickle.load(f)
+            test_partition = json.load(f)
         
         true_partition = set_of_frozenset([
                         {1, 4},
@@ -594,14 +600,17 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple3():
         nodes, edges, edge_partition, _ = exemple3()
         gamma = Gamma(nodes, edges, edge_partition)
+        
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_partition'
-        gamma.export_transformation(directory, filename)
         
-        input_file = os.path.join(directory, f"{filename}.pkl")
+        transformation = gamma.transformation_to_dict()
+        input_file = to_json(transformation, directory, filename)
+        
+        #input_file = os.path.join(directory, f"{filename}.pkl")
         
         with open(input_file, 'rb') as f:
-            test_partition = pickle.load(f)
+            test_partition = json.load(f)
         
         true_partition =  set_of_frozenset([
                             (1, 7),
@@ -623,14 +632,17 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exemple5():
         nodes, edges, edge_partition, _ = exemple5()
         gamma = Gamma(nodes, edges, edge_partition)
+        
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_partition'
-        gamma.export_transformation(directory, filename)
         
-        input_file = os.path.join(directory, f"{filename}.pkl")
+        transformation = gamma.transformation_to_dict()
+        input_file = to_json(transformation, directory, filename)
+        
+        #input_file = os.path.join(directory, f"{filename}.pkl")
         
         with open(input_file, 'rb') as f:
-            test_partition = pickle.load(f)
+            test_partition = json.load(f)
         
         true_partition =  set_of_frozenset([
                             (1, 11),
@@ -659,12 +671,14 @@ def UNIT_TEST_export_transformation():
         
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_partition'
-        gamma.export_transformation(directory, filename)
         
-        input_file = os.path.join(directory, f"{filename}.pkl")
+        transformation = gamma.transformation_to_dict()
+        input_file = to_json(transformation, directory, filename)
+        
+        #input_file = os.path.join(directory, f"{filename}.pkl")
         
         with open(input_file, 'rb') as f:
-            test_partition = pickle.load(f)
+            test_partition = json.load(f)
         
         true_partition =  set_of_frozenset([
                             (1,),
@@ -703,14 +717,17 @@ def UNIT_TEST_export_transformation():
     def UNIT_TEST_exempleXI():
         nodes, edges, edge_partition, _ = exempleXI()
         gamma = Gamma(nodes, edges, edge_partition)
+        
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_partition'
-        gamma.export_transformation(directory, filename)
         
-        input_file = os.path.join(directory, f"{filename}.pkl")
+        transformation = gamma.transformation_to_dict()
+        input_file = to_json(transformation, directory, filename)
+        
+        #input_file = os.path.join(directory, f"{filename}.pkl")
         
         with open(input_file, 'rb') as f:
-            test_partition = pickle.load(f)
+            test_partition = json.load(f)
         
         true_partition =  set_of_frozenset([
                             (1,),
@@ -888,12 +905,13 @@ def UNIT_TEST_export():
         # Export transformed problem
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export'
-        output_file = os.path.join(directory, f"{filename}.json")
         
-        g_gamma.export(directory, filename)
+        npp_problem = g_gamma.image_problem_to_dict()
+        output_file = to_json(npp_problem, directory, filename)
+        #output_file = os.path.join(directory, f"{filename}.json")
         
         # Verify that the integrity of the problem before and after export 
-        nodes, edges, problems = from_json(output_file)
+        nodes, edges, problems = npp_from_json(output_file)
         equal = True
         
         #  Nodes |           Edges |              γ(Edges) |        γ(Nodes) | Edge partition
@@ -981,11 +999,15 @@ def UNIT_TEST_export():
         # Export transformed problem
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export'
-        output_file = os.path.join(directory, f"{filename}.json")
-        g_gamma.export(directory, filename)
+        
+        
+        npp_problem = g_gamma.image_problem_to_dict()
+        output_file = to_json(npp_problem, directory, filename)
+        #output_file = os.path.join(directory, f"{filename}.json")
+        
         
         # Verify that the integrity of the problem before and after export 
-        nodes, edges, problems = from_json(output_file)
+        nodes, edges, problems = npp_from_json(output_file)
         equal = True
         
         #  Nodes |          Edges |             γ(Edges) |        γ(Nodes) | Edge partition
@@ -1052,10 +1074,11 @@ def UNIT_TEST_export_transformation_2():
         
 
         output_file = os.path.join(directory, f"{filename}.pkl")
-        g_gamma.export_transformation(directory, filename)
+        transformation = g_gamma.transformation_to_dict()
+        output_file = to_json(transformation, directory, filename)
         
         with open(output_file, 'rb') as f:
-            d = pickle.load(f)
+            d = json.load(f)
         
         test_edge_partition = [tuple(map(lambda x: edges[x-1], cls)) for cls in d['RA']]
         test_node_partition = [tuple(map(lambda x: nodes[x-1], cls)) for cls in d['RV']]
@@ -1210,16 +1233,18 @@ def UNIT_TEST_export_transformation_2():
     UNIT_TEST_exempleX()
     UNIT_TEST_exempleXI()
         
-def UNIT_TEST_from_transformation_pickle():
+def UNIT_TEST_from_transformation_file():
     
     def UNIT_TEST_exemple_i(exemple, directory, filename): 
         # import
         nodes, edges, edge_partition, _ = exemple()
         g_gamma = Gamma(nodes, edges, edge_partition)
-        output_file = os.path.join(directory, f"{filename}.pkl")
-        g_gamma.export_transformation(directory, filename)
         
-        test_gamma = Gamma.from_transformation_pickle(nodes, edges, output_file)
+        transformation = g_gamma.transformation_to_dict()
+        output_file = to_json(transformation, directory, filename)
+        #output_file = os.path.join(directory, f"{filename}.pkl")
+        
+        test_gamma = Gamma.from_transformation_file(nodes, edges, output_file)
         equal = True
         
         for node in nodes:
@@ -1253,7 +1278,7 @@ def UNIT_TEST_from_transformation_pickle():
     def UNIT_TEST_exemple1():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple1
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1270,7 +1295,7 @@ def UNIT_TEST_from_transformation_pickle():
     def UNIT_TEST_exemple2():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple2
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1287,7 +1312,7 @@ def UNIT_TEST_from_transformation_pickle():
     def UNIT_TEST_exemple3():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple3
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1304,7 +1329,7 @@ def UNIT_TEST_from_transformation_pickle():
     def UNIT_TEST_exemple5():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple5
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1322,7 +1347,7 @@ def UNIT_TEST_from_transformation_pickle():
     def UNIT_TEST_exempleX():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exempleX
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1339,7 +1364,7 @@ def UNIT_TEST_from_transformation_pickle():
     def UNIT_TEST_exempleXI():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exempleXI
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)

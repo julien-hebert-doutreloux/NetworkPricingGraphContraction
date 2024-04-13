@@ -1,5 +1,5 @@
 from preamble.preamble import *
-from gamma.common import from_json, set_of_frozenset
+from gamma.common import npp_from_json, set_of_frozenset, json_compression, to_json
 from gamma.gamma import GammaNPP
 from gamma.rules import make_rules, Rules
 from unit_test.tools import timing_decorator
@@ -11,8 +11,11 @@ logger = config.log(**PARAMETERS['logger'])
 @timing_decorator
 def main(
         num_partitions:int=1000,
+        min_sub_length:int=3,
         max_sub_length:int=3,
+        min_not_trivial_class:int=3,
         max_not_trivial_class:int=3,
+        batch_size:int=1000,
         input_file:str='',
         export_folder_problems:str='',
         export_folder_transformations:str='',
@@ -23,7 +26,9 @@ def main(
 
     Parameters:
     num_partitions (int): The number of partitions to create. Default is 1000.
+    min_sub_length (int): The minimum length of the element in a partition. Default is 3.
     max_sub_length (int): The maximum length of the element in a partition. Default is 3.
+    min_not_trivial_class (int): The minimum number of none trivial equivalence class in partition. Default is 3.
     max_not_trivial_class (int): The maximum number of none trivial equivalence class in partition. Default is 3.
     input_file (str): The path to the input JSON file containing the graph data. Default is an empty string.
     export_folder (str): The path to the output folder where the results will be saved. Default is an empty string.
@@ -45,11 +50,16 @@ def main(
         logger.warning(f"The specified directory does not exist: {export_folder_transformations}")
         os.makedirs(export_folder_transformations)
         logger.info(f"The specified directory has been created: {export_folder_transformations}")
-
+    
+    
+    base_filename, file_extension = os.path.splitext(os.path.basename(input_file))
+    
+    
+    
     # Import JSON
     # Extraction Graph (nodes, edges)
     # Extraction Problem
-    nodes, edges, problems = from_json(input_file)
+    nodes, edges, problems = npp_from_json(input_file)
     
     # Compatibility graph extraction
     compatibility_graph = make_rules(edges)
@@ -65,34 +75,83 @@ def main(
     singleton = list(map(lambda x: (x,), difference))
     
     # Random Partition
-    partitions = compatibility_graph.random_partition(num_partitions, max_sub_length, max_not_trivial_class)
-    for partition in partitions:
-        logger.debug(list(map(lambda x: list(map(str, x)), partition)))
+    partitions = compatibility_graph.random_partition(
+                                                        num_partitions,
+                                                        min_sub_length,
+                                                        max_sub_length,
+                                                        min_not_trivial_class,
+                                                        max_not_trivial_class
+                                                        )
+    #for partition in partitions:
+    #    logger.debug(list(map(lambda x: list(map(str, x)), partition)))
+        
     # trivial partition first
-    partitions.insert(0, set_of_frozenset([(e, ) for e in edges]))
+    trivial_partition = set_of_frozenset([(e, ) for e in edges])
+    if trivial_partition in partitions:
+        partitions.remove(trivial_partition)
+    partitions.insert(0, trivial_partition)
     
-    base_filename, file_extension = os.path.splitext(os.path.basename(input_file))
+    
+    
+    transformations_array = []
+    problems_array = []
     for i, partition in enumerate(partitions, start=0):
+    
         if i != 0:
             partition = list(map(tuple, partition))
             partition += singleton
         
         if (len(edges) != sum(map(len, partition))):
             logger.warning('Not a partition')
+            #logger.debug(list(map(lambda x: list(map(str, x)), partition)))
+            logger.debug(list(map(str, set(edges) - set(chain.from_iterable(partition)))))
             return
+            
             
         # Gamma
         transformation = GammaNPP(nodes, edges, partition, problems)
         
-        # Export NPP in JSON
         number = "%06d" % i
         filename = f"{number}-NPP-{base_filename}"
-        problem_file = transformation.export(export_folder_problems, filename)
+        if batch_size == 1:
+            
+            # indivudual export
+            # Export NPP in JSON
+            problem_file = to_json(transformation.image_problem_to_dict(), export_folder_problems, filename)
+            
+            filename+="-T"
+            tranformation_file = to_json(transformation.transformation_to_dict(), export_folder_transformations, filename)
+            
+            logger.info(f'NPP JSON file created : {problem_file}')
+            logger.info(f'Transformation PKL file created : {tranformation_file}')
         
-        # Export edge partition to pickle
-        filename+="-T"
-        tranformation_file = transformation.export_transformation(export_folder_transformations, filename)
-        
-        logger.info(f'NPP JSON file created : {problem_file}')
-        logger.info(f'Transformation PKL file created : {tranformation_file}')
-        
+        else:
+            if (i%batch_size)==0:
+                transformations_array.append([])
+                problems_array.append([])
+                
+            problems_array[-1].append(
+                                    (filename, transformation.image_problem_to_dict())
+                                )
+            
+            transformations_array[-1].append(
+                                        (filename+"-T", transformation.transformation_to_dict())
+                                    )
+    if batch_size > 1:
+        for j, (p_batch, t_batch) in enumerate(zip(problems_array, transformations_array)):
+            # Export problems
+            prefix = f"{'%06d' % len(p_batch)}-{min_sub_length}-{max_sub_length}-{min_not_trivial_class}-{max_not_trivial_class}"
+            filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}.pkl"
+            problems_file = os.path.join(export_folder_problems, filename)
+            json_compression(p_batch, problems_file)
+            
+            # Export transformation
+            filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}-T.pkl"
+            transformations_file = os.path.join(export_folder_transformations, filename)
+            json_compression(t_batch, transformations_file)
+            
+            logger.info(f'NPP batch PKL file created : {problems_file}')
+            logger.info(f'Transformation batch PKL file created : {transformations_file}')
+                    
+                    
+#batch_number, batch_size, min_sub_len, max_sub_len, min_not_trivial_class, max_not_trivial_class

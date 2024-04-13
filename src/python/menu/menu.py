@@ -59,13 +59,16 @@ def option_3(subparsers_):
                                         help=help
                                     )
         parser_.add_argument('--num_partitions', type=int, help='number of random partitions')
+        parser_.add_argument('--min_sub_length', type=int, help='minimum length of a equivalence class in partition')
         parser_.add_argument('--max_sub_length', type=int, help='maximum length of a subset of a partition')
+        parser_.add_argument('--min_not_trivial_class', type=int, help='minimum number of none trivial equivalence class in partition')
+        parser_.add_argument('--max_not_trivial_class', type=int, help='maximum number of none trivial equivalence class in partition')
         parser_.add_argument('--input_folder', type=str, help='input folder where are the original NPP json file')
         parser_.add_argument('--export_folder_grid', type=str, required=True, help='Path to the export compute grid')
         parser_.add_argument('--export_folder_problems', type=str, required=True, help='Path to the export NPP json')
         parser_.add_argument('--export_folder_transformations', type=str, required=True, help='Path to the export transformation PKL')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-    
+        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')
     
     def option_3_2(subparsers_): 
         name = '3-2'
@@ -217,12 +220,14 @@ def option_5(subparsers_):
                                         help=help
                                     )
         parser_.add_argument('--num_partitions', type=int, help='number of random partitions')
-        parser_.add_argument('--max_sub_length', type=int, help='maximum length of a subset of a partition')
+        parser_.add_argument('--min_sub_length', type=int, help='minimum length of a equivalence class in partition')
+        parser_.add_argument('--max_sub_length', type=int, help='maximum length of a equivalence class in partition')
+        parser_.add_argument('--min_not_trivial_class', type=int, help='minimum number of none trivial equivalence class in partition')
         parser_.add_argument('--max_not_trivial_class', type=int, help='maximum number of none trivial equivalence class in partition')
         parser_.add_argument('--input_file', type=str, help='NPP json file path')
         parser_.add_argument('--export_folder_problems', type=str, required=True, help='folder to export NPP json')
         parser_.add_argument('--export_folder_transformations', type=str, required=True, help='folder to export transformation PKL')
-    
+        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')
         
         
         

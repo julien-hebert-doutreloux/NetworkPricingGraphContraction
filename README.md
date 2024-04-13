@@ -20,6 +20,18 @@ import Pkg; Pkg.add("JSON")
 ```bash  
 import Pkg; Pkg.add("CSV")  
 ```
+#### FileIO
+```bash
+import Pkg; Pkg.add("FileIO")
+```
+#### Unmarshal
+```bash
+import Pkg; Pkg.add("Unmarshal")
+```
+#### Pickle
+```bash
+import Pkg; Pkg.add("Pickle")
+```
 #### DataFrames
 ```bash  
 import Pkg; Pkg.add("DataFrames")  
@@ -36,12 +48,10 @@ julia
 add https://github.com/minhcly95/NetPricing.jl
 ```
 ### JuMP
-
 ```bash  
 import Pkg; Pkg.add("JuMP")  
 ```
 ### Gurobi
-
 ```bash  
 import Pkg; Pkg.add("Gurobi")  
 ```

@@ -1896,3 +1896,36 @@ def option_8(subparsers_):
         parser_.add_argument('--result_file_after', type=str, help='transformed graph result file')
         parser_.add_argument('--verbose', help='Print information')
         
+        
+        
+def export_transformation(self, directory, filename):
+    # Check if the directory exists
+    if not os.path.isdir(directory):
+        logger.warning(f"The specified directory does not exist: {directory}")
+        return
+
+    # Check if the filename is not empty
+    if not filename:
+        logger.warning("The specified filename is empty")
+        
+    # Verify the extension
+    if filename.endswith('.pkl'):
+        filename = filename.rstrip('.pkl')
+
+    output_file = os.path.join(directory, f"{filename}.pkl")
+
+    # Check if the file already exists
+    if os.path.isfile(output_file):
+        logger.warning(f"The specified file already exists: {output_file}")
+        return
+
+    
+    transformation = self.transformation_to_dict()
+    
+    # Write the list of sets to the file
+    with open(output_file, 'wb') as f:
+        pickle.dump(transformation, f)
+    
+    return output_file
+        
+

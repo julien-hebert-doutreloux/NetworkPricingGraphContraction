@@ -1,6 +1,5 @@
 from preamble.preamble import *
 from gamma.gamma import GammaNPP
-from gamma.common import from_json
 from graph.graph import Edge, Node
 
 PARAMETERS = config.test_shortest_path_rewind(__name__)

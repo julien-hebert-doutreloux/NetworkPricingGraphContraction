@@ -1,7 +1,7 @@
 from preamble.preamble import *
 from unit_test.tools import unit_test_decorator, timing_decorator
-from gamma.common import from_json, to_json
-
+from gamma.common import npp_from_json, to_json
+from gamma.gamma import GammaNPP
 PARAMETERS = config.unit_test_unit_test_common(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
@@ -12,10 +12,10 @@ logger = config.log(**PARAMETERS['logger'])
 ## Unit test for the common.py
 
 ## Function Tested
-## common.from_json
+## common.npp_from_json
 ## common.to_json
 
-def UNIT_TEST_from_json_to_json():
+def UNIT_TEST_npp_from_json_to_json():
     """
     Compares two JSON files by loading and comparing their content.
 
@@ -28,7 +28,7 @@ def UNIT_TEST_from_json_to_json():
     directory = 'other'
     filename = 'adaptivetest'
     input_file1 = os.path.join(directory, f"{filename}.json")
-    nodes, edges, problems = from_json(input_file1)
+    nodes, edges, problems = npp_from_json(input_file1)
     
     with open(input_file1, 'r') as json_file:
         data1 = json.load(json_file)
@@ -37,8 +37,11 @@ def UNIT_TEST_from_json_to_json():
     
     directory = 'other'
     filename = 'adaptivetest_rebuild'
-    input_file2 = os.path.join(directory, f"{filename}.json")
-    json_dict = to_json(nodes, edges, problems, directory, filename, indent=4)
+    #input_file2 = os.path.join(directory, f"{filename}.json")
+    
+    g_gamma = GammaNPP(nodes, edges, edge_partition=None, problems=problems, preprocess=False)
+    json_dict = g_gamma.image_problem_to_dict()
+    input_file2 = to_json(json_dict, directory, filename, indent=4)
     
     with open(input_file2, 'r') as json_file:
         data2 = json.load(json_file)
@@ -46,10 +49,10 @@ def UNIT_TEST_from_json_to_json():
     # Compare the loaded data
     test = (data1 == data2)
     if not test:
-        logger.warning(f"from_json:{input_file1} is different from to_json:{input_file2}")
-        logger.warning('UNIT_TEST_from_json_to_json failed')
+        logger.warning(f"npp_from_json:{input_file1} is different from to_json:{input_file2}")
+        logger.warning('UNIT_TEST_npp_from_json_to_json failed')
     else:
-        logger.info('UNIT_TEST_from_json_to_json succeeded')
+        logger.info('UNIT_TEST_npp_from_json_to_json succeeded')
         
     if os.path.isfile(input_file2):
         os.remove(input_file2)
