@@ -54,12 +54,34 @@ def main(
     
     base_filename, file_extension = os.path.splitext(os.path.basename(input_file))
     
-    
-    
     # Import JSON
     # Extraction Graph (nodes, edges)
     # Extraction Problem
     nodes, edges, problems = npp_from_json(input_file)
+    
+    def preprocessing():
+        for edge in edges:
+            # every tolled arc starting cost is 1
+            if edge.toll:
+                edge.cost = 1
+            # only integer cost
+            else:
+                edge.cost = max(round(edge.cost, 0), 1)
+           
+        # Problems structures
+        #[...,
+        #    {
+        #        "orig": 1,
+        #        "dest": 4,
+        #        "demand": 1.0
+        #    },... 
+        #]
+        
+        # only integer demand
+        for problem in problems:
+            problem['demand'] = max(round(problem['demand'], 0), 1)
+            
+    preprocessing()
     
     # Compatibility graph extraction
     compatibility_graph = make_rules(edges)
@@ -91,8 +113,6 @@ def main(
         partitions.remove(trivial_partition)
     partitions.insert(0, trivial_partition)
     
-    
-    
     transformations_array = []
     problems_array = []
     for i, partition in enumerate(partitions, start=0):
@@ -103,24 +123,23 @@ def main(
         
         if (len(edges) != sum(map(len, partition))):
             logger.warning('Not a partition')
-            #logger.debug(list(map(lambda x: list(map(str, x)), partition)))
             logger.debug(list(map(str, set(edges) - set(chain.from_iterable(partition)))))
             return
             
             
         # Gamma
-        transformation = GammaNPP(nodes, edges, partition, problems)
+        g_gamma = GammaNPP(nodes, edges, partition, problems)
         
         number = "%06d" % i
         filename = f"{number}-NPP-{base_filename}"
-        if batch_size == 1:
+        if batch_size == 1 or i == 0:
             
             # indivudual export
             # Export NPP in JSON
-            problem_file = to_json(transformation.image_problem_to_dict(), export_folder_problems, filename)
+            problem_file = to_json(g_gamma.image_problem_to_dict(), export_folder_problems, filename)
             
             filename+="-T"
-            tranformation_file = to_json(transformation.transformation_to_dict(), export_folder_transformations, filename)
+            tranformation_file = to_json(g_gamma.transformation_to_dict(), export_folder_transformations, filename)
             
             logger.info(f'NPP JSON file created : {problem_file}')
             logger.info(f'Transformation PKL file created : {tranformation_file}')
@@ -131,12 +150,13 @@ def main(
                 problems_array.append([])
                 
             problems_array[-1].append(
-                                    (filename, transformation.image_problem_to_dict())
+                                    (filename, g_gamma.image_problem_to_dict())
                                 )
             
             transformations_array[-1].append(
-                                        (filename+"-T", transformation.transformation_to_dict())
+                                        (filename, g_gamma.transformation_to_dict())
                                     )
+    
     if batch_size > 1:
         for j, (p_batch, t_batch) in enumerate(zip(problems_array, transformations_array)):
             # Export problems
@@ -146,12 +166,12 @@ def main(
             json_compression(p_batch, problems_file)
             
             # Export transformation
-            filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}-T.pkl"
+            filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}.pkl"
             transformations_file = os.path.join(export_folder_transformations, filename)
             json_compression(t_batch, transformations_file)
             
             logger.info(f'NPP batch PKL file created : {problems_file}')
             logger.info(f'Transformation batch PKL file created : {transformations_file}')
                     
-                    
+# number in the filename
 #batch_number, batch_size, min_sub_len, max_sub_len, min_not_trivial_class, max_not_trivial_class

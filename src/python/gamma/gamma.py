@@ -382,27 +382,15 @@ class Gamma(Algebra):
     def __init__(self, nodes, edges, edge_partition=None):
         super().__init__(nodes, edges, edge_partition)
     
+    ## To Do : unit test
     @classmethod
-    def from_transformation_file(cls, nodes, edges, transformation_file, **kwargs):
-        with open(transformation_file, 'rb') as f:
-            transformation = json.load(f)
-        
+    def from_transformation(cls, nodes, edges, transformation, **kwargs):
+        ## Transformation as the method transformation_to_dict
         index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
-        edge_partition = [tuple(map(index_edge, cls)) for cls in transformation['RA']]
+        edge_partition = [tuple(map(index_edge, x)) for x in transformation['RA']]
         return cls(nodes, edges, edge_partition, **kwargs)
-    
-    def to_networkx(self, graph_image=True):
-        G = nx.MultiDiGraph()
         
-        A = self.A_ if graph_image else self.A
-        phi = self.phi_A_ if graph_image else self.phi_A
-        #G.add_edges_from(map(lambda x: (x.src, x.dst, x.cost), A))
-        for edge in A:
-            G.add_edge(edge.src, edge.dst, key=phi(edge), **{'cost': edge.cost, 'toll': edge.toll})
-
-        return G
-        
-        
+    ## To Do : unit test
     def transformation_to_dict(self):
         transformation = {'V':{}, 'A':{}, 'RV':{}, 'RA':{}}
         
@@ -432,41 +420,33 @@ class Gamma(Algebra):
         return transformation
         
     
+    ## To Do : unit test
+    def to_networkx(self, graph_image=True, formatted_edge=False):
+        G = nx.MultiDiGraph()
+        
+        A = self.A_ if graph_image else self.A
+        phi = self.phi_A_ if graph_image else self.phi_A
+        
+        edge_format = lambda e: (str(e.src), str(e.dst), str(phi(e)), e.cost, e.toll)
+        for edge in A:
+        
+            if formatted_edge: 
+                u, v, key, cost, toll = edge_format(edge)
+            else:
+                u, v, key, cost, toll = edge.src, edge.dst, phi(edge), edge.cost, edge.toll
+            
+            G.add_edge(u, v, key=key, **{'cost': cost, 'toll': toll})
+
+        return G
+
 
 
 class GammaNPP(Gamma):
     __slots__ = ('problems_domain', 'problems_image')
     
-    def __init__(self, nodes, edges, edge_partition=None, problems=None, preprocess=True):
-        logger.debug(f'preprocess problem : {preprocess}')
-        
-        def preprocessing(nodes, edges, problems):
-            for edge in edges:
-                # every tolled arc starting cost is 1
-                if edge.toll:
-                    edge.cost = 1
-                # only integer cost
-                else:
-                    edge.cost = max(round(edge.cost, 0), 1)
-                
-            # Problems structures
-            #[...,
-            #    {
-            #        "orig": 1,
-            #        "dest": 4,
-            #        "demand": 1.0
-            #    },... 
-            #]
-            # only integer demand
-            for problem in problems:
-                problem['demand'] = max(round(problem['demand'], 0), 1)
-        
-        if preprocess:
-            preprocessing(nodes, edges, problems)
+    def __init__(self, nodes, edges, edge_partition=None, problems=None):
             
         super().__init__(nodes, edges, edge_partition)
-        
-        
         self.problems_domain = problems
         self.problems_image = []
         
@@ -485,44 +465,8 @@ class GammaNPP(Gamma):
             else:
                 index = tmp.index(origin_destination)
                 self.problems_image[index]['demand'] += k['demand']
-                
-       
-    # not tested
-    @classmethod      
-    def revised_problem_from_result(cls, before_json, transformation_file, after_result, option=1):
-        # going back to the original problem and change the cost of the tolled edge
-        
-        nodes, edges, problems = npp_from_json(before_json)
-        
-        
-        # accordingly to the result from the transformation
-        tmp_gamma = cls.from_transformation_pickle(nodes, edges, transformation_file, problems=problems)
-        
-        # import import after result
-        with open(after_result, 'rb') as f:
-            res = json.load(f)
-        
-        for e in edges:
-            if e.toll:
-                general_index = tmp_gamma.phi_A(e)
-                tolled_index = tmp_gamma.beta_inv(tmp_gamma.conv1(general_index))
-                logger.debug(f"general_index = {general_index}")
-                logger.debug(f"tolled_index = {tolled_index}")
-                if option == 1:
-                    e.cost += res['tvals'][tolled_index-1] # index correction and value correction
-                    logger.debug(f"res['tvals'][tolled_index-1] : {res['tvals'][tolled_index-1]}")
-                    logger.debug(f"e.cost = {e.cost}")
-                    
-                elif option == 2:
-                    preimage_cardinality = len(tmp_gamma.conv1.preimage(tolled_index))
-                    e.cost += res['tvals'][tolled_index-1] / preimage_cardinality
-                    logger.debug(f"e.cost = {e.cost}")
-                    
-                logger.debug(f"e = {e}")
-                    
-        # no partition here because we return to the original problem
-        return cls(nodes, edges, edge_partition=tmp_gamma.P_A, problems=problems, preprocess=False)
-
+    
+    
     def image_problem_to_dict(self):
     
         # Prepare to export
@@ -559,14 +503,48 @@ class GammaNPP(Gamma):
             
         return json_dict
         
-        
-    
-        
-        
-        
 if __name__ == "__main__": 
     pass
         
     
     
+#, preprocess=True):
+        #logger.debug(f'preprocess problem : {preprocess}')
+        
+        #def preprocessing(nodes, edges, problems):
+        #    for edge in edges:
+        #        # every tolled arc starting cost is 1
+        #        if edge.toll:
+        #            edge.cost = 1
+        #        # only integer cost
+        #        else:
+        #            edge.cost = max(round(edge.cost, 0), 1)
+                
+            # Problems structures
+            #[...,
+            #    {
+            #        "orig": 1,
+            #        "dest": 4,
+            #        "demand": 1.0
+            #    },... 
+            #]
+            # only integer demand
+            #for problem in problems:
+            #    problem['demand'] = max(round(problem['demand'], 0), 1)
+        
+        #if preprocess:
+        #    preprocessing(nodes, edges, problems)
+        
+# import import after result
+#with open(after_result, 'rb') as f:
+#res = json.load(f)
 
+
+#@classmethod
+#def from_transformation_file(cls, nodes, edges, transformation_file, **kwargs):
+#    with open(transformation_file, 'rb') as f:
+#        transformation = json.load(f)
+#    
+#    index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
+#    edge_partition = [tuple(map(index_edge, cls)) for cls in transformation['RA']]
+#    return cls(nodes, edges, edge_partition, **kwargs)

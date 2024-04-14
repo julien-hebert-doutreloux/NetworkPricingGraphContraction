@@ -1928,4 +1928,157 @@ def export_transformation(self, directory, filename):
     
     return output_file
         
+#process_result_before_vs_after
+def process_result_before_vs_after(
+    before_graph_file:str,
+    after_graph_result_file:str,
+    transformation_file:str,
+    export_folder:str='',
+    output_filename:str='',
+    ):
+    """
+    Process the results of a graph transformation before and after the transformation.
+    Args:
+        before_graph_file (str)      : The file path of the graph before the transformation.
+        after_graph_result_file (str): The file path of the graph after the transformation.
+        transformation_file (str)    : The file path of the transformation file.
+        export_folder (str)          : The folder path to export the results. Defaults to ''.
+        filename (str)               : The filename to use for the exported results. Defaults to ''.
+    """
+    
+    
+    # Verify the extension
+    if not output_filename.endswith('.pkl'):
+        output_filename = output_filename + '.pkl'
+        
+    output_file = os.path.join(export_folder, output_filename)
+    
+    # Check if the file does not exists
+    if not os.path.isfile(before_graph_file):
+        logger.warning(f"The specified file does not exists: {before_graph_file}")
+        return False
+    if not os.path.isfile(after_graph_result_file):
+        logger.warning(f"The specified file does not exists: {after_graph_result_file}")
+        return False
+    if not os.path.isfile(transformation_file):
+        logger.warning(f"The specified file does not exists: {transformation_file}")
+        return False
+    
+    # Check if the file already exists
+    if os.path.isfile(output_file):
+        logger.info(f"The specified file already exists: {output_file}")
+        
+    # Check if the directory exists
+    if not os.path.isdir(export_folder):
+        logger.warning(f"The specified directory does not exist: {export_folder}")
+        return False
 
+    
+    # import original graph
+    nodes, edges, problems = npp_from_json(before_graph_file)
+    
+    # import result from the after_graph_result_file
+    with open(after_graph_result_file, 'rb') as f:
+        result = json.load(f)
+        
+    # import transformation
+    with open(transformations_file, 'r') as f:
+        transformation = pickle.load(f)
+        
+    
+        
+    to_export = result_post_processing(
+                                        nodes,
+                                        edges,
+                                        transformations['RA'],
+                                        problems,
+                                        result
+                                        )
+    
+    
+    # Write the list of sets to the file
+    with open(output_file, 'wb') as f:
+        pickle.dump(to_export, f)  # Fixed variable name here
+    
+    return output_file      
+    
+    
+    
+    
+    if not os.path.isfile(export_edge_dataframe_file):
+        logger.warning(f"The specified file does not exists: {export_edge_dataframe_file}")
+        logger.warning(f"The following file is created : {export_edge_dataframe_file}")
+        df1.to_pickle(export_edge_dataframe_file)
+        
+    else:
+        df = pd.read_pickle(export_edge_dataframe_file)
+        
+        # verify if the result are already there
+        if df['file'].isin([filename_after,]).any():
+            logger.warning(f"Result already in edge_dataframe. Reference file: {filename_after}")
+            logger.warning(f"Overwriting rows")
+            df = df[df['file'] != filename_after]
+            
+        df = pd.concat([df, df1])
+        df.to_pickle(export_edge_dataframe_file)
+        
+    if not os.path.isfile(export_meta_dataframe_file):
+        logger.warning(f"The specified file does not exists: {export_meta_dataframe_file}")
+        logger.warning(f"The following file is created : {export_meta_dataframe_file}")
+        df2.to_pickle(export_meta_dataframe_file)
+        
+    else:
+        df = pd.read_pickle(export_meta_dataframe_file)
+        
+        # verify if the result are already there
+        if df['id'].isin([filename_after,]).any():
+            logger.warning(f"Result already in meta_dataframe. Reference file: {filename_after}")
+            logger.warning(f"Overwriting rows")
+            df = df[df['id'] != filename_after]
+            
+        df = pd.concat([df, df2])
+        df.to_pickle(export_meta_dataframe_file)
+            
+#if verbose:
+#edge_av = lambda i : f"{g_gamma.phi_T_A_inv(i)}"
+#edge_ap = lambda i : g_gamma(g_gamma.phi_T_A_inv(i))
+#
+#row_fun = (
+#        edge_av, opt_val_av, opt_flow_av,\
+#        edge_ap, opt_val_ap, opt_flow_ap,\
+#        comp1, comp2, rel_error_t, rel_error_f
+#        )
+#row = lambda i: [fun(i) for fun in row_fun]
+#data = [row(i) for i in g_gamma.phi_T_A.image]
+#headers = [
+#        'edge', 'opt. value', 'opt. flow',\
+#        'γ(edge)', 'opt. value', 'opt. flow',\
+#        'sym. value', 'sym. flow', '%rel. error value', '%rel. error flow'
+#    ]
+#print(tabulate(data, headers=headers))
+# revised_before_with_after_result()
+# before_graph_result_file
+# transformation_file
+# after_graph_result_file
+# export_folder
+
+## Other result
+    # comparaison
+    #comp1 = lambda i: sym(opt_val_av(i), opt_val_ap(i))
+    #comp2 = lambda i: sym(opt_flow_av(i), opt_flow_ap(i))
+    
+    # % relative error tval and flow
+    #rel_error_t = lambda i : round(((opt_val_ap(i) - opt_val_av(i))/opt_val_av(i)), 3)*100 if opt_val_av(i)>0 else np.nan
+    #rel_error_f = lambda i : round(((opt_flow_ap(i) - opt_flow_av(i))/opt_flow_av(i)), 3)*100 if opt_flow_av(i)>0 else np.nan
+    ## Path count
+    #G = g_gamma.to_networkx()
+    #od_pair_in_problems = map(lambda x: (x['orig'], x['dest']), g_gamma.problems_image)
+
+    # Compute the number of distinct paths for each pair
+    #path_counts = {}
+    #for origin, destination in od_pair_in_problems:
+    #    print(origin, destination)
+    #    paths = list(nx.all_simple_paths(G, origin, destination))
+    #    num_distinct_paths = len(paths)
+    #    print(num_distinct_paths)
+    #    path_counts[(origin, destination)] = num_distinct_paths

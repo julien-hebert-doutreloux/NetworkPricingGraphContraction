@@ -5,22 +5,54 @@ from graph.graph import Edge, Node
 PARAMETERS = config.test_shortest_path_rewind(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
-def shortest_path_rewind(before_graph_file, after_graph_result_file, transformation_file):
-    # recreate the original graph change the problem to reflect result from the transformation
+
+
+# To Do : unit test
+def revised_problem_from_result(
+                                g_gamma:GammaNPP,
+                                result:dict,
+                                option=1
+                                ) -> GammaNPP:
+    
+    for e in edges:
+
+        if e.toll:
+            general_index = g_gamma.phi_A(e)
+            tolled_index = g_gamma.beta_inv(g_gamma.conv1(general_index))
+            logger.debug(f"general_index = {general_index}")
+            logger.debug(f"tolled_index = {tolled_index}")
+            
+            if option == 1:
+                e.cost += result['tvals'][tolled_index-1] # index correction and value correction
+                logger.debug(f"result['tvals'][tolled_index-1] : {result['tvals'][tolled_index-1]}")
+                logger.debug(f"e.cost = {e.cost}")
+                
+            elif option == 2:
+                preimage_cardinality = len(g_gamma.conv1.preimage(tolled_index))
+                e.cost += result['tvals'][tolled_index-1] / preimage_cardinality
+                logger.debug(f"e.cost = {e.cost}")
+                
+            logger.debug(f"e = {e}")
+            
+    return g_gamma
+
+
+
+
+def shortest_path_rewind(
+                        g_gamma:GammaNPP,
+                        result:dict
+                        ):
     option = 2
-    g_gamma = GammaNPP.revised_problem_from_result(before_graph_file, transformation_file, after_graph_result_file, option)
-    edge_format = lambda e: (str(e.src), str(e.dst), str(e.label), e.cost, e.toll)
+    # recreate the original graph change the problem to reflect result from the transformation
+    g_gamma = GammaNPP(nodes, edges, edge_partition, problems)
+    g_gamma = revised_problem_from_result(result, option)
+    nx_graph = g_gamma.to_networkx()
     
-    nx_graph = nx.MultiDiGraph()
-    for edge in g_gamma.phi_A.domain:
-        u, v, key, cost, toll = edge_format(edge)
-        nx_graph.add_edge(u, v, key=key, **{'cost': cost, 'toll': toll})
-    
-    
+    # Just for the logging
     sorted_edges = sorted(nx_graph.edges(keys=True, data=True), key=lambda x: int(x[2]))
     data = [(u, v, key, data['cost'], data['toll']) for u, v, key, data in sorted_edges]
     logger.debug('\n'+tabulate(data,headers=['orig', 'dest', 'nx_key', 'cost', 'toll']))
-    
     
     od_pair_demand = []
     for p in g_gamma.problems_domain:
@@ -54,10 +86,8 @@ def shortest_path_rewind(before_graph_file, after_graph_result_file, transformat
     start_time = time.time()
     #https://codereview.stackexchange.com/questions/235898/speeding-up-dijkstras-algorithm
     total_profit = 0
-    for o,d,n in od_pair_demand:
+    for o, d, n in od_pair_demand:
         s_paths = list(nx.all_shortest_paths(nx_graph, o,d, weight='cost'))
-        #print(*s_paths, sep='\n' )
         total_profit += leader_profit(*s_paths)*n
-    #input(f"total_profit : {total_profit}")
     end_time = time.time()
     return total_profit, end_time-start_time
