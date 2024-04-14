@@ -120,8 +120,8 @@ function main(args)
 	    
     elseif endswith(input_file, ".pkl") & endswith(output_file, ".json") 
 		# Batch solver and one compressed result output file
-		# input file : path/to/input.gz
-		# output file: path/to/output.gz
+		# input file : path/to/input.pkl
+		# output file: path/to/output.json
 		
 		results_array = []
 	    
@@ -130,12 +130,12 @@ function main(args)
 		# Loop over the data
 		for item in data
 			k, v = item
-			try
-				result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
-				append!(results_array, result)
-			catch
-				println("An error occurred.", k)
-			end
+			#try
+			result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
+			append!(results_array, result)
+			#catch
+			#	println("An error occurred.", k)
+			#end
 		end
 		
 		save_result_batch(results_array, output_file)
