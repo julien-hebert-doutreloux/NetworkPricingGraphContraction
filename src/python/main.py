@@ -334,7 +334,7 @@ if '__main__' == __name__:
 
 
 # One batch 
-# 0.5gb RAM + 1 CPU
+# 2 gb RAM + 1 CPU
 
 # 1) Generation (home)
 # 1000 transformations ---> 2 MB

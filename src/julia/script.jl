@@ -111,12 +111,10 @@ function main(args)
 	    # Individual solver
 		# input file : json
 		# output file: json
-		
-	    result = solve_and_get_values(import_problem_from_file(input_file))
-	    
-	    if result
+		try
+	    	result = solve_and_get_values(import_problem_from_file(input_file))
     		save_result_individual(result, output_file)
-	    else
+	    catch
 			println("An error occurred.", input_file)
 		end
 	    
@@ -132,11 +130,10 @@ function main(args)
 		# Loop over the data
 		for item in data
 			k, v = item
-			result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
-			
-			if result
+			try
+				result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
 				append!(results_array, result)
-			else
+			catch
 				println("An error occurred.", k)
 			end
 		end
