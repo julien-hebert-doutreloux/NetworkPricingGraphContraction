@@ -87,7 +87,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString)
 		prob_k = problem(primal_repr)               # Preprocessed problem of forms[k]
 		Amap = used_arcs(prob_k)		    # List of edge index of the solution path 
 		#println(Amap)
-		push!(flow, Amap)
+		append!(flow, Amap)
 	end
 	
 	all_flow = vcat(flow)

@@ -32,13 +32,15 @@ if Main == @__MODULE__
 	# Create a fake list of OptimizationResult struct
 	fake_results = []
 	for i in 1:1000
+		tval_dim = rand(1:100)
+		flow_dim = rand(1:100)
 		res = OptimizationResult(
 				"id_$(i)",
-				rand(100),  # tvals: random vector of length 10
+				rand(tval_dim),  # tvals: random vector of length 10
 				rand(),  # obj_value: random float
 				rand(),  # preprocess_time: random float
 				rand(),  # solve_time: random float
-				Dict(j => rand() for j in 1:100)  # flow: dictionary with 5 random entries
+				Dict(j => rand() for j in 1:flow_dim)  # flow: dictionary with 5 random entries
 			)
 		push!(fake_results, res)
 	end
