@@ -8,8 +8,8 @@ from unit_test.unit_test import main as unit_test
 from test.test_approx_max_clique import main as test_approx_max_clique
 
 from test.result_processing import \
-                                process_result_before_vs_after,\
-                                process_result_before_vs_after_batch,\
+                                result_post_process,\
+                                result_post_process_csv_batch,\
                                 stack_result_into_dataframe,\
                                 stack_result_into_dataframe_batch
                                 

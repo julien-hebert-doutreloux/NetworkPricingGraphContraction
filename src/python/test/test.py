@@ -2,7 +2,7 @@ from preamble.preamble import *
 from unit_test.tools import timing_decorator, unit_test_decorator
 from plot.plot_graph import plot_graph, old_plot_graph
 from test.shortest_path_rewind import shortest_path_rewind
-from test.result_processing import process_result_before_vs_after
+from test.result_processing import result_post_process
 def bell_number(n):
     if n == 0:
         return 1

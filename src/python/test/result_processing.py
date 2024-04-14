@@ -13,7 +13,7 @@ def result_post_process(
             results_file:str,
             export_folder:str='',
             output_filename:str='',
-            )
+            ):
             
     """
     Process the results of a graph transformation before and after the transformation.
@@ -72,7 +72,7 @@ def result_post_process(
         
         # other result
         rewind_optimal, rewind_time = shortest_path_rewind(
-                                                            g_gamma
+                                                            g_gamma,
                                                             result
                                                             )
         compression_factors = {}
@@ -138,7 +138,7 @@ def result_post_process(
         with open(transformations_file, 'r') as f:
             transformations = pickle.load(f)
             # only consider transformation with successful result from julia  
-            transformations = list(filter(lambda x: x[0] in npp_list, transformations)
+            transformations = list(filter(lambda x: x[0] in npp_list, transformations))
             
             
         for ((t_name, transformation) , (r_name, result)) in zip(transformations, results):

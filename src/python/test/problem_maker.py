@@ -145,7 +145,7 @@ def main(
             logger.info(f'Transformation PKL file created : {tranformation_file}')
         
         else:
-            if (i%batch_size)==0:
+            if (i%batch_size)==0 or i==1:
                 transformations_array.append([])
                 problems_array.append([])
                 
@@ -158,7 +158,7 @@ def main(
                                     )
     
     if batch_size > 1:
-        for j, (p_batch, t_batch) in enumerate(zip(problems_array, transformations_array)):
+        for j, (p_batch, t_batch) in enumerate(zip(problems_array, transformations_array), start=1):
             # Export problems
             prefix = f"{'%06d' % len(p_batch)}-{min_sub_length}-{max_sub_length}-{min_not_trivial_class}-{max_not_trivial_class}"
             filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}.pkl"
