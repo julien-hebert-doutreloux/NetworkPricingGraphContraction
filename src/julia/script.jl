@@ -120,7 +120,7 @@ function main(args)
 			println("An error occurred.", input_file)
 		end
 	    
-    elseif endswith(input_file, ".pkl") & endswith(output_file, ".pkl") 
+    elseif endswith(input_file, ".pkl") & endswith(output_file, ".json") 
 		# Batch solver and one compressed result output file
 		# input file : path/to/input.gz
 		# output file: path/to/output.gz
