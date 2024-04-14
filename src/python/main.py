@@ -331,3 +331,20 @@ if '__main__' == __name__:
 #    else
 #        sumtx = sum(tx)
 #    end
+
+
+# One batch 
+# 0.5gb RAM + 1 CPU
+
+# 1) Generation (home)
+# 1000 transformations ---> 2 MB
+# 1000 npp problems    ---> 4.5 MB
+# 1000 results         ---> 4.5 MB
+
+# 2) Computing (RAM)
+# 1000 transformations ---> 2 MB
+# 1000 results         ---> 4.5 MB
+
+# Total in home : 11 MB
+
+# Max number of batch : ~2000

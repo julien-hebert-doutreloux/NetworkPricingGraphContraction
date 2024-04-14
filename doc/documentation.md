@@ -209,8 +209,8 @@ python src/python/main.py option5 5-1 \
  --max_not_trivial_class 3 \
  --batch_size 10 \
  --input_file './data/from_github/problems/progressive/i30-06.json' \
- --export_folder_problems './tmp/i30-06/' \
- --export_folder_transformations './tmp/i30-06/'
+ --export_folder_problems './tmp/i30-06/graphs/' \
+ --export_folder_transformations './tmp/i30-06/transformations/'
 ```
 
 #### 5-2. Process result

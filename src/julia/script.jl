@@ -25,7 +25,7 @@ end
 
 function save_result_batch(results, filename::AbstractString)
 	# results : array of OptimizationResult
-	# filename : path/to/output.pkl
+	# filename : path/to/output.json
 	
 	# Convert the results list to a JSON string
 	json_data = JSON.json(results)
@@ -33,10 +33,9 @@ function save_result_batch(results, filename::AbstractString)
 	# Compress the JSON data into a bytes object
 	# Save the compressed data to a file
 	open(filename, "w") do file
-		write(file, compressed_data)
+		write(file, json_data)
 	end
 end
-
 
 # Import problem
 function import_problem_from_file(file::AbstractString)
@@ -52,8 +51,6 @@ function import_problem_from_str(str::AbstractString)
 	prob = unmarshal(Problem, JSON.parse(str)["problem"])
 	return prob
 end
-
-
 
 
 function solve_and_get_values(prob::Problem, id::AbstractString)
@@ -105,9 +102,6 @@ function solve_and_get_values(prob::Problem, id::AbstractString)
     return OptimizationResult(id, tvals, obj_value, preprocess_time, solve_time, freq_dict)
 end
 
-
-
-
 function main(args)
 
     input_file = args[1]
@@ -147,7 +141,7 @@ function main(args)
 			end
 		end
 		
-		#save_result_batch(results_array, output_file)
+		save_result_batch(results_array, output_file)
 		
 	else
 		println("An error occurred.", input_file)

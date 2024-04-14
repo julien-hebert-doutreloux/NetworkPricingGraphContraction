@@ -90,3 +90,9 @@
 2024-04-13 17:27:35,624:gamma.common:The specified file already exists: ./tmp/unit_test/exemple5_export_transformation.json
 2024-04-13 17:27:35,625:gamma.common:The specified file already exists: ./tmp/unit_test/exempleX_export_transformation.json
 2024-04-13 17:27:35,627:gamma.common:The specified file already exists: ./tmp/unit_test/exempleXI_export_transformation.json
+2024-04-13 18:32:12,281:gamma.common:The specified file already exists: ./tmp/unit_test/exemple1_export_transformation.json
+2024-04-13 18:32:12,282:gamma.common:The specified file already exists: ./tmp/unit_test/exemple2_export_transformation.json
+2024-04-13 18:32:12,282:gamma.common:The specified file already exists: ./tmp/unit_test/exemple3_export_transformation.json
+2024-04-13 18:32:12,283:gamma.common:The specified file already exists: ./tmp/unit_test/exemple5_export_transformation.json
+2024-04-13 18:32:12,284:gamma.common:The specified file already exists: ./tmp/unit_test/exempleX_export_transformation.json
+2024-04-13 18:32:12,285:gamma.common:The specified file already exists: ./tmp/unit_test/exempleXI_export_transformation.json
