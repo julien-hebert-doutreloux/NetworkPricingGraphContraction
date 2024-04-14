@@ -30,17 +30,18 @@ if Main == @__MODULE__
 	output_file = ARGS[1]
 
 	# Create a fake list of OptimizationResult struct
-	fake_results = [
-		OptimizationResult(
-		    "id_$(i)",
-		    rand(100),  # tvals: random vector of length 10
-		    rand(),  # obj_value: random float
-		    rand(),  # preprocess_time: random float
-		    rand(),  # solve_time: random float
-		    Dict(j => rand() for j in 1:100)  # flow: dictionary with 5 random entries
-		) for i in 1:1000
-	]
-
+	fake_results = []
+	for i in 1:1000
+		res = OptimizationResult(
+				"id_$(i)",
+				rand(100),  # tvals: random vector of length 10
+				rand(),  # obj_value: random float
+				rand(),  # preprocess_time: random float
+				rand(),  # solve_time: random float
+				Dict(j => rand() for j in 1:100)  # flow: dictionary with 5 random entries
+			)
+		push!(fake_results, res)
+	end
     save_result_batch(fake_results, output_file)
 end
 

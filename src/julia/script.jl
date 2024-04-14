@@ -87,7 +87,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString)
 		prob_k = problem(primal_repr)               # Preprocessed problem of forms[k]
 		Amap = used_arcs(prob_k)		    # List of edge index of the solution path 
 		#println(Amap)
-		append!(flow, Amap)
+		push!(flow, Amap)
 	end
 	
 	all_flow = vcat(flow)
@@ -130,12 +130,12 @@ function main(args)
 		# Loop over the data
 		for item in data
 			k, v = item
-			#try
-			result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
-			append!(results_array, result)
-			#catch
-			#	println("An error occurred.", k)
-			#end
+			try
+				result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
+				push!(results_array, result)
+			catch
+				println("An error occurred.", k)
+			end
 		end
 		
 		save_result_batch(results_array, output_file)
