@@ -59,8 +59,6 @@ ________________________________________________________________________________
 ##### Example
 ```bash
 python src/python/main.py option3 3-1 \
- --num_partitions 100 \
- --max_sub_length 3 \
  --input_folder './data/from_github/problems' \
  --export_folder_grid './data/modified' \
  --export_folder_problems './data/modified/problems' \
@@ -207,6 +205,7 @@ python src/python/main.py option5 5-1 \
  --max_sub_length 4 \
  --min_not_trivial_class 3 \
  --max_not_trivial_class 3 \
+ --H4 True\
  --batch_size 10 \
  --input_file './data/from_github/problems/progressive/i30-06.json' \
  --export_folder_problems './tmp/i30-06/graphs/' \

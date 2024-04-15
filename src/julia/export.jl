@@ -32,8 +32,8 @@ if Main == @__MODULE__
 	# Create a fake list of OptimizationResult struct
 	fake_results = []
 	for i in 1:1000
-		tval_dim = rand(1:100)
-		flow_dim = rand(1:100)
+		tval_dim = rand(1:200)
+		flow_dim = rand(1:200)
 		res = OptimizationResult(
 				"id_$(i)",
 				rand(tval_dim),  # tvals: random vector of length 10

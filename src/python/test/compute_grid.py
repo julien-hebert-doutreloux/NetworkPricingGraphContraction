@@ -3,8 +3,6 @@ from preamble.preamble import *
 PARAMETERS = config.test_compute_grid(__name__)
 logger = config.log(**PARAMETERS['logger'])
 def compute_grid_problem_generation(
-                                    num_partitions:int=100,
-                                    max_sub_length:int=3,
                                     input_folder:str='',
                                     export_folder_grid:str='',
                                     export_folder_problems:str='',
@@ -15,8 +13,6 @@ def compute_grid_problem_generation(
     This function, `compute_grid_problem_generation`, is used to generate a list of commands for processing JSON problem files found in a specified input folder.
 
     Parameters:
-        num_partitions (int, optional): The number of partitions for the problem. Defaults to 100.
-        max_sub_length (int, optional): The maximum length allowed for element of the partition. Defaults to 3.
         input_folder (str, optional): The path to the folder containing the problem JSON files. Defaults to ''.
         export_folder_grid (str, optional): The path to the folder where the output grid file will be stored. Defaults to ''.
         export_folder_problems (str, optional): The path to the folder where the output problem files will be stored. Defaults to ''.
@@ -35,7 +31,7 @@ def compute_grid_problem_generation(
     # export_folder_grid ? no -> create folder          
     # export_folder_problems ? no -> create folder
     # export_folder_transformations ? no -> create folder
-    
+    param_combinaison = PARAMETERS['probleme_generation_combinaison']
     command_list = []
     # problem_making
     for root, dirs, files in os.walk(input_folder):
@@ -58,8 +54,11 @@ def compute_grid_problem_generation(
                     os.makedirs(output_folder_transformations)
                     logger.info(f"Folder created : {output_folder_transformations}")
                 
-                command = f"python src/python/main.py option5 5-1 --num_partitions {num_partitions} --max_sub_length {max_sub_length} --input_file {original_problem_path} --export_folder_problems {output_folder_problems} --export_folder_transformations {output_folder_transformations}"
-                command_list.append(command)
+                
+                for (num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size) in param_combinaison:
+                    command = f"""python src/python/main.py option5 5-1 --num_partitions {num_partitions} --min_sub_length {max_sub_length} --max_sub_length {max_sub_length} --number_not_trivial_class {number_not_trivial_class} --H4 {H4} --input_file {original_problem_path} --export_folder_problems {output_folder_problems} --export_folder_transformations {output_folder_transformations} --batch_size {batch_size}"""
+                                
+                    command_list.append(command)
     
     if not output_filename.endswith('.txt'):
         output_filename += '.txt'
@@ -75,12 +74,11 @@ def compute_grid_problem_generation(
     return output_file
     
     
-def compute_grid_individual_julia(
-                                input_folder='',
-                                export_folder_grid='',
-                                export_folder_results='',
-                                output_filename='',
-                                batch_size:int=1,
+def compute_grid_julia(
+                        input_folder='',
+                        export_folder_grid='',
+                        export_folder_results='',
+                        output_filename='',
                             ):
                             
     # Logic for file and folder existence                   
@@ -89,11 +87,11 @@ def compute_grid_individual_julia(
     # export_folder_results ? no -> create folder
     
     command_list = []
-    input_output_list = []
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
-            if filename.endswith(".json"):
-                
+        
+            
+            if filename.endswith(".json") or filename.endswith(".pkl"):
                 problem_path = os.path.join(root, filename)
                 base_name, ext = os.path.splitext(filename)
                 subfolder = root.replace(input_folder, '').split(os.sep)
@@ -103,31 +101,15 @@ def compute_grid_individual_julia(
                 if not os.path.exists(output_folder_results):
                     os.makedirs(output_folder_results)
                     logger.info(f"Folder created : {output_folder_results}")
-                        
-                output_result_file = os.path.join(output_folder_results, f"{base_name}-RR.json")
+                
+                output_result_file = os.path.join(output_folder_results, f"{base_name}.json")
+                    
+                
                 command = f"julia src{os.sep}julia{os.sep}script.jl {problem_path} {output_result_file}"
                 command_list.append(command)
-                input_output_list.append((problem_path, output_result_file))
+        
     
-    
-    # Batch command
-    if batch_size>1:
-        command_list = []
-        split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
-        for j, sublist in enumerate(split_list, start=1):
-            output_file = os.path.join(export_folder_grid, f"julia_batch_{j}.csv")
-            
-            with open(output_file, 'w') as f:
-                f.write('input_file,output_file')
-                f.write('\n')
-                for (i, o) in sublist:
-                    f.write(f"{i},{o}")
-                    f.write('\n')
-            
-            logger.info(f"Batch {j} exported: {output_file}")
-            command = f"julia src{os.sep}julia{os.sep}script.jl {output_file}"
-            command_list.append(command)
-            
+
     # Exporting the compute grid
     if not output_filename.endswith('.txt'):
         output_filename += '.txt'
@@ -141,6 +123,37 @@ def compute_grid_individual_julia(
     logger.info(f"Compute grid exported : {output_file}")
         
     return output_file
+
+
+
+
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def compute_grid_process_result_before_vs_after(
                                                 input_folder_graphs:str='',
@@ -230,7 +243,10 @@ def compute_grid_process_result_before_vs_after(
     
     return output_file
     
-                
+    
+    
+    
+
 def compute_grid_stack_result_into_dataframe(
                                             input_folder_processed_results:str='',
                                             export_folder_dataframes:str='',

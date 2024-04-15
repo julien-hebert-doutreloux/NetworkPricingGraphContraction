@@ -66,7 +66,7 @@ def result_post_process(
         data = [reduce_row(i) for i in g_gamma.phi_T_A.image]
         
         # tolled edges
-        headers = ('edge', 'γ(edge)', 'opt. value', 'opt. flow')
+        headers = ('edge', '(edge)', '(opt. value)', '(opt. flow)')
         logger.debug('\n'+tabulate(data, headers=headers))
         
         
@@ -97,8 +97,6 @@ def result_post_process(
                     #'n_simple_path_for_od':0,
                     }
                     
-        
-        
     output_file = os.path.join(export_folder, output_filename)
             
     # Check if the file does not exists
@@ -129,7 +127,7 @@ def result_post_process(
     nodes, edges, problems = npp_from_json(original_graph_file)
     
     if transformations_file.endswith('.pkl'):
-        # Case batch
+        # MULTIPLE CASE
         
         with open(results_file, 'r') as f:
             results = json.load(f)
@@ -149,8 +147,11 @@ def result_post_process(
                 to_export.append({**processing(g_gamma, result), **{'id': r_name}})
     
     else:
-        # individual case
-        g_gamma = GammaNPP.from_transformation(nodes, edges, transformation, problems=problems) 
+        # SINGLE CASE
+        with open(transformations_file, 'r') as f:
+            transformations = json.load(f)
+            
+        g_gamma = GammaNPP.from_transformation(nodes, edges, transformations, problems=problems) 
         to_export = {**processing(g_gamma, result), **{'id': r_name}}
     
     with open(output_file, 'wb') as f:

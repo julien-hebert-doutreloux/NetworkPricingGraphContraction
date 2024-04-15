@@ -5,13 +5,13 @@ from gamma.gamma import Edge, Node
 PARAMETERS = config.gamma_rules(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
-def make_rules(edges_list:iter) -> dict:
+def make_rules(edges_list:iter, H4:bool=False) -> dict:
     # H1 : Continuity-free edge equivalence class hypothesis (True by default)
     # H2 : Equivalence class assumption for elements of equal value (False by default)
     # H3 : Tolled element equivalence class hypothesis (True by default)
     # H4 : Local element only (False by default)
     
-    H1, H2, H3, H4 = True, False, True, False
+    H1, H2, H3 = True, False, True
     
     def H1_condition(edge1:Edge, edge2:Edge) -> bool:
         # Not continuous
@@ -28,9 +28,19 @@ def make_rules(edges_list:iter) -> dict:
     def H4_condition(edge1:Edge, edge2:Edge) -> bool:
         # Local contigue
         return ((edge1.dst == edge2.dst) or (edge1.src == edge2.src))
-    
+        
     def are_compatible(edge1:Edge, edge2:Edge) -> bool:
-        return H1_condition(edge1, edge2) and H3_condition(edge1, edge2) # and H4_condition(edge1, edge2) #and H2_condition(edge1, edge2)
+        condition = True
+        if H1:
+            condition = condition & H1_condition(edge1, edge2)
+        if H2:
+            condition = condition & H2_condition(edge1, edge2)
+        if H3:
+            condition = condition & H3_condition(edge1, edge2)
+        if H4:
+            condition = condition & H4_condition(edge1, edge2)
+            
+        return condition
     
     if H3:
         prepartition = list(filter(lambda x: x.toll, edges_list))
@@ -217,8 +227,7 @@ class Rules(dict):
                             number_or_partition:int, 
                             min_len:int,
                             max_len:int,
-                            min_not_trivial_class:int,
-                            max_not_trivial_class:int
+                            number_not_trivial_class:int,
                             ):
         if max_len == -1:
             max_len = len(self)
@@ -233,55 +242,43 @@ class Rules(dict):
             n_not_trivial_class = 0
             attempt = 0
             
-            while union != set(self) and attempt < 10000:
+            while union != set(self) and attempt < 50:
                 attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
                 #input(f"random_generator = {random_generator}")
                 
                 if random_generator:
                     max_length = min(len(self) - len(union), len(random_generator), max_len)
-                    min_length = max(0, min(min_len, max_length))
+                    min_length = max(1, min(min_len, max_length))
                     random_size = random.randint(min_length, max_length)
-                    #input(f"random_size = {random_size}")
-                    
                     random_subset = set(random.sample(list(random_generator), random_size))
-                    #input(f"random_subset = {random_subset}")
                         
                     # correction des duplicats
                     random_subset -= set().union(*partition)
                     
-                    
                     if random_subset != set():
-                    
-                        if len(random_subset)>2:
+                        if random_size>=2:
                             n_not_trivial_class+=1
                             
                         partition += [random_subset]
                         random_generator -= random_subset
                         
                         union |= random_subset
-                        
-                    if n_not_trivial_class == max_not_trivial_class:
-                        partition += [[x] for x in set(self)-union]
-                        union = set(self)
-                        random_generator = False
+                
+                if n_not_trivial_class == number_not_trivial_class:
+                    partition += [set((x,)) for x in set(self)-union]
+                    union = set(self)
                        
-                if not (min_not_trivial_class <= n_not_trivial_class <= max_not_trivial_class):
-                    partition = list(filter(lambda x: len(x) > 1, partition))
-                    union = set(chain.from_iterable(partition))
               
-              
-            if union == set(self):
-                    
-                partition = set_of_frozenset(partition)
-                
-                if not partition in partitions:
-                
-                    length = len(set(chain.from_iterable(partition)))
-                    readable_partition = list(map(lambda x: list(map(str, x)), partition))
-                    logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
-                    
-                    partitions.append(partition)
-                    partition = []
+            if n_not_trivial_class == number_not_trivial_class:
+                if union == set(self):
+                    partition = set_of_frozenset(partition)
+                    if not partition in partitions:
+                        #length = len(set(chain.from_iterable(partition)))
+                        #readable_partition = list(map(lambda x: list(map(str, x)), partition))
+                        #logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
+                        
+                        partitions.append(partition)
+                        partition = []
         
         return partitions

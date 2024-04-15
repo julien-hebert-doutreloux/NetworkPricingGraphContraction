@@ -13,8 +13,8 @@ def main(
         num_partitions:int=1000,
         min_sub_length:int=3,
         max_sub_length:int=3,
-        min_not_trivial_class:int=3,
-        max_not_trivial_class:int=3,
+        number_not_trivial_class:int=3,
+        H4:bool=False,
         batch_size:int=1000,
         input_file:str='',
         export_folder_problems:str='',
@@ -28,8 +28,9 @@ def main(
     num_partitions (int): The number of partitions to create. Default is 1000.
     min_sub_length (int): The minimum length of the element in a partition. Default is 3.
     max_sub_length (int): The maximum length of the element in a partition. Default is 3.
-    min_not_trivial_class (int): The minimum number of none trivial equivalence class in partition. Default is 3.
-    max_not_trivial_class (int): The maximum number of none trivial equivalence class in partition. Default is 3.
+    number_not_trivial_class (int): The number of none trivial equivalence class in partition. Default is 3.
+    H4 (bool): Applied the local hypothesis for making the partition. Default is False.
+    batch_size (int): The number of problem in one file. Default is 1000.
     input_file (str): The path to the input JSON file containing the graph data. Default is an empty string.
     export_folder (str): The path to the output folder where the results will be saved. Default is an empty string.
     """
@@ -84,11 +85,12 @@ def main(
     preprocessing()
     
     # Compatibility graph extraction
-    compatibility_graph = make_rules(edges)
+    compatibility_graph = make_rules(edges,H4)
+    logger.debug(f"Number of tolled edge : {len(compatibility_graph)}")
     minimal = all(map(lambda v: len(v)>1, compatibility_graph.values()))
     
     if not minimal:
-        logger.debug.append("Rules not minimal")
+        logger.debug("Rules not minimal")
         compatibility_graph = {k:v for k,v in compatibility_graph.items() if len(v)>1}
         
     compatibility_graph = Rules(compatibility_graph)
@@ -101,8 +103,7 @@ def main(
                                                         num_partitions,
                                                         min_sub_length,
                                                         max_sub_length,
-                                                        min_not_trivial_class,
-                                                        max_not_trivial_class
+                                                        number_not_trivial_class,
                                                         )
     #for partition in partitions:
     #    logger.debug(list(map(lambda x: list(map(str, x)), partition)))
@@ -112,7 +113,7 @@ def main(
     if trivial_partition in partitions:
         partitions.remove(trivial_partition)
     partitions.insert(0, trivial_partition)
-    
+    #logger.debug(len(partitions))
     transformations_array = []
     problems_array = []
     for i, partition in enumerate(partitions, start=0):
@@ -129,23 +130,21 @@ def main(
             
         # Gamma
         g_gamma = GammaNPP(nodes, edges, partition, problems)
-        
         number = "%06d" % i
+        #logger.debug(number)
         filename = f"{number}-NPP-{base_filename}"
         if batch_size == 1 or i == 0:
             
             # indivudual export
             # Export NPP in JSON
             problem_file = to_json(g_gamma.image_problem_to_dict(), export_folder_problems, filename)
-            
-            filename+="-T"
             tranformation_file = to_json(g_gamma.transformation_to_dict(), export_folder_transformations, filename)
             
             logger.info(f'NPP JSON file created : {problem_file}')
             logger.info(f'Transformation PKL file created : {tranformation_file}')
         
         else:
-            if (i%batch_size)==0 or i==1:
+            if (i%(batch_size+1))==0 or i==1:
                 transformations_array.append([])
                 problems_array.append([])
                 
@@ -160,7 +159,7 @@ def main(
     if batch_size > 1:
         for j, (p_batch, t_batch) in enumerate(zip(problems_array, transformations_array), start=1):
             # Export problems
-            prefix = f"{'%06d' % len(p_batch)}-{min_sub_length}-{max_sub_length}-{min_not_trivial_class}-{max_not_trivial_class}"
+            prefix = f"{'%06d' % len(p_batch)}-{min_sub_length}-{max_sub_length}-{number_not_trivial_class}-{int(H4)}"
             filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}.pkl"
             problems_file = os.path.join(export_folder_problems, filename)
             json_compression(p_batch, problems_file)
@@ -174,4 +173,4 @@ def main(
             logger.info(f'Transformation batch PKL file created : {transformations_file}')
                     
 # number in the filename
-#batch_number, batch_size, min_sub_len, max_sub_len, min_not_trivial_class, max_not_trivial_class
+#batch_number, batch_size, min_sub_len, max_sub_len, number_not_trivial_class, H4

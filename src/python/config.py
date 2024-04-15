@@ -35,7 +35,8 @@ def main_main(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'main.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['file_handle_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
+    parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
     
     # OTHER PARAMETERS
@@ -74,7 +75,7 @@ def gamma_gamma(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'gamma.gamma.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     # OTHER PARAMETERS
@@ -89,6 +90,7 @@ def gamma_common(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'gamma.common.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     # OTHER PARAMETERS
@@ -152,6 +154,7 @@ def unit_test_tools(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.tools.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -270,6 +273,7 @@ def menu_menu(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'menu.menu.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -310,6 +314,30 @@ def test_compute_grid(name):
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     # OTHER PARAMETERS
+    
+    parameters['probleme_generation_combinaison'] = [
+                        # num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size
+                        (1000, 2, 2, 1, False, 1000),
+                        (1000, 2, 2, 2, False, 1000),
+                        (1000, 2, 2, 3, False, 1000),
+                        (1000, 2, 2, 4, False, 1000),
+                        (1000, 2, 2, 5, False, 1000),
+                        (1000, 3, 3, 1, False, 1000),
+                        (1000, 3, 3, 2, False, 1000),
+                        (1000, 4, 4, 1, False, 1000),
+                        (1000, 5, 5, 1, False, 1000),
+                        (1000, 2, 5, 5, False, 1000),
+                        (1000, 2, 2, 1, True, 1000),
+                        (1000, 2, 2, 2, True, 1000),
+                        (1000, 2, 2, 3, True, 1000),
+                        (1000, 2, 2, 4, True, 1000),
+                        (1000, 2, 2, 5, True, 1000),
+                        (1000, 3, 3, 1, True, 1000),
+                        (1000, 3, 3, 2, True, 1000),
+                        (1000, 4, 4, 1, True, 1000),
+                        (1000, 5, 5, 1, True, 1000),
+                        (1000, 2, 5, 5, True, 1000),
+                    ]
     return parameters
 
 # test.problem_maker.py
@@ -321,6 +349,7 @@ def test_problem_maker(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'test.problem_maker.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.WARNING
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     # OTHER PARAMETERS

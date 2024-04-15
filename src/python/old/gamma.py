@@ -2082,3 +2082,40 @@ def process_result_before_vs_after(
     #    num_distinct_paths = len(paths)
     #    print(num_distinct_paths)
     #    path_counts[(origin, destination)] = num_distinct_paths
+    
+    
+        # Batch command
+    if batch_size>1:
+        command_list = []
+        split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
+        for j, sublist in enumerate(split_list, start=1):
+            output_file = os.path.join(export_folder_grid, f"julia_batch_{j}.csv")
+            
+            with open(output_file, 'w') as f:
+                f.write('input_file,output_file')
+                f.write('\n')
+                for (i, o) in sublist:
+                    f.write(f"{i},{o}")
+                    f.write('\n')
+            
+            logger.info(f"Batch {j} exported: {output_file}")
+            command = f"julia src{os.sep}julia{os.sep}script.jl {output_file}"
+            command_list.append(command)
+            
+            
+            
+            def option_3_3(subparsers_): 
+        name = '3-3'
+        description = textwrap.dedent("Julia commands batch")
+        help = 'test.compute_grid.compute_grid_batch_julia'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_folder', type=str, help='input parent folder where are the original NPP json file')
+        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--export_folder_results', type=str, required=True, help='prepare parent folder to the export result of julia result')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')

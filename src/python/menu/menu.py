@@ -50,7 +50,7 @@ def option_3(subparsers_):
                                     
     def option_3_1(subparsers_): 
         name = '3-1'
-        description = textwrap.dedent("Problem transformation generation")
+        description = textwrap.dedent("Problem transformation generation (parameters in config.test_compute_grid)")
         help = 'test.compute_grid.py'
         parser_ = subparsers_.add_parser(
                                         name=name,
@@ -58,22 +58,16 @@ def option_3(subparsers_):
                                         formatter_class=argparse.RawTextHelpFormatter,
                                         help=help
                                     )
-        parser_.add_argument('--num_partitions', type=int, help='number of random partitions')
-        parser_.add_argument('--min_sub_length', type=int, help='minimum length of a equivalence class in partition')
-        parser_.add_argument('--max_sub_length', type=int, help='maximum length of a subset of a partition')
-        parser_.add_argument('--min_not_trivial_class', type=int, help='minimum number of none trivial equivalence class in partition')
-        parser_.add_argument('--max_not_trivial_class', type=int, help='maximum number of none trivial equivalence class in partition')
         parser_.add_argument('--input_folder', type=str, help='input folder where are the original NPP json file')
         parser_.add_argument('--export_folder_grid', type=str, required=True, help='Path to the export compute grid')
         parser_.add_argument('--export_folder_problems', type=str, required=True, help='Path to the export NPP json')
         parser_.add_argument('--export_folder_transformations', type=str, required=True, help='Path to the export transformation PKL')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')
     
     def option_3_2(subparsers_): 
         name = '3-2'
-        description = textwrap.dedent("Julia commands individual")
-        help = 'test.compute_grid.compute_grid_individual_julia'
+        description = textwrap.dedent("Julia commands")
+        help = 'test.compute_grid.compute_grid_julia'
         parser_ = subparsers_.add_parser(
                                         name=name,
                                         description=description,
@@ -86,22 +80,6 @@ def option_3(subparsers_):
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
         
         
-    def option_3_3(subparsers_): 
-        name = '3-3'
-        description = textwrap.dedent("Julia commands batch")
-        help = 'test.compute_grid.compute_grid_batch_julia'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-        parser_.add_argument('--input_folder', type=str, help='input parent folder where are the original NPP json file')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
-        parser_.add_argument('--export_folder_results', type=str, required=True, help='prepare parent folder to the export result of julia result')
-        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')
-    
     def option_3_4(subparsers_): 
         name = '3-4'
         description = textwrap.dedent("process result commands")
@@ -172,7 +150,7 @@ def option_3(subparsers_):
         
     option_3_1(subparsers__)
     option_3_2(subparsers__)
-    option_3_3(subparsers__)
+    #option_3_3(subparsers__)
     option_3_4(subparsers__)
     option_3_5(subparsers__)
     option_3_6(subparsers__)
@@ -222,8 +200,8 @@ def option_5(subparsers_):
         parser_.add_argument('--num_partitions', type=int, help='number of random partitions')
         parser_.add_argument('--min_sub_length', type=int, help='minimum length of a equivalence class in partition')
         parser_.add_argument('--max_sub_length', type=int, help='maximum length of a equivalence class in partition')
-        parser_.add_argument('--min_not_trivial_class', type=int, help='minimum number of none trivial equivalence class in partition')
-        parser_.add_argument('--max_not_trivial_class', type=int, help='maximum number of none trivial equivalence class in partition')
+        parser_.add_argument('--number_not_trivial_class', type=int, help='number of none trivial equivalence class in partition')
+        parser_.add_argument('--H4', type=str, help='Applied the local hypothesis in the partition')
         parser_.add_argument('--input_file', type=str, help='NPP json file path')
         parser_.add_argument('--export_folder_problems', type=str, required=True, help='folder to export NPP json')
         parser_.add_argument('--export_folder_transformations', type=str, required=True, help='folder to export transformation PKL')
