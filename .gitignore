@@ -1,7 +1,6 @@
 # ignore virtualenv directory
 venv/
 other/
-data/
 **/__pycache__/
 tmp/
 *.log
