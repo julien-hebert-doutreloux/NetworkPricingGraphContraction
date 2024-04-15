@@ -955,32 +955,31 @@ def UNIT_TEST_export():
         
         true_edges = [
                     Edge(src=true_nodes[0], dst=true_nodes[1], label=1, cost=12, toll=False),   # [e1] : [v1] --> [v2]
-                    Edge(true_nodes[0], true_nodes[2], 2, 1, False),                            # [e2] : [v1] --> [v3]
+                    Edge(true_nodes[0], true_nodes[2], 2, 0, False),                            # [e2] : [v1] --> [v3]
                     Edge(true_nodes[0], true_nodes[3], 3, 5, False),                            # [e3] : [v1] --> [v4]
-                    Edge(true_nodes[2], true_nodes[3], 4, 1, True),                             # [e4] : [v3] --> [v4]
+                    Edge(true_nodes[2], true_nodes[3], 4, 54, True),                             # [e4] : [v3] --> [v4]
                     Edge(true_nodes[3], true_nodes[2], 5, 3, False),                            # [e5] : [v4] --> [v3]
                     Edge(true_nodes[3], true_nodes[5], 6, 6, False),                            # [e6] : [v4] --> [v8]
                     Edge(true_nodes[2], true_nodes[1], 7, 6, False),                            # [e7] : [v3] --> [v2]
-                    Edge(true_nodes[3], true_nodes[1], 8, 1, False),                            # [e9] : [v4] --> [v2]
-                    Edge(true_nodes[3], true_nodes[5], 9, 1, False),                            # [e10] : [v4] --> [v8]
-                    Edge(true_nodes[4], true_nodes[2], 10, 1, False),                           # [e11] : [v7] --> [v3]
+                    Edge(true_nodes[3], true_nodes[1], 8, 0, False),                            # [e9] : [v4] --> [v2]
+                    Edge(true_nodes[3], true_nodes[5], 9, 0, False),                            # [e10] : [v4] --> [v8]
+                    Edge(true_nodes[4], true_nodes[2], 10, 0, False),                           # [e11] : [v7] --> [v3]
                     Edge(true_nodes[4], true_nodes[2], 11, 5, False),                           # [e12] : [v7] --> [v3]
                     Edge(true_nodes[4], true_nodes[5], 12, 11, False),                           # [e13] : [v7] --> [v8]
         ]
-        
-        
         
         if len(nodes) != len(true_nodes):
             equal = False
         if len(edges) != len(true_edges):
             equal = False
         for edge1, edge2 in zip(edges, true_edges):
-            if edge1!= edge2:
+        
+            if edge1 != edge2:
                 equal = False
+                
         for node1, node2 in zip(nodes, true_nodes):
             if node1!=node2:
                 equal = False
-                    
         if not equal:
             logger.warning(f'UNIT_TEST_export.UNIT_TEST_exemple1 failed')
         else:
@@ -1030,11 +1029,10 @@ def UNIT_TEST_export():
         ]
         
         true_edges = [
-                    Edge(src=true_nodes[0], dst=true_nodes[1], label=1, cost=1, toll=True),   # [e1] : [v1] --> [v2]
-                    Edge(true_nodes[1], true_nodes[1], 2, 1, False),                            # [e2] : [v2] --> [v2]
+                    Edge(src=true_nodes[0], dst=true_nodes[1], label=1, cost=54, toll=True),   # [e1] : [v1] --> [v2]
+                    Edge(true_nodes[1], true_nodes[1], 2, 0, False),                            # [e2] : [v2] --> [v2]
                     Edge(true_nodes[1], true_nodes[0], 3, 1, False),                            # [e3] : [v2] --> [v1]
         ]
-        
         
         
         if len(nodes) != len(true_nodes):
@@ -1233,7 +1231,7 @@ def UNIT_TEST_export_transformation_2():
     UNIT_TEST_exempleX()
     UNIT_TEST_exempleXI()
         
-def UNIT_TEST_from_transformation_file():
+def UNIT_TEST_from_transformation():
     
     def UNIT_TEST_exemple_i(exemple, directory, filename): 
         # import
@@ -1243,8 +1241,10 @@ def UNIT_TEST_from_transformation_file():
         transformation = g_gamma.transformation_to_dict()
         output_file = to_json(transformation, directory, filename)
         #output_file = os.path.join(directory, f"{filename}.pkl")
-        
-        test_gamma = Gamma.from_transformation_file(nodes, edges, output_file)
+        with open(output_file, 'r') as f:
+            imported_transformation = json.load(f)
+            
+        test_gamma = Gamma.from_transformation(nodes, edges, transformation)
         equal = True
         
         for node in nodes:

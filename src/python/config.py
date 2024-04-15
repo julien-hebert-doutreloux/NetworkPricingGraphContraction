@@ -141,7 +141,7 @@ def unit_test_examples(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.examples.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -171,7 +171,7 @@ def unit_test_unit_test(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -188,7 +188,7 @@ def unit_test_unit_test_common(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_common.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -203,7 +203,7 @@ def unit_test_unit_test_gamma(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_gamma.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -218,7 +218,7 @@ def unit_test_unit_test_graph(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_graph.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -233,7 +233,7 @@ def unit_test_unit_test_partition(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_partition.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -248,7 +248,7 @@ def unit_test_unit_test_plot_graph(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_plot_graph.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -263,7 +263,7 @@ def unit_test_unit_test_rules(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_rules.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['stream_handler_level'] = logging.DEBUG
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS

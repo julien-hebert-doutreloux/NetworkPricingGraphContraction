@@ -39,7 +39,7 @@ def UNIT_TEST_npp_from_json_to_json():
     filename = 'adaptivetest_rebuild'
     #input_file2 = os.path.join(directory, f"{filename}.json")
     
-    g_gamma = GammaNPP(nodes, edges, edge_partition=None, problems=problems, preprocess=False)
+    g_gamma = GammaNPP(nodes, edges, edge_partition=None, problems=problems)
     json_dict = g_gamma.image_problem_to_dict()
     input_file2 = to_json(json_dict, directory, filename, indent=4)
     
