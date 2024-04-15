@@ -117,24 +117,24 @@ class Rules(dict):
         complement_rules = self.complement_rules
         lenght_dict = {k:len(v) for k,v in self.items()}
         
-        if str(option) == str(0):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]), self[k2]))
-        elif str(option) == str(1):
+        #if str(option) == str(0):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]), self[k2]))
+        if str(option) == str(1):
             affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) / (lenght_dict[x]), self[k2]))
-        elif str(option) == str(2):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[k1], self[k2]))
-        elif str(option) == str(3):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(complement_rules[x]), self[k2]))
-        elif str(option) == str(4):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) / (len(complement_rules[x])+1), self[k2]))
-        elif str(option) == str(5):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(complement_rules[x])/(lenght_dict[x]), self[k2]))
-        elif str(option) == str(6):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x]/(len(complement_rules[x])+1), self[k2]))
-        elif str(option) == str(7):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(set(self[k1])&set(self[x])), self[k2]))
-        elif str(option) == str(8):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x], self[k2]))
+        #elif str(option) == str(2):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[k1], self[k2]))
+        #elif str(option) == str(3):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(complement_rules[x]), self[k2]))
+        #elif str(option) == str(4):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) / (len(complement_rules[x])+1), self[k2]))
+        #elif str(option) == str(5):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(complement_rules[x])/(lenght_dict[x]), self[k2]))
+        #elif str(option) == str(6):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x]/(len(complement_rules[x])+1), self[k2]))
+        #elif str(option) == str(7):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(set(self[k1])&set(self[x])), self[k2]))
+        #elif str(option) == str(8):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x], self[k2]))
             
         res = {
                 key: sorted(list(self[key]),
@@ -231,7 +231,10 @@ class Rules(dict):
                             ):
         if max_len == -1:
             max_len = len(self)
-        
+            
+        if min_len>max_len:
+            logger.warning("min_len>max_len")
+            return
         
         generators, max_gen = self.approx_max_clique(return_all=True)
         
@@ -242,7 +245,7 @@ class Rules(dict):
             n_not_trivial_class = 0
             attempt = 0
             
-            while union != set(self) and attempt < 50:
+            while union != set(self) and attempt < 25:
                 attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
                 #input(f"random_generator = {random_generator}")
@@ -274,6 +277,7 @@ class Rules(dict):
                 if union == set(self):
                     partition = set_of_frozenset(partition)
                     if not partition in partitions:
+                    
                         #length = len(set(chain.from_iterable(partition)))
                         #readable_partition = list(map(lambda x: list(map(str, x)), partition))
                         #logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
