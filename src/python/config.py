@@ -337,6 +337,7 @@ def test_compute_grid(name):
                         (100, 4, 4, 1, False, 100),
                         (100, 5, 5, 1, False, 100),
                         (100, 2, 5, 5, False, 100),
+                        (100, 2, 0, 0, False, 100),
                         (100, 2, 2, 1, True, 100),
                         (100, 2, 2, 2, True, 100),
                         (100, 2, 2, 3, True, 100),
@@ -347,6 +348,7 @@ def test_compute_grid(name):
                         (100, 4, 4, 1, True, 100),
                         (100, 5, 5, 1, True, 100),
                         (100, 2, 5, 5, True, 100),
+                        (100, 2, 0, 0, True, 100),
                     ]
     return parameters
 

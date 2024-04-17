@@ -3,7 +3,7 @@ from preamble.preamble import *
 PARAMETERS = config.test_compute_grid(__name__)
 logger = config.log(**PARAMETERS['logger'])
 def compute_grid_problem_generation(
-                                    input_folder:str='',
+                                    input_folder_or_file:str='',
                                     export_folder_grid:str='',
                                     export_folder_problems:str='',
                                     export_folder_transformations:str='',
@@ -31,35 +31,97 @@ def compute_grid_problem_generation(
     # export_folder_problems ? no -> create folder
     # export_folder_transformations ? no -> create folder
     param_combinaison = PARAMETERS['probleme_generation_combinaison']
+    base_command = "python src/python/main.py option5 5-1 "
     command_list = []
     
-    
-    # problem_making
-    for root, dirs, files in os.walk(input_folder):
-        for filename in files:
-            if filename.endswith(".json"):
-            
-                original_problem_path = os.path.join(root, filename)
-                subfolder = root.replace(input_folder, '').split(os.sep)
-                base_name, ext = os.path.splitext(filename)
-                
-                # Problems
-                output_folder_problems = os.path.join(export_folder_problems, *subfolder, base_name)
-                if not os.path.exists(output_folder_problems):
-                    os.makedirs(output_folder_problems)
-                    logger.info(f"Folder created : {output_folder_problems}")
+    def make_command(command, **command_kwargs):
+        command += ''.join([f'--{k} {v} ' for k,v in command_kwargs.items()])
+        return command 
                         
-                # Transformation
-                output_folder_transformations = os.path.join(export_folder_transformations, *subfolder, base_name)
-                if not os.path.exists(output_folder_transformations):
-                    os.makedirs(output_folder_transformations)
-                    logger.info(f"Folder created : {output_folder_transformations}")
+                        
+    def file_logic(input_folder, root, filename, export_folder_problems, export_folder_transformations):
+        
+        original_problem_path = os.path.join(root, filename) 
+        subfolder = root.replace(input_folder, '').split(os.sep)
+        base_name, ext = os.path.splitext(filename)
+        
+        # Problems
+        output_folder_problems = os.path.join(export_folder_problems, *subfolder, base_name)
+        if not os.path.exists(output_folder_problems):
+            os.makedirs(output_folder_problems)
+            logger.info(f"Folder created : {output_folder_problems}")
                 
+        # Transformation
+        output_folder_transformations = os.path.join(export_folder_transformations, *subfolder, base_name)
+        if not os.path.exists(output_folder_transformations):
+            os.makedirs(output_folder_transformations)
+            logger.info(f"Folder created : {output_folder_transformations}")
+
+        return original_problem_path, output_folder_problems, output_folder_transformations
+                        
+    if os.path.isfile(input_folder_or_file):
+        filename = os.path.basename(input_folder_or_file) 
+        input_folder = os.path.dirname(input_folder_or_file)
+        root =  input_folder
+        
+        original_problem_path, \
+        output_folder_problems, \
+        output_folder_transformations = file_logic(
+                                                    input_folder,
+                                                    root, 
+                                                    filename, 
+                                                    export_folder_problems,
+                                                    export_folder_transformations
+                                                    )
+                                    
+       
+        
+        for (num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size) in param_combinaison:
+            command_kwargs = {
+                'num_partitions':num_partitions,
+                'min_sub_length':min_sub_length,
+                'max_sub_length':max_sub_length,
+                'number_not_trivial_class':number_not_trivial_class,
+                'H4':H4,
+                'input_file':original_problem_path,
+                'export_folder_problems':output_folder_problems,
+                'export_folder_transformations':output_folder_transformations,
+                'batch_size':batch_size
+            }
+            command = make_command(base_command, **command_kwargs)
+            command_list.append(command)
+        
+    else:
+        input_folder = input_folder_or_file
+        # problem_making
+        for root, dirs, files in os.walk(input_folder):
+            for filename in files:
+                if filename.endswith(".json"):
                 
-                for (num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size) in param_combinaison:
-                    command = f"""python src/python/main.py option5 5-1 --num_partitions {num_partitions} --min_sub_length {max_sub_length} --max_sub_length {max_sub_length} --number_not_trivial_class {number_not_trivial_class} --H4 {H4} --input_file {original_problem_path} --export_folder_problems {output_folder_problems} --export_folder_transformations {output_folder_transformations} --batch_size {batch_size}"""
-                                
-                    command_list.append(command)
+                    original_problem_path, \
+                    output_folder_problems, \
+                    output_folder_transformations = file_logic(
+                                                                input_folder,
+                                                                root, 
+                                                                filename, 
+                                                                export_folder_problems,
+                                                                export_folder_transformations
+                                                                )
+                    
+                    for (num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size) in param_combinaison:
+                        command_kwargs = {
+                                        'num_partitions':num_partitions,
+                                        'min_sub_length':min_sub_length,
+                                        'max_sub_length':max_sub_length,
+                                        'number_not_trivial_class':number_not_trivial_class,
+                                        'H4':H4,
+                                        'input_file':original_problem_path,
+                                        'export_folder_problems':output_folder_problems,
+                                        'export_folder_transformations':output_folder_transformations,
+                                        'batch_size':batch_size
+                                    }
+                        command = make_command(base_command, **command_kwargs)
+                        command_list.append(command)
     
     if not output_filename.endswith('.sh'):
         output_filename += '.sh'
@@ -108,7 +170,6 @@ def compute_grid_julia(
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
         
-            
             if filename.endswith(".json") or filename.endswith(".pkl"):
                 problem_path = os.path.join(root, filename)
                 base_name, ext = os.path.splitext(filename)
@@ -153,7 +214,8 @@ def compute_grid_julia(
         for command in command_list:
             f.write(command)
             f.write('\n')
-            
+        f.write('sleep 60')
+        
     logger.info(f"Compute grid exported : {output_file}")
         
     return output_file

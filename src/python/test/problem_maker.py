@@ -87,7 +87,8 @@ def main(
     
     # Compatibility graph extraction
     compatibility_graph = make_rules(edges, H4)
-    if all(map(lambda x: x == set(), compatibility_graph.values())):
+    #print(*compatibility_graph.items(), sep='\n')
+    if all(map(lambda x: 0<=len(x)<=1, compatibility_graph.values())):
         logger.warning(f"Only the trivial partition is feasible")
         return
         
@@ -99,7 +100,7 @@ def main(
         compatibility_graph = {k:v for k,v in compatibility_graph.items() if len(v)>1}
         
     compatibility_graph = Rules(compatibility_graph)
-    
+    #print(compatibility_graph)
     difference = set(edges) - set(compatibility_graph)
     singleton = list(map(lambda x: (x,), difference))
     
@@ -110,8 +111,13 @@ def main(
                                                         max_sub_length,
                                                         number_not_trivial_class,
                                                         )
-    #for partition in partitions:
-    #    logger.debug(list(map(lambda x: list(map(str, x)), partition)))
+    if not partitions:
+        logger.warning('No partition have been found')
+        logger.debug(f'Parameter:\nnum_partitions: {num_partitions}\nmin_sub_length: {min_sub_length}\nmax_sub_length:{max_sub_length}\nnumber_not_trivial_class:{number_not_trivial_class}')
+        return
+    
+    for partition in partitions:
+        logger.debug(list(map(lambda x: list(map(str, x)), partition)))
         
     # trivial partition first
     trivial_partition = set_of_frozenset([(e, ) for e in edges])

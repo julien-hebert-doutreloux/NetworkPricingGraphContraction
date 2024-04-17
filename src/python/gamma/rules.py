@@ -67,7 +67,7 @@ def make_rules(edges_list:iter, H4:bool=False) -> dict:
             rules.update({elem:set(filter(lambda x: are_compatible(x, elem), sub)) for elem in sub})
             #print(*rules.items(), sep='\n')
             # compatibility rules
-            #print(*find_all_compatible_partition(readable_dict), sep='\n')
+        #print(*readable_rules(rules).items(), sep='\n')
             # python unit_test.py | sed 's/frozenset//g'
     return rules
         
@@ -232,8 +232,16 @@ class Rules(dict):
                             max_len:int,
                             number_not_trivial_class:int,
                             ):
-        if max_len == -1:
+        if min_len < 2:
+            logger.warning("min_len<2")
+            return
+            
+        if max_len == 0:
             max_len = len(self)
+            print(self)
+        if number_not_trivial_class == 0:
+            number_not_trivial_class = -1
+        
             
         if min_len>max_len:
             logger.warning("min_len>max_len")
@@ -242,13 +250,15 @@ class Rules(dict):
         generators, max_gen = self.approx_max_clique(return_all=True)
         
         partitions = []
+        full_set = set(self)
+        
         for _ in range(number_or_partition):
             partition = []
             union = set()
             n_not_trivial_class = 0
             attempt = 0
             
-            while union != set(self) and attempt < 1000:
+            while union != full_set and attempt < 1000:
                 attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
                 #input(f"random_generator = {random_generator}")
@@ -256,6 +266,7 @@ class Rules(dict):
                 if random_generator:
                     max_length = min(len(self) - len(union), len(random_generator), max_len)
                     min_length = max(1, min(min_len, max_length))
+                    
                     random_size = random.randint(min_length, max_length)
                     random_subset = set(random.sample(list(random_generator), random_size))
                         
@@ -270,22 +281,27 @@ class Rules(dict):
                         random_generator -= random_subset
                         
                         union |= random_subset
+                        
                 
                 if n_not_trivial_class == number_not_trivial_class:
-                    partition += [set((x,)) for x in set(self)-union]
-                    union = set(self)
+                    partition += [set((x,)) for x in full_set-union]
+                    union = full_set
+            
+            
+            
+            if union != full_set:
+                partition += [set((x,)) for x in full_set-union]
+                union = full_set
+                
                        
               
-            if n_not_trivial_class == number_not_trivial_class:
-                if union == set(self):
-                    partition = set_of_frozenset(partition)
-                    if not partition in partitions:
-                    
-                        #length = len(set(chain.from_iterable(partition)))
-                        #readable_partition = list(map(lambda x: list(map(str, x)), partition))
-                        #logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
-                        
-                        partitions.append(partition)
-                        partition = []
-        
+            if (n_not_trivial_class == number_not_trivial_class) or (number_not_trivial_class == -1):
+                partition = set_of_frozenset(partition)
+                if not partition in partitions:
+                    #length = len(set(chain.from_iterable(partition)))
+                    #readable_partition = list(map(lambda x: list(map(str, x)), partition))
+                    #logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
+                    partitions.append(partition)
+                    partition = []
+    
         return partitions
