@@ -96,9 +96,6 @@ def import_partition(input_file:str):
 
 
 
-
-
-
 def json_compression(id_problem_lt:list, output_file:str):
     # output_file : path/to/output.pkl
     # Write the JSON string to a file

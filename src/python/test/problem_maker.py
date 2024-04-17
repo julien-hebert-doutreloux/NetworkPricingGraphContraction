@@ -10,10 +10,10 @@ logger = config.log(**PARAMETERS['logger'])
 
 @timing_decorator
 def main(
-        num_partitions:int=1000,
-        min_sub_length:int=3,
-        max_sub_length:int=3,
-        number_not_trivial_class:int=3,
+        num_partitions:int,
+        min_sub_length:int,
+        max_sub_length:int,
+        number_not_trivial_class:int,
         H4:bool=False,
         batch_size:int=1000,
         input_file:str='',
@@ -64,10 +64,11 @@ def main(
         for edge in edges:
             # every tolled arc starting cost is 1
             if edge.toll:
-                edge.cost = 1
+                edge.cost = max(int(round(edge.cost, 0)), 1)
+                
             # only integer cost
             else:
-                edge.cost = max(round(edge.cost, 0), 1)
+                edge.cost = max(int(round(edge.cost, 0)), 1)
            
         # Problems structures
         #[...,
@@ -80,12 +81,16 @@ def main(
         
         # only integer demand
         for problem in problems:
-            problem['demand'] = max(round(problem['demand'], 0), 1)
+            problem['demand'] = max(int(round(problem['demand'], 0)), 1)
             
     preprocessing()
     
     # Compatibility graph extraction
-    compatibility_graph = make_rules(edges,H4)
+    compatibility_graph = make_rules(edges, H4)
+    if all(map(lambda x: x == set(), compatibility_graph.values())):
+        logger.warning(f"Only the trivial partition is feasible")
+        return
+        
     logger.debug(f"Number of tolled edge : {len(compatibility_graph)}")
     minimal = all(map(lambda v: len(v)>1, compatibility_graph.values()))
     
@@ -113,7 +118,8 @@ def main(
     if trivial_partition in partitions:
         partitions.remove(trivial_partition)
     partitions.insert(0, trivial_partition)
-    #logger.debug(len(partitions))
+    
+    logger.debug(f"number of partition found: {len(partitions)}")
     transformations_array = []
     problems_array = []
     for i, partition in enumerate(partitions, start=0):
@@ -133,6 +139,7 @@ def main(
         number = "%06d" % i
         #logger.debug(number)
         filename = f"{number}-NPP-{base_filename}"
+        id_ = f"{number}-{min_sub_length}-{max_sub_length}-{number_not_trivial_class}-{int(H4)}-NPP-{base_filename}"
         if batch_size == 1 or i == 0:
             
             # indivudual export
@@ -141,19 +148,21 @@ def main(
             tranformation_file = to_json(g_gamma.transformation_to_dict(), export_folder_transformations, filename)
             
             logger.info(f'NPP JSON file created : {problem_file}')
-            logger.info(f'Transformation PKL file created : {tranformation_file}')
+            logger.info(f'Transformation JSON file created : {tranformation_file}')
         
         else:
             if (i%(batch_size+1))==0 or i==1:
                 transformations_array.append([])
                 problems_array.append([])
                 
+            logger.debug(f"created problem id_ {id_}")
+            
             problems_array[-1].append(
-                                    (filename, g_gamma.image_problem_to_dict())
+                                    (id_, g_gamma.image_problem_to_dict())
                                 )
             
             transformations_array[-1].append(
-                                        (filename, g_gamma.transformation_to_dict())
+                                        (id_, g_gamma.transformation_to_dict())
                                     )
     
     if batch_size > 1:
@@ -171,6 +180,55 @@ def main(
             
             logger.info(f'NPP batch PKL file created : {problems_file}')
             logger.info(f'Transformation batch PKL file created : {transformations_file}')
+            
+            
+            
+            
+def merging_batch(input_folder, super_batch_size=10, erease=True):
+
+    ### File-Folder logic
+    ### ...
+    
+    if super_batch_size == -1:
+        super_batch_size = 10**6
+        
+    if super_batch_size <=1:
+        logger.warning(f"Invalid super_batch_size : {super_batch_size}")
+        
+        
+    combined_data = {}
+    i = 1
+    j = 1
+    # iterate over all PKL files in the directory
+    for filename in os.listdir(input_folder):
+        if filename.endswith('.pkl'):
+        
+            if i%(super_batch_size+1) == 0 or i==1:
+                number = "%06d" % j
+                
+                if i>1:
+                    output_file = os.path.join(input_folder, f'{number}-super_batch.pkl')
+                    with open(output_file, 'wb') as f:
+                        # save the combined data to a new PKL file
+                        pickle.dump(combined_data, f)
+                        logger.info(f"super_batch file has been created : {output_file}")
+                        
+                    j+=1
+                combined_data = {}
+            input_file = os.path.join(input_folder, filename)
+            with open(input_file, 'rb') as f:
+                data = pickle.load(f)
+                combined_data.update(data)
+            i+=1
+            
+            if erease:
+                os.remove(input_file)
+
+                
+    
                     
+            
+
+    
 # number in the filename
 #batch_number, batch_size, min_sub_len, max_sub_len, number_not_trivial_class, H4

@@ -11,15 +11,18 @@ def make_rules(edges_list:iter, H4:bool=False) -> dict:
     # H3 : Tolled element equivalence class hypothesis (True by default)
     # H4 : Local element only (False by default)
     
-    H1, H2, H3 = True, False, True
-    
+    H1, H2, H3 = True, True, True
+    #for edge in edges_list:
+    #    if edge.toll:
+    #        logger.debug(f"{edge.src}, {edge.dst}, {edge.label}, {edge.cost}, {edge.toll}")
+    #input()
     def H1_condition(edge1:Edge, edge2:Edge) -> bool:
         # Not continuous
         return (edge1.dst != edge2.src) and (edge2.dst != edge1.src)
         
     def H2_condition(edge1:Edge, edge2:Edge) -> bool:
         # equal price
-        return (edge1.cost != edge2.cost)
+        return (edge1.cost == edge2.cost)
         
     def H3_condition(edge1:Edge, edge2:Edge) -> bool:
         # =Tolled
@@ -59,11 +62,11 @@ def make_rules(edges_list:iter, H4:bool=False) -> dict:
         #print(*[str(set(map(str, cls))) for cls in prepartition], sep='\n')
         # s'il y a plusieurs element non vide dans prepartition, il faudra faire toutes les combinaisons entre les partitions possibles
         # de chaque element de prepartition (par default, prepartition contient un element sous les hypotheses 1,2,3)
+        rules = {}
         for sub in prepartition:
-            rules = {elem:set(filter(lambda x: are_compatible(x, elem), sub)) for elem in sub}
-            
+            rules.update({elem:set(filter(lambda x: are_compatible(x, elem), sub)) for elem in sub})
+            #print(*rules.items(), sep='\n')
             # compatibility rules
-            #print(readable_dict,sep='\n')
             #print(*find_all_compatible_partition(readable_dict), sep='\n')
             # python unit_test.py | sed 's/frozenset//g'
     return rules
@@ -220,7 +223,7 @@ class Rules(dict):
             
         if return_all:
             return unions, max_clique
-            
+        
         return max_clique
         
     def random_partition(self,
@@ -245,7 +248,7 @@ class Rules(dict):
             n_not_trivial_class = 0
             attempt = 0
             
-            while union != set(self) and attempt < 25:
+            while union != set(self) and attempt < 1000:
                 attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
                 #input(f"random_generator = {random_generator}")

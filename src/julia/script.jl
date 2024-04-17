@@ -43,7 +43,8 @@ function import_problem_from_file(file::AbstractString)
     prob = read_problem(file)
     
 	# Get the file name without the extension
-	id = splitext(basename(file_name))[1]
+	id = splitext(basename(file))[1]
+	#println(id)
 	return prob, id
 end
 
@@ -77,7 +78,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString)
 
     # Extract the result
     tvals = value.(model[:t])  # The prices t
-	println(tvals)
+	#println(tvals)
     # Get the objective value
     obj_value = objective_value(model)
 
@@ -112,8 +113,8 @@ function main(args)
 		# input file : json
 		# output file: json
 		try
-	    	result = solve_and_get_values(import_problem_from_file(input_file))
-    		save_result_individual(result, output_file)
+			result = solve_and_get_values(import_problem_from_file(input_file)...)
+			save_result_individual(result, output_file)
 	    catch
 			println("An error occurred.", input_file)
 		end
@@ -153,10 +154,4 @@ end
 # $ julia script.jl '/path/to/existing_file.json' '/path/to/future_output.json'
 # or
 # $ julia script.jl '/path/to/existing_file.csv'
-
-
-
-
-
-
 

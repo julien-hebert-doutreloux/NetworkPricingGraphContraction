@@ -153,7 +153,6 @@ def result_post_process(
             
         g_gamma = GammaNPP.from_transformation(nodes, edges, transformations, problems=problems) 
         to_export = {**processing(g_gamma, result), **{'id': r_name}}
-    
     with open(output_file, 'wb') as f:
         pickle.dump(to_export, f)
     

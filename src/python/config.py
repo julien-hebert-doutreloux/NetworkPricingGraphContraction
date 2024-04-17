@@ -141,7 +141,7 @@ def unit_test_examples(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.examples.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -170,8 +170,8 @@ def unit_test_unit_test(name):
     parameters['logger'] = {}
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test.log')
     parameters['logger']['logger_name'] = name
-    parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -187,8 +187,8 @@ def unit_test_unit_test_common(name):
     parameters['logger'] = {}
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_common.log')
     parameters['logger']['logger_name'] = name
-    parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -202,8 +202,8 @@ def unit_test_unit_test_gamma(name):
     parameters['logger'] = {}
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_gamma.log')
     parameters['logger']['logger_name'] = name
-    parameters['logger']['logger_level'] = logging.DEBUG
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -218,7 +218,7 @@ def unit_test_unit_test_graph(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_graph.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -233,7 +233,7 @@ def unit_test_unit_test_partition(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_partition.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -248,7 +248,7 @@ def unit_test_unit_test_plot_graph(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_plot_graph.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -263,7 +263,7 @@ def unit_test_unit_test_rules(name):
     parameters['logger']['filename'] = os.path.join('.', 'log', 'unit_test.unit_test_rules.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.DEBUG
+    parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.ERROR
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')    
     # OTHER PARAMETERS
@@ -327,26 +327,26 @@ def test_compute_grid(name):
     
     parameters['probleme_generation_combinaison'] = [
                         # num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size
-                        (1000, 2, 2, 1, False, 1000),
-                        (1000, 2, 2, 2, False, 1000),
-                        (1000, 2, 2, 3, False, 1000),
-                        (1000, 2, 2, 4, False, 1000),
-                        (1000, 2, 2, 5, False, 1000),
-                        (1000, 3, 3, 1, False, 1000),
-                        (1000, 3, 3, 2, False, 1000),
-                        (1000, 4, 4, 1, False, 1000),
-                        (1000, 5, 5, 1, False, 1000),
-                        (1000, 2, 5, 5, False, 1000),
-                        (1000, 2, 2, 1, True, 1000),
-                        (1000, 2, 2, 2, True, 1000),
-                        (1000, 2, 2, 3, True, 1000),
-                        (1000, 2, 2, 4, True, 1000),
-                        (1000, 2, 2, 5, True, 1000),
-                        (1000, 3, 3, 1, True, 1000),
-                        (1000, 3, 3, 2, True, 1000),
-                        (1000, 4, 4, 1, True, 1000),
-                        (1000, 5, 5, 1, True, 1000),
-                        (1000, 2, 5, 5, True, 1000),
+                        (100, 2, 2, 1, False, 100),
+                        (100, 2, 2, 2, False, 100),
+                        (100, 2, 2, 3, False, 100),
+                        (100, 2, 2, 4, False, 100),
+                        (100, 2, 2, 5, False, 100),
+                        (100, 3, 3, 1, False, 100),
+                        (100, 3, 3, 2, False, 100),
+                        (100, 4, 4, 1, False, 100),
+                        (100, 5, 5, 1, False, 100),
+                        (100, 2, 5, 5, False, 100),
+                        (100, 2, 2, 1, True, 100),
+                        (100, 2, 2, 2, True, 100),
+                        (100, 2, 2, 3, True, 100),
+                        (100, 2, 2, 4, True, 100),
+                        (100, 2, 2, 5, True, 100),
+                        (100, 3, 3, 1, True, 100),
+                        (100, 3, 3, 2, True, 100),
+                        (100, 4, 4, 1, True, 100),
+                        (100, 5, 5, 1, True, 100),
+                        (100, 2, 5, 5, True, 100),
                     ]
     return parameters
 

@@ -25,7 +25,6 @@ def compute_grid_problem_generation(
         The path to the output file containing the generated command list.
     """
     
-    
     # Logic for file and folder existence                   
     # input_folder ? no -> return error  
     # export_folder_grid ? no -> create folder          
@@ -33,6 +32,8 @@ def compute_grid_problem_generation(
     # export_folder_transformations ? no -> create folder
     param_combinaison = PARAMETERS['probleme_generation_combinaison']
     command_list = []
+    
+    
     # problem_making
     for root, dirs, files in os.walk(input_folder):
         for filename in files:
@@ -79,7 +80,7 @@ def compute_grid_julia(
                         export_folder_grid='',
                         export_folder_results='',
                         output_filename='',
-                            ):
+                        ):
                             
     # Logic for file and folder existence                   
     # input_folder ? no -> return error  
