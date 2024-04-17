@@ -61,15 +61,32 @@ def compute_grid_problem_generation(
                                 
                     command_list.append(command)
     
-    if not output_filename.endswith('.txt'):
-        output_filename += '.txt'
+    if not output_filename.endswith('.sh'):
+        output_filename += '.sh'
         
     output_file = os.path.join(export_folder_grid, output_filename)
     with open(output_file, 'w') as f:
+        preamble = [
+            "#!/bin/bash",
+            "#SBATCH --cpus-per-task=1",
+            "#SBATCH --mem=1G",
+            "#SBATCH --time=1:00:00",
+            "#SBATCH --output=/dev/null",
+            "#SBATCH --partition=optimum",
+            "module load python/3.12.0",
+            "source venev/bin/activate",
+            "module load julia",
+            "module load gurobi"
+        ]
+        
+        for e in preamble:
+            f.write(e+'\n')
+
         for command in command_list:
             f.write(command)
             f.write('\n')
-            
+        f.write('sleep 60')
+        
     logger.info(f"Compute grid exported : {output_file}")
         
     return output_file
@@ -112,11 +129,27 @@ def compute_grid_julia(
     
 
     # Exporting the compute grid
-    if not output_filename.endswith('.txt'):
-        output_filename += '.txt'
+    if not output_filename.endswith('.sh'):
+        output_filename += '.sh'
         
     output_file = os.path.join(export_folder_grid, output_filename)
     with open(output_file, 'w') as f:
+        preamble = [
+                "#!/bin/bash",
+                "#SBATCH --cpus-per-task=1",
+                "#SBATCH --mem=1G",
+                "#SBATCH --time=1:00:00",
+                "#SBATCH --output=/dev/null",
+                "#SBATCH --partition=optimum",
+                "module load python/3.12.0",
+                "source venev/bin/activate",
+                "module load julia",
+                "module load gurobi"
+            ]
+        
+        for e in preamble:
+            f.write(e+'\n')
+
         for command in command_list:
             f.write(command)
             f.write('\n')
