@@ -1,5 +1,5 @@
 from preamble.preamble import *
-from gamma.common import npp_from_json
+from gamma.common import npp_from_json, npp_from_dict
 from gamma.gamma import Function, Algebra, Gamma, GammaNPP
 from test.shortest_path_rewind import shortest_path_rewind 
 
@@ -7,158 +7,117 @@ PARAMETERS = config.test_result_processing(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 
-def result_post_process(
-            original_graph_file:str,
-            transformations_file:str,
-            results_file:str,
-            export_folder:str='',
-            output_filename:str='',
-            ):
-            
-    """
-    Process the results of a graph transformation before and after the transformation.
-    Args:
-        original_graph_file (str)    : The file path of the graph before the transformation.
-        transformation_file (str)    : The file path of the transformation file.
-        results_file (str)           : The file path of the graph after the transformation.
-        export_folder (str)          : The folder path to export the results. Defaults to ''.
-        filename (str)               : The filename to use for the exported results. Defaults to ''.
-    """   
-    def processing(
-                    g_gamma:GammaNPP,
-                    result:dict
-                    ) -> dict:
+def post_process_result(
+                        nodes,
+                        edges,
+                        problems,
+                        transformation:dict,
+                        result:dict,
+                        **parameter_kwargs
+                    ):
     
-        tvals = result['tvals']
-        flow_ = result['flow']
-        flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
-        
-        if set(flow) != set(range(1, len(g_gamma)+1)):
-            logger.debug('Flow result incomplete. NaN completion')
-                
-            diff = set(range(1, len(g_gamma)+1)) - set(flow)
-            
-            for i in sorted(diff):
-                flow[i] = np.nan
-            
-        # function graph bridge
-        #T_A       ⊆     A  ---gamma---> A_      ⊇       T_A_      
-        #|                |              |                 |
-        #phi_T_A          phi_A         phi_A_            phi_T_A_
-        #|                |              |                 |
-        #V                V              V                 V
-        #I_T_A --alpha--> I_A --conv_1--> I_A_  <---beta--- I_T_A_
-        #||                                                    A
-        #||                                                   ||
-        #-----------------------conv_2------------------------
-        
-        # (i) based on the index from I_T_AV
-        edge_av = lambda i : g_gamma.alpha(i) 
-        opt_val_av = lambda i : max(1, tvals_0[i-1]) # index correction and value correction 
-        opt_flow_av = lambda i : flow_0[i] 
-        
-        edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
-        opt_val_ap = lambda i : max(1, tvals[g_gamma.conv2(i)-1])  # index correction and value correction 
-        opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
-        
-        reduce_row_fun = (edge_av, edge_ap, opt_val_ap, opt_flow_ap)
-        reduce_row = lambda i: [fun(i) for fun in reduce_row_fun]
-        data = [reduce_row(i) for i in g_gamma.phi_T_A.image]
-        
-        # tolled edges
-        headers = ('edge', '(edge)', '(opt. value)', '(opt. flow)')
-        logger.debug('\n'+tabulate(data, headers=headers))
-        
-        
-        # other result
-        rewind_optimal, rewind_time = shortest_path_rewind(
-                                                            g_gamma,
-                                                            result
-                                                            )
-        compression_factors = {}
-        compression_factors[1] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
-        compression_factors[2] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
-        compression_factors[3] = compression_factors[1]*compression_factors[2]
-        compression_factors[4] = len(g_gamma.domain)/len(g_gamma.image)
-        
-        for i in range(5, 10):
-            compression_factors[i] = 2**compression_factors[i-4]
-        
-        return {
-                    'edge':data,
-                    'obj_value':result['obj_value'],
-                    'preprocess_time':result['preprocess_time'],
-                    'solve_time':result['solve_time'],
-                    'n_vertex':len(g_gamma.A_),
-                    'n_edge':len(g_gamma.V_),
-                    'compression_factors':compression_factors,
-                    'rewind_optimal':rewind_optimal,
-                    'rewind_time':rewind_time,
-                    #'n_simple_path_for_od':0,
-                    }
-                    
-    output_file = os.path.join(export_folder, output_filename)
-            
-    # Check if the file does not exists
-    if not os.path.isfile(original_graph_file):
-        logger.warning(f"The specified file does not exists: {original_graph_file}")
-        return
-        
-    # Check if the file does not exists
-    if not os.path.isfile(transformations_file):
-        logger.warning(f"The specified file does not exists: {transformations_file}")
-        return
-        
-    # Check if the file does not exists
-    if not os.path.isfile(results_file):
-        logger.warning(f"The specified file does not exists: {results_file}")
-        return
+    g_gamma = GammaNPP.from_transformation(nodes, edges, transformation, problems=problems)
     
-    # Check if the directory exists
-    if not os.path.isdir(export_folder):
-        logger.warning(f"The specified directory does not exist: {export_folder}")
-        return
+    tvals = result['tvals']
+    flow_ = result['flow']
+    flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
+    
+    if set(flow) != set(range(1, len(g_gamma)+1)):
+        logger.warning('Flow result incomplete. NaN completion')
+            
+        diff = set(range(1, len(g_gamma)+1)) - set(flow)
         
-    # Check if the file already exists
-    if os.path.isfile(output_file):
-        logger.info(f"The specified file already exists: {output_file}")
-    
-    # import original
-    nodes, edges, problems = npp_from_json(original_graph_file)
-    
-    if transformations_file.endswith('.pkl'):
-        # MULTIPLE CASE
+        for i in sorted(diff):
+            flow[i] = np.nan
         
-        with open(results_file, 'r') as f:
-            results = json.load(f)
-            npp_list = list(map(lambda x: x[0], results))
-            
-        with open(transformations_file, 'r') as f:
-            transformations = pickle.load(f)
-            # only consider transformation with successful result from julia  
-            transformations = list(filter(lambda x: x[0] in npp_list, transformations))
-            
-            
-        for ((t_name, transformation) , (r_name, result)) in zip(transformations, results):
-            to_export = []
-            if t_name == r_name:
-                g_gamma = GammaNPP.from_transformation(nodes, edges, transformation, problems=problems) 
-                
-                to_export.append({**processing(g_gamma, result), **{'id': r_name}})
+    # function graph bridge
+    #T_A       ⊆     A  ---gamma---> A_      ⊇       T_A_      
+    #|                |              |                 |
+    #phi_T_A          phi_A         phi_A_            phi_T_A_
+    #|                |              |                 |
+    #V                V              V                 V
+    #I_T_A --alpha--> I_A --conv_1--> I_A_  <---beta--- I_T_A_
+    #||                                                    A
+    #||                                                   ||
+    #-----------------------conv_2------------------------
     
-    else:
-        # SINGLE CASE
-        with open(transformations_file, 'r') as f:
-            transformations = json.load(f)
-            
-        g_gamma = GammaNPP.from_transformation(nodes, edges, transformations, problems=problems) 
-        to_export = {**processing(g_gamma, result), **{'id': r_name}}
-    with open(output_file, 'wb') as f:
-        pickle.dump(to_export, f)
+    # (i) based on the index from I_T_AV
+    edge_av = lambda i : g_gamma.alpha(i) 
+    opt_val_av = lambda i : max(1, tvals_0[i-1]) # index correction and value correction 
+    opt_flow_av = lambda i : flow_0[i] 
     
-    return output_file
+    edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
+    opt_val_ap = lambda i : max(1, tvals[g_gamma.conv2(i)-1])  # index correction and value correction 
+    opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
+    
+    reduce_row_fun = (edge_av, edge_ap, opt_val_ap, opt_flow_ap)
+    reduce_row = lambda i: [fun(i) for fun in reduce_row_fun]
+    data = [reduce_row(i) for i in g_gamma.phi_T_A.image]
+    
+    # tolled edges
+    headers = ('edge', '(edge)', '(opt. value)', '(opt. flow)')
+    #logger.debug('\n'+tabulate(data, headers=headers))
+    
+    
+    # other result
+    compression_factors = {}
+    compression_factors[1] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
+    compression_factors[2] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
+    compression_factors[3] = compression_factors[1]*compression_factors[2]
+    compression_factors[4] = len(g_gamma.domain)/len(g_gamma.image)
+    for i in range(5, 10):
+        compression_factors[i] = 2**compression_factors[i-4]
+    
+    rewind_optimal_2, rewind_time_2 = shortest_path_rewind(g_gamma, result, option=2)
+    rewind_optimal_1, rewind_time_1 = shortest_path_rewind(g_gamma, result, option=1)
+    
+    
+    return {
+                'edge':data,
+                'obj_value':result['obj_value'],
+                'preprocess_time':result['preprocess_time'],
+                'solve_time':result['solve_time'],
+                'n_vertex':len(g_gamma.A_),
+                'n_edge':len(g_gamma.V_),
+                'compression_factors':compression_factors,
+                'rewind_optimal_1':rewind_optimal_1,
+                'rewind_time_1':rewind_time_1,
+                'rewind_optimal_2':rewind_optimal_2,
+                'rewind_time_2':rewind_time_2,
+                **parameter_kwargs
+                #'n_simple_path_for_od':0,
+                }
+    
+    
 
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 def result_post_process_csv_batch(input_file:str):
     data = pd.read_csv(input_file)

@@ -7,3 +7,4 @@ more-itertools
 tabulate
 tqdm
 seaborn
+ipykernel

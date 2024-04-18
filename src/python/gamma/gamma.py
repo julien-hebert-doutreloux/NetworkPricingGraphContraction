@@ -48,6 +48,8 @@ class Function(dict):
             logger.exception(f"{x} does not exist in the domain")    
         else:
             return image
+            
+            
     def preimage(self, y):
         """
         Compute the preimage of y under the function.
@@ -330,7 +332,6 @@ class Algebra(Function):
         
         return result
         
-        
     def summary(self):
         # Before transformation
         nodes = sorted(self.V, key=self.phi_V)
@@ -426,16 +427,16 @@ class Gamma(Algebra):
         
         A = self.A_ if graph_image else self.A
         phi = self.phi_A_ if graph_image else self.phi_A
-        
+        #A = sorted(A, key=lambda x: int(x.label))
         edge_format = lambda e: (str(e.src), str(e.dst), str(phi(e)), e.cost, e.toll)
-        for edge in A:
         
+        for edge in A:
             if formatted_edge: 
-                u, v, key, cost, toll = edge_format(edge)
+                u, v, key_, cost, toll = edge_format(edge)
             else:
-                u, v, key, cost, toll = edge.src, edge.dst, phi(edge), edge.cost, edge.toll
-            
-            G.add_edge(u, v, key=key, **{'cost': cost, 'toll': toll})
+                u, v, key_, cost, toll = edge.src, edge.dst, phi(edge), edge.cost, edge.toll
+                
+            G.add_edge(u, v, key=key_, **{'cost': cost, 'toll': toll})
 
         return G
 
@@ -503,6 +504,7 @@ class GammaNPP(Gamma):
             
         return json_dict
         
+    
 if __name__ == "__main__": 
     pass
         

@@ -45,7 +45,8 @@ import Pkg; Pkg.add("BenchmarkTools")
 ```bash
 julia
 ]
-add https://github.com/minhcly95/NetPricing.jl
+add https://github.com/minhcly95/NetPricing.jl  
+add https://github.com/julien-hebert-doutreloux/NetPricing.jl
 ```
 ### JuMP
 ```bash  

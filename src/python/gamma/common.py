@@ -9,18 +9,8 @@ def set_of_frozenset(iterable):
     
     
 ## Tested
-def npp_from_json(input_file):
-    # Pont entre le code de Ming Bui et la transformation
-    
-    # Verify if the file exist
-    if not os.path.isfile(input_file):
-        print(f"Error: The specified file does not exist: {input_file}")
-        return
-        
-    with open(input_file, 'r') as json_file:
-        loaded_data = json.load(json_file)
-
-    json_problem = loaded_data['problem'] 
+def npp_from_dict(npp_dict:dict):
+    json_problem = npp_dict['problem'] 
     
     # create node
     node_dict = {i : Node(i) for i in range(1, json_problem['V']+1)}
@@ -41,6 +31,21 @@ def npp_from_json(input_file):
         problems.append(k)
         
     return nodes, edges, problems
+    
+def npp_from_json(input_file:str):
+    # Pont entre le code de Ming Bui et la transformation
+    
+    # Verify if the file exist
+    if not os.path.isfile(input_file):
+        print(f"Error: The specified file does not exist: {input_file}")
+        return
+        
+    with open(input_file, 'r') as json_file:
+        loaded_data = json.load(json_file)
+        
+    return npp_from_dict(loaded_data)
+    
+
 
 ## Tested
 def to_json(

@@ -36,6 +36,10 @@ class Edge:
         self.cost = cost
         self.toll = toll
         self.label = str(label)
+    
+    
+    def copy(self):
+        return Edge(self.src, self.dst, self.label, self.cost, self.toll)
         
     def __hash__(self):
         return hash((self.src, self.dst, self.label, self.cost, self.toll))

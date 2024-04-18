@@ -2700,37 +2700,169 @@ def option_5_2(subparsers_):
                                         
                                         
                                         
-                                        
-# Grille de probleme
-python src/python/main.py option3 3-1 \
---input_directory './data/from_github/problems/progressive-2/o45-04.json' \
---export_directory_grid './data/generated/' \
---export_directory_graphs './data/generated/graphs/progressive-2' \
---export_directory_transformations './data/generated/transformations/progressive-2' \
---output_filename 'compute_grid_problem_generation_o45-04'   
-
-# Execution de la grille
-python src/python/main.py option4 --input_file './data/generated/compute_grid_problem_generation_o45-04.sh' --n_core 1
-sbatch './data/generated/compute_grid_problem_generation_o45-04.sh'
-
-# Uniformisation des batchs
-python src/python/main.py option3 3-2 \
---input_directory_graphs './data/generated/graphs/' \
---input_directory_transformations './data/generated/transformations/' \
---export_directory_grid './data/generated/' \
---output_filename 'compute_grid_uniform_batches_o45-04'
-
-# Execution de la grille
-python src/python/main.py option4 --input_file './data/generated/compute_grid_uniform_batches_o45-04.sh' --n_core 1
-sbatch './data/generated/compute_grid_uniform_batches_o45-04.sh'
 
 
-# Creation des grilles de calcul independant pour toutes les batches
-python src/python/main.py option3 3-3 \
---input_directory_graphs './data/generated/graphs/' \
---export_directory_grid './data/generated/TO_COMPUTE/' \
---export_directory_results './data/generated/results/' \
---output_filename ''
+for i in {1..14}; do
+  filename="./data/generated/TO_COMPUTE/$(printf "%06d" $i)-super_batch.sh"
+  echo "$filename"
+  sbatch "$filename"
+done
 
-for i in {000001..000014}; do python $(printf "%06d" $i)-super_batch.sh; done
+#python src/python/main.py option4 --input_file './data/generated/compute_grid_problem_generation_o45-04.sh' --n_core 1
+#python src/python/main.py option4 --input_file './data/generated/compute_grid_uniform_batches_o45-04.sh' --n_core 1
 
+
+# Check if the file does not exists
+    if not os.path.isfile(original_graph_file):
+        logger.warning(f"The specified file does not exists: {original_graph_file}")
+        return
+        
+    # Check if the file does not exists
+    if not os.path.isfile(transformations_file):
+        logger.warning(f"The specified file does not exists: {transformations_file}")
+        return
+        
+    # Check if the file does not exists
+    if not os.path.isfile(results_file):
+        logger.warning(f"The specified file does not exists: {results_file}")
+        return
+    
+    # Check if the directory exists
+    if not os.path.isdir(export_folder):
+        logger.warning(f"The specified directory does not exist: {export_folder}")
+        return
+        
+    # Check if the file already exists
+    if os.path.isfile(output_file):
+        logger.info(f"The specified file already exists: {output_file}")
+        
+        
+def processing(g_gamma:GammaNPP, result):
+
+    tvals = result['tvals']
+    flow_ = result['flow']
+    flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
+    
+    if set(flow) != set(range(1, len(g_gamma)+1)):
+        logger.debug('Flow result incomplete. NaN completion')
+            
+        diff = set(range(1, len(g_gamma)+1)) - set(flow)
+        
+        for i in sorted(diff):
+            flow[i] = np.nan
+        
+    # function graph bridge
+    #T_A       ⊆     A  ---gamma---> A_      ⊇       T_A_      
+    #|                |              |                 |
+    #phi_T_A          phi_A         phi_A_            phi_T_A_
+    #|                |              |                 |
+    #V                V              V                 V
+    #I_T_A --alpha--> I_A --conv_1--> I_A_  <---beta--- I_T_A_
+    #||                                                    A
+    #||                                                   ||
+    #-----------------------conv_2------------------------
+    
+    # (i) based on the index from I_T_AV
+    edge_av = lambda i : g_gamma.alpha(i) 
+    opt_val_av = lambda i : max(1, tvals_0[i-1]) # index correction and value correction 
+    opt_flow_av = lambda i : flow_0[i] 
+    
+    edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
+    opt_val_ap = lambda i : max(1, tvals[g_gamma.conv2(i)-1])  # index correction and value correction 
+    opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
+    
+    reduce_row_fun = (edge_av, edge_ap, opt_val_ap, opt_flow_ap)
+    reduce_row = lambda i: [fun(i) for fun in reduce_row_fun]
+    data = [reduce_row(i) for i in g_gamma.phi_T_A.image]
+    
+    # tolled edges
+    headers = ('edge', '(edge)', '(opt. value)', '(opt. flow)')
+    logger.debug('\n'+tabulate(data, headers=headers))
+    
+    
+    # other result
+    rewind_optimal, rewind_time = shortest_path_rewind(
+                                                        g_gamma,
+                                                        result
+                                                        )
+    compression_factors = {}
+    compression_factors[1] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
+    compression_factors[2] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
+    compression_factors[3] = compression_factors[1]*compression_factors[2]
+    compression_factors[4] = len(g_gamma.domain)/len(g_gamma.image)
+    
+    for i in range(5, 10):
+        compression_factors[i] = 2**compression_factors[i-4]
+    
+    return {
+                'edge':data,
+                'obj_value':result['obj_value'],
+                'preprocess_time':result['preprocess_time'],
+                'solve_time':result['solve_time'],
+                'n_vertex':len(g_gamma.A_),
+                'n_edge':len(g_gamma.V_),
+                'compression_factors':compression_factors,
+                'rewind_optimal':rewind_optimal,
+                'rewind_time':rewind_time,
+                'min_sub_length':,
+                'max_sub_length':,
+                'number_not_trivial_class':,
+                'H4':
+                #'n_simple_path_for_od':0,
+                }
+                    
+                    
+                    
+def result_post_process(
+            original_graph:GammaNPP,
+            transformation,
+            results,
+            ):
+            
+    """
+    Process the results of a graph transformation before and after the transformation.
+    Args:
+        original_graph    : The file path of the graph before the transformation.
+        transformation    : The file path of the transformation file.
+        results           : The file path of the graph after the transformation.
+    """   
+    
+                    
+    output_file = os.path.join(export_folder, output_filename)
+            
+    
+    
+    # import original
+    nodes, edges, problems = npp_from_json(original_graph_file)
+    
+    if transformations_file.endswith('.pkl'):
+        # MULTIPLE CASE
+        
+        with open(results_file, 'r') as f:
+            results = json.load(f)
+            npp_list = list(map(lambda x: x[0], results))
+            
+        with open(transformations_file, 'r') as f:
+            transformations = pickle.load(f)
+            # only consider transformation with successful result from julia  
+            transformations = list(filter(lambda x: x[0] in npp_list, transformations))
+            
+            
+        for ((t_name, transformation) , (r_name, result)) in zip(transformations, results):
+            to_export = []
+            if t_name == r_name:
+                g_gamma = GammaNPP.from_transformation(nodes, edges, transformation, problems=problems) 
+                
+                to_export.append({**processing(g_gamma, result), **{'id': r_name}})
+    
+    else:
+        # SINGLE CASE
+        with open(transformations_file, 'r') as f:
+            transformations = json.load(f)
+            
+        g_gamma = GammaNPP.from_transformation(nodes, edges, transformations, problems=problems) 
+        to_export = {**processing(g_gamma, result), **{'id': r_name}}
+    with open(output_file, 'wb') as f:
+        pickle.dump(to_export, f)
+    
+    return output_file

@@ -7,11 +7,7 @@ from menu.menu import *
 from unit_test.unit_test import main as unit_test
 from test.test_approx_max_clique import main as test_approx_max_clique
 
-from test.result_processing import \
-                                result_post_process,\
-                                result_post_process_csv_batch,\
-                                stack_result_into_dataframe,\
-                                stack_result_into_dataframe_batch
+
                                 
 from test.problem_maker import main as problem_maker
 from test.problem_maker import uniform_batch_merging
