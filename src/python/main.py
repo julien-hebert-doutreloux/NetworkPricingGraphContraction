@@ -14,37 +14,24 @@ from test.result_processing import \
                                 stack_result_into_dataframe_batch
                                 
 from test.problem_maker import main as problem_maker
+from test.problem_maker import uniform_batch_merging
 from test.test import main as test
-from test.shortest_path_rewind import shortest_path_rewind 
 from test.compute_grid import \
                                 compute_grid_problem_generation,\
-                                compute_grid_julia,\
-                                compute_grid_process_result_before_vs_after,\
-                                compute_grid_stack_result_into_dataframe
-                                
+                                compute_grid_merging,\
+                                compute_grid_julia
                                 
 
 # Option
 # X 1) unit test
 # X 2) networkx.approximation.max_clique vs my.max_clique performance test
 # 3) compute grid
-# X 3.1) problems generation
-# X 3.2) julia commands individual (1-batch)
+# X 3.1) graphs generation
+# X 3.2) uniform merging
 # X 3.3) julia commands n-batch
-# X 3.4) result process
-# X 3.5) result process n-batch
-# X 3.6) result stacking
-# X 3.7) result stacking n-batch
 # X 4) process compute grid
 # 5) indivual result_process
 # X 5.1) problem generation
-# X 5.2) process raw data
-# X 5.3) process raw data batch
-# X 5.4) stack process data
-# X 5.5) stack process data
-# 6) plot
-#   6.1) plot graph
-#   6.2) ...
 
 
 if '__main__' == __name__:
@@ -106,68 +93,48 @@ if '__main__' == __name__:
         selected_option_3 = args.selected_option_3
         
         if selected_option_3 == '3-1':
-            input_folder = args.input_folder
-            export_folder_grid = args.export_folder_grid
-            export_folder_problems = args.export_folder_problems
-            export_folder_transformations = args.export_folder_transformations
+            input_directory = args.input_directory
+            export_directory_grid = args.export_directory_grid
+            export_directory_graphs = args.export_directory_graphs
+            export_directory_transformations = args.export_directory_transformations
             output_filename = args.output_filename
             
             compute_grid_problem_generation(
-                                            input_folder,
-                                            export_folder_grid,
-                                            export_folder_problems,
-                                            export_folder_transformations,
+                                            input_directory,
+                                            export_directory_grid,
+                                            export_directory_graphs,
+                                            export_directory_transformations,
                                             output_filename,
                                         )
-                                        
-        elif selected_option_3 in ['3-2', '3-3']:
-            input_folder = args.input_folder
-            export_folder_grid = args.export_folder_grid
-            export_folder_results = args.export_folder_results
+        
+        elif selected_option_3 == '3-2':
+            input_directory_graphs = args.input_directory_graphs
+            input_directory_transformations = args.input_directory_transformations
+            export_directory_grid = args.export_directory_grid
             output_filename = args.output_filename
+            
+            compute_grid_merging(
+                                input_directory_graphs,
+                                input_directory_transformations,
+                                export_directory_grid,
+                                output_filename,
+                            )
+                            
+                            
+        elif selected_option_3 == '3-3':
+            input_directory_graphs = args.input_directory_graphs
+            export_directory_grid = args.export_directory_grid
+            export_directory_results = args.export_directory_results
+            output_filename = args.output_filename
+            
             compute_grid_julia(
-                                input_folder,
-                                export_folder_grid,
-                                export_folder_results,
+                                input_directory_graphs,
+                                export_directory_grid,
+                                export_directory_results,
                                 output_filename,
                             )
                                 
-        elif selected_option_3 in ['3-4', '3-5']:
         
-            input_folder_graphs = args.input_folder_graphs
-            input_folder_transformations = args.input_folder_transformations
-            input_folder_results = args.input_folder_results
-            export_folder_grid = args.export_folder_grid
-            export_folder_results = args.export_folder_results
-            output_filename = args.output_filename
-            batch_size = args.batch_size if args.batch_size else 1 
-            
-            compute_grid_process_result_before_vs_after(
-                                                            input_folder_graphs,
-                                                            input_folder_transformations,
-                                                            input_folder_results,
-                                                            export_folder_grid,
-                                                            export_folder_results,
-                                                            output_filename,
-                                                            batch_size,
-                                                        )
-                                                    
-                                                    
-        elif selected_option_3 in ['3-6', '3-7']:
-            input_folder_processed_results=args.input_folder_processed_results
-            export_folder_dataframes = args.export_folder_dataframes
-            export_folder_grid = args.export_folder_grid
-            output_filename = args.output_filename
-            batch_size = args.batch_size if args.batch_size else 1
-            
-            compute_grid_stack_result_into_dataframe(
-                                                        input_folder_processed_results,
-                                                        export_folder_dataframes,
-                                                        export_folder_grid,
-                                                        output_filename,
-                                                        batch_size,
-                                                    )
-                
                                                     
             
     elif selected_option == 'option4':
@@ -217,9 +184,9 @@ if '__main__' == __name__:
             H4 = True if args.H4.lower() == 'true' else False
             batch_size = args.batch_size
             input_file = args.input_file 
-            export_folder_problems = args.export_folder_problems
-            export_folder_transformations = args.export_folder_transformations
-                
+            export_directory_graphs = args.export_directory_graphs
+            export_directory_transformations = args.export_directory_transformations
+            
             problem_maker(
                             num_partitions,
                             min_sub_length,
@@ -228,50 +195,20 @@ if '__main__' == __name__:
                             H4,
                             batch_size,
                             input_file,
-                            export_folder_problems,
-                            export_folder_transformations,
+                            export_directory_graphs,
+                            export_directory_transformations,
                         )
                         
+                        
         elif selected_option_5 == '5-2':
-            before_graph_file = args.before_graph_file
-            after_graph_result_file = args.after_graph_result_file
-            transformation_file = args.transformation_file
-            export_folder_results = args.export_folder_results
-            output_filename = args.output_filename
+            input_directory_graphs = args.input_directory_graphs
+            input_directory_transformations = args.input_directory_transformations
             
-            process_result_before_vs_after(
-                                            before_graph_file,
-                                            after_graph_result_file,
-                                            transformation_file,
-                                            export_folder_results,
-                                            output_filename,
-                                        )
-                                        
-        elif selected_option_5 == '5-3':
-            input_file = args.input_file
+            uniform_batch_merging(
+                                    input_directory_graphs,
+                                    input_directory_transformations
+                                )
             
-            process_result_before_vs_after_batch(
-                                            input_file,
-                                        )
-                                        
-        elif selected_option_5 == '5-4':
-            input_process_result_file_before = args.input_process_result_file_before
-            input_process_result_file_after = args.input_process_result_file_after
-            export_edge_dataframe_file = args.export_edge_dataframe_file
-            export_meta_dataframe_file = args.export_meta_dataframe_file
-            
-            stack_result_into_dataframe(
-                                            input_process_result_file_before,
-                                            input_process_result_file_after,
-                                            export_edge_dataframe_file,
-                                            export_meta_dataframe_file,
-                                        )
-        elif selected_option_5 == '5-5':
-            input_file = args.input_file
-            
-            stack_result_into_dataframe_batch(
-                                            input_file,
-                                        )
                                         
     if selected_option == 'option8':
         test()
@@ -324,7 +261,7 @@ if '__main__' == __name__:
 
 # 1) Generation (home)
 # 1000 transformations ---> 2 MB
-# 1000 npp problems    ---> 4.5 MB
+# 1000 npp graphs    ---> 4.5 MB
 # 1000 results         ---> 4.5 MB
 
 # 2) Computing (RAM)

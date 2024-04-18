@@ -2470,3 +2470,267 @@ def process_result_before_vs_after(
 
 # 6) Process
 #python src/python/main.py option4 --input_file './tmp/compute_grid_stack_result.txt' --n_core 1 --verbose false
+
+
+        
+    def option_3_4(subparsers_): 
+        name = '3-4'
+        description = textwrap.dedent("process result commands")
+        help = 'test.compute_grid.compute_grid_process_result_before_vs_after'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_folder_graphs', type=str, help='input parent folder where are the NPP json file')
+        parser_.add_argument('--input_folder_transformations', type=str, help='input parent folder where are the transformation pkl file')
+        parser_.add_argument('--input_folder_results', type=str, help='input parent folder where are the julia result json file')
+        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--export_folder_results', type=str, required=True, help='parent folder for processed result')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+        
+        
+    def option_3_5(subparsers_): 
+        name = '3-5'
+        description = textwrap.dedent("process result commands batch")
+        help = 'test.compute_grid.compute_grid_process_result_before_vs_after'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_folder_graphs', type=str, help='input parent folder where are the NPP json file')
+        parser_.add_argument('--input_folder_transformations', type=str, help='input parent folder where are the transformation pkl file')
+        parser_.add_argument('--input_folder_results', type=str, help='input parent folder where are the julia result json file')
+        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--export_folder_results', type=str, required=True, help='parent folder for processed result')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size')
+        
+    def option_3_6(subparsers_): 
+        name = '3-6'
+        description = textwrap.dedent("process stacking results commands")
+        help = 'test.compute_grid.stack_result_into_dataframe'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_folder_processed_results', type=str, help='Processed result pkl file path')
+        parser_.add_argument('--export_folder_dataframes', type=str, help='Parent folder to export dataframes')
+        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+        
+        
+    def option_3_7(subparsers_): 
+        name = '3-7'
+        description = textwrap.dedent("process stacking results commands batch")
+        help = 'test.compute_grid.stack_result_into_dataframe'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_folder_processed_results', type=str, help='Processed result pkl file path')
+        parser_.add_argument('--export_folder_dataframes', type=str, help='Parent folder to export dataframes')
+        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size')
+
+def option_5_2(subparsers_): 
+        name = '5-2'
+        description = textwrap.dedent("Process raw result")
+        help = 'test.result_processing.process_result_before_vs_after'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+                                    
+        parser_.add_argument('--before_graph_file', type=str, help='NPP json path of the problem before transformation')
+        parser_.add_argument('--after_graph_result_file', type=str, help='NPP json path after transformation')
+        parser_.add_argument('--transformation_file', type=str, help='transformation pkl file path')
+        parser_.add_argument('--export_folder_results', type=str, required=True, help='folder to export the processed results')
+        parser_.add_argument('--output_filename', type=str, required=True, help='processed result filename')
+        
+    def option_5_3(subparsers_): 
+        name = '5-3'
+        description = textwrap.dedent("Process raw result batch")
+        help = 'test.result_processing.process_result_before_vs_after_batch'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+                                    
+        parser_.add_argument('--input_file', type=str, help='batch file')
+        
+    def option_5_4(subparsers_): 
+        name = '5-4'
+        description = textwrap.dedent("Stacking result")
+        help = 'test.result_processing.stack_result_into_dataframe'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        
+        parser_.add_argument('--input_process_result_file_before', type=str, help='File path to json raw result before transformation')
+        parser_.add_argument('--input_process_result_file_after', type=str, help='File path to json raw result after transformation')
+        parser_.add_argument('--export_edge_dataframe_file', type=str, help='File path to pkl tolled edge dataframe')
+        parser_.add_argument('--export_meta_dataframe_file', type=str, required=True, help='File path to pkl meta dataframe')
+        
+        
+    def option_5_5(subparsers_): 
+        name = '5-5'
+        description = textwrap.dedent("Stacking result batch")
+        help = 'test.result_processing.stack_result_into_dataframe_batch'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+                                    
+        parser_.add_argument('--input_file', type=str, help='batch file')
+
+    option_5_1(subparsers__)
+    option_5_2(subparsers__)
+    option_5_3(subparsers__)
+    option_5_4(subparsers__)
+    option_5_5(subparsers__)
+    
+    
+    elif selected_option_3 in ['3-4', '3-5']:
+        
+            input_folder_graphs = args.input_folder_graphs
+            input_folder_transformations = args.input_folder_transformations
+            input_folder_results = args.input_folder_results
+            export_folder_grid = args.export_folder_grid
+            export_folder_results = args.export_folder_results
+            output_filename = args.output_filename
+            batch_size = args.batch_size if args.batch_size else 1 
+            
+            compute_grid_process_result_before_vs_after(
+                                                            input_folder_graphs,
+                                                            input_folder_transformations,
+                                                            input_folder_results,
+                                                            export_folder_grid,
+                                                            export_folder_results,
+                                                            output_filename,
+                                                            batch_size,
+                                                        )
+                                                    
+                                                    
+        elif selected_option_3 in ['3-6', '3-7']:
+            input_folder_processed_results=args.input_folder_processed_results
+            export_folder_dataframes = args.export_folder_dataframes
+            export_folder_grid = args.export_folder_grid
+            output_filename = args.output_filename
+            batch_size = args.batch_size if args.batch_size else 1
+            
+            compute_grid_stack_result_into_dataframe(
+                                                        input_folder_processed_results,
+                                                        export_folder_dataframes,
+                                                        export_folder_grid,
+                                                        output_filename,
+                                                        batch_size,
+                                                    )
+                
+                
+                elif selected_option_5 == '5-2':
+            before_graph_file = args.before_graph_file
+            after_graph_result_file = args.after_graph_result_file
+            transformation_file = args.transformation_file
+            export_directory_results = args.export_directory_results
+            output_filename = args.output_filename
+            
+            process_result_before_vs_after(
+                                            before_graph_file,
+                                            after_graph_result_file,
+                                            transformation_file,
+                                            export_directory_results,
+                                            output_filename,
+                                        )
+                                        
+        elif selected_option_5 == '5-3':
+            input_file = args.input_file
+            
+            process_result_before_vs_after_batch(
+                                            input_file,
+                                        )
+                                        
+        elif selected_option_5 == '5-4':
+            input_process_result_file_before = args.input_process_result_file_before
+            input_process_result_file_after = args.input_process_result_file_after
+            export_edge_dataframe_file = args.export_edge_dataframe_file
+            export_meta_dataframe_file = args.export_meta_dataframe_file
+            
+            stack_result_into_dataframe(
+                                            input_process_result_file_before,
+                                            input_process_result_file_after,
+                                            export_edge_dataframe_file,
+                                            export_meta_dataframe_file,
+                                        )
+        elif selected_option_5 == '5-5':
+            input_file = args.input_file
+            
+            stack_result_into_dataframe_batch(
+                                            input_file,
+                                        )
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+# Grille de probleme
+python src/python/main.py option3 3-1 \
+--input_directory './data/from_github/problems/progressive-2/o45-04.json' \
+--export_directory_grid './data/generated/' \
+--export_directory_graphs './data/generated/graphs/progressive-2' \
+--export_directory_transformations './data/generated/transformations/progressive-2' \
+--output_filename 'compute_grid_problem_generation_o45-04'   
+
+# Execution de la grille
+python src/python/main.py option4 --input_file './data/generated/compute_grid_problem_generation_o45-04.sh' --n_core 1
+sbatch './data/generated/compute_grid_problem_generation_o45-04.sh'
+
+# Uniformisation des batchs
+python src/python/main.py option3 3-2 \
+--input_directory_graphs './data/generated/graphs/' \
+--input_directory_transformations './data/generated/transformations/' \
+--export_directory_grid './data/generated/' \
+--output_filename 'compute_grid_uniform_batches_o45-04'
+
+# Execution de la grille
+python src/python/main.py option4 --input_file './data/generated/compute_grid_uniform_batches_o45-04.sh' --n_core 1
+sbatch './data/generated/compute_grid_uniform_batches_o45-04.sh'
+
+
+# Creation des grilles de calcul independant pour toutes les batches
+python src/python/main.py option3 3-3 \
+--input_directory_graphs './data/generated/graphs/' \
+--export_directory_grid './data/generated/TO_COMPUTE/' \
+--export_directory_results './data/generated/results/' \
+--output_filename ''
+
+for i in {000001..000014}; do python $(printf "%06d" $i)-super_batch.sh; done
+

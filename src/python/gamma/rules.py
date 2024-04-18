@@ -238,7 +238,7 @@ class Rules(dict):
             
         if max_len == 0:
             max_len = len(self)
-            print(self)
+            
         if number_not_trivial_class == 0:
             number_not_trivial_class = -1
         

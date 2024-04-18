@@ -1,6 +1,6 @@
 from preamble.preamble import *
 from unit_test.tools import timing_decorator, unit_test_decorator
-from test.problem_maker import merging_batch
+from test.problem_maker import uniform_batch_merging
 
 def bell_number(n):
     if n == 0:
@@ -21,8 +21,12 @@ def bell_number(n):
 @timing_decorator
 def main():
 
-    input_folder = './tmp/testing_gen/transformations/j40-07/'
-    super_batch_size = 5
-    erease = True
-    merging_batch(input_folder, super_batch_size, erease)
-   
+    #super_batch_size = 5
+    #erease = True
+    #merging_batch(input_folder, super_batch_size, erease)
+    input_folder_graphs = './tmp/testing_gen/graphs/progressive/j40-07/'
+    input_folder_transformations = './tmp/testing_gen/transformations/progressive/j40-07/'
+    uniform_batch_merging(input_folder_graphs, input_folder_transformations)
+    
+    
+

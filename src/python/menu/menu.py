@@ -58,14 +58,30 @@ def option_3(subparsers_):
                                         formatter_class=argparse.RawTextHelpFormatter,
                                         help=help
                                     )
-        parser_.add_argument('--input_folder', type=str, help='input folder where are the original NPP json file')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='Path to the export compute grid')
-        parser_.add_argument('--export_folder_problems', type=str, required=True, help='Path to the export NPP json')
-        parser_.add_argument('--export_folder_transformations', type=str, required=True, help='Path to the export transformation PKL')
+        parser_.add_argument('--input_directory', type=str, help='input directory where the original NPP json file are')
+        parser_.add_argument('--export_directory_grid', type=str, required=True, help='Path to the export compute grid')
+        parser_.add_argument('--export_directory_graphs', type=str, required=True, help='Path to the export NPP json')
+        parser_.add_argument('--export_directory_transformations', type=str, required=True, help='Path to the export transformation PKL')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
     
-    def option_3_2(subparsers_): 
+    
+    def option_3_2(subparsers_):
         name = '3-2'
+        description = textwrap.dedent("Batch uniformisation")
+        help = 'test.compute_grid.batch '
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_directory_graphs', type=str, help='directory where the batches of graphs are')
+        parser_.add_argument('--input_directory_transformations', type=str, required=True, help='directory where the batches of transformations are')
+        parser_.add_argument('--export_directory_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+    
+    def option_3_3(subparsers_): 
+        name = '3-3'
         description = textwrap.dedent("Julia commands")
         help = 'test.compute_grid.compute_grid_julia'
         parser_ = subparsers_.add_parser(
@@ -74,87 +90,21 @@ def option_3(subparsers_):
                                         formatter_class=argparse.RawTextHelpFormatter,
                                         help=help
                                     )
-        parser_.add_argument('--input_folder', type=str, help='input parent folder where are the original NPP json file')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
-        parser_.add_argument('--export_folder_results', type=str, required=True, help='prepare parent folder to the export result of julia result')
+        parser_.add_argument('--input_directory_graphs', type=str, help='input parent directory where are the original NPP json file')
+        parser_.add_argument('--export_directory_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--export_directory_results', type=str, required=True, help='prepare parent directory to the export result of julia result')
         parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
         
-        
-    def option_3_4(subparsers_): 
-        name = '3-4'
-        description = textwrap.dedent("process result commands")
-        help = 'test.compute_grid.compute_grid_process_result_before_vs_after'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-        parser_.add_argument('--input_folder_graphs', type=str, help='input parent folder where are the NPP json file')
-        parser_.add_argument('--input_folder_transformations', type=str, help='input parent folder where are the transformation pkl file')
-        parser_.add_argument('--input_folder_results', type=str, help='input parent folder where are the julia result json file')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
-        parser_.add_argument('--export_folder_results', type=str, required=True, help='parent folder for processed result')
-        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        
-        
-    def option_3_5(subparsers_): 
-        name = '3-5'
-        description = textwrap.dedent("process result commands batch")
-        help = 'test.compute_grid.compute_grid_process_result_before_vs_after'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-        parser_.add_argument('--input_folder_graphs', type=str, help='input parent folder where are the NPP json file')
-        parser_.add_argument('--input_folder_transformations', type=str, help='input parent folder where are the transformation pkl file')
-        parser_.add_argument('--input_folder_results', type=str, help='input parent folder where are the julia result json file')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
-        parser_.add_argument('--export_folder_results', type=str, required=True, help='parent folder for processed result')
-        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size')
-        
-    def option_3_6(subparsers_): 
-        name = '3-6'
-        description = textwrap.dedent("process stacking results commands")
-        help = 'test.compute_grid.stack_result_into_dataframe'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-        parser_.add_argument('--input_folder_processed_results', type=str, help='Processed result pkl file path')
-        parser_.add_argument('--export_folder_dataframes', type=str, help='Parent folder to export dataframes')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
-        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        
-        
-    def option_3_7(subparsers_): 
-        name = '3-7'
-        description = textwrap.dedent("process stacking results commands batch")
-        help = 'test.compute_grid.stack_result_into_dataframe'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-        parser_.add_argument('--input_folder_processed_results', type=str, help='Processed result pkl file path')
-        parser_.add_argument('--export_folder_dataframes', type=str, help='Parent folder to export dataframes')
-        parser_.add_argument('--export_folder_grid', type=str, required=True, help='path to the export compute grid')
-        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
-        parser_.add_argument('--batch_size', type=int, required=True, help='Batch size')
-        
+
+
+    
     option_3_1(subparsers__)
     option_3_2(subparsers__)
-    #option_3_3(subparsers__)
-    option_3_4(subparsers__)
-    option_3_5(subparsers__)
-    option_3_6(subparsers__)
-    option_3_7(subparsers__)
+    option_3_3(subparsers__)
+    #option_3_4(subparsers__)
+    #option_3_5(subparsers__)
+    #option_3_6(subparsers__)
+    #option_3_7(subparsers__)
 
 def option_4(subparsers_):
     name = 'option4'
@@ -203,77 +153,29 @@ def option_5(subparsers_):
         parser_.add_argument('--number_not_trivial_class', type=int, help='number of none trivial equivalence class in partition')
         parser_.add_argument('--H4', type=str, help='Applied the local hypothesis in the partition')
         parser_.add_argument('--input_file', type=str, help='NPP json file path')
-        parser_.add_argument('--export_folder_problems', type=str, required=True, help='folder to export NPP json')
-        parser_.add_argument('--export_folder_transformations', type=str, required=True, help='folder to export transformation PKL')
+        parser_.add_argument('--export_directory_graphs', type=str, required=True, help='directory to export NPP json')
+        parser_.add_argument('--export_directory_transformations', type=str, required=True, help='directory to export transformation PKL')
         parser_.add_argument('--batch_size', type=int, required=True, help='Batch size (number of problem in one batch)')
         
         
-        
-    def option_5_2(subparsers_): 
+    def option_5_2(subparsers_):
         name = '5-2'
         description = textwrap.dedent("Process raw result")
-        help = 'test.result_processing.process_result_before_vs_after'
+        help = 'test.problem_maker.uniform_batch_merging'
         parser_ = subparsers_.add_parser(
                                         name=name,
                                         description=description,
                                         formatter_class=argparse.RawTextHelpFormatter,
                                         help=help
                                     )
-                                    
-        parser_.add_argument('--before_graph_file', type=str, help='NPP json path of the problem before transformation')
-        parser_.add_argument('--after_graph_result_file', type=str, help='NPP json path after transformation')
-        parser_.add_argument('--transformation_file', type=str, help='transformation pkl file path')
-        parser_.add_argument('--export_folder_results', type=str, required=True, help='folder to export the processed results')
-        parser_.add_argument('--output_filename', type=str, required=True, help='processed result filename')
-        
-    def option_5_3(subparsers_): 
-        name = '5-3'
-        description = textwrap.dedent("Process raw result batch")
-        help = 'test.result_processing.process_result_before_vs_after_batch'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-                                    
-        parser_.add_argument('--input_file', type=str, help='batch file')
-        
-    def option_5_4(subparsers_): 
-        name = '5-4'
-        description = textwrap.dedent("Stacking result")
-        help = 'test.result_processing.stack_result_into_dataframe'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-        
-        parser_.add_argument('--input_process_result_file_before', type=str, help='File path to json raw result before transformation')
-        parser_.add_argument('--input_process_result_file_after', type=str, help='File path to json raw result after transformation')
-        parser_.add_argument('--export_edge_dataframe_file', type=str, help='File path to pkl tolled edge dataframe')
-        parser_.add_argument('--export_meta_dataframe_file', type=str, required=True, help='File path to pkl meta dataframe')
-        
-        
-    def option_5_5(subparsers_): 
-        name = '5-5'
-        description = textwrap.dedent("Stacking result batch")
-        help = 'test.result_processing.stack_result_into_dataframe_batch'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-                                    
-        parser_.add_argument('--input_file', type=str, help='batch file')
-
+        parser_.add_argument('--input_directory_graphs', type=str, help='directory with graphs pkl batches')
+        parser_.add_argument('--input_directory_transformations', type=str, help='directory with transformations pkl batches')
+    
+    
+    
     option_5_1(subparsers__)
     option_5_2(subparsers__)
-    option_5_3(subparsers__)
-    option_5_4(subparsers__)
-    option_5_5(subparsers__)
+    
     
     
 
