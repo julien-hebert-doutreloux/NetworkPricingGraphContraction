@@ -36,7 +36,7 @@ def main():
                 command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit}'
                 
                 if independant:
-                    sh_file = os.path.join(directory_sh, filename.replace(f'P{ext}', 'R.json'))
+                    sh_file = os.path.join(directory_sh, filename.replace(f'P{ext}', 'R.sh'))
                     with open(sh_file, 'w') as f:
                         f.write('\n'.join(preamble(cpu, ram, h, m, s)))
                         f.write('\n'+command)
