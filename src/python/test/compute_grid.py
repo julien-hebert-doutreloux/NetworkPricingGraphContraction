@@ -1,5 +1,4 @@
 from preamble.preamble import *
-from test.problem_maker import uniform_batch_merging
 
 
 PARAMETERS = config.test_compute_grid(__name__)
@@ -160,6 +159,8 @@ def compute_grid_problem_generation(
 def compute_grid_merging(
                         input_directory_graphs:str,
                         input_directory_transformations:str,
+                        min_element:int,
+                        max_element:int,
                         export_directory_grid:str,
                         output_filename:str
                         ):
@@ -169,7 +170,7 @@ def compute_grid_merging(
         for filename in filenames:
             if filename.endswith('.pkl'):
                 idt = dirpath.replace(input_directory_graphs, input_directory_transformations)
-                command_list.append(f"python src/python/main.py option5 5-2 --input_directory_graphs {dirpath} --input_directory_transformations {idt}")
+                command_list.append(f"python src/python/main.py option5 5-2 --input_directory_graphs {dirpath} --input_directory_transformations {idt} --min_element {min_element} --max_element {max_element}")
                 break
                 
                 
@@ -243,7 +244,7 @@ def compute_grid_julia(
                 command_list.append(command)
                 output_name_list.append(base_name)
         
-    
+    h,m,s = PARAMETERS['h_limit'], PARAMETERS['m_limit'], PARAMETERS['s_limit']
     if independant:
         for output_filename, command in zip(output_name_list, command_list):
         
@@ -257,7 +258,7 @@ def compute_grid_julia(
                         "#!/bin/bash",
                         "#SBATCH --cpus-per-task=2",
                         "#SBATCH --mem=5G",
-                        "#SBATCH --time=3:00:00",
+                        f"#SBATCH --time={h}:{m}:{s}",
                         "#SBATCH --output=/dev/null",
                         "#SBATCH --partition=optimum",
                         "module load python/3.12.0",
@@ -287,7 +288,7 @@ def compute_grid_julia(
                     "#!/bin/bash",
                     "#SBATCH --cpus-per-task=1",
                     "#SBATCH --mem=5G",
-                    "#SBATCH --time=3:00:00",
+                    f"#SBATCH --time={h}:{m}:{s}",
                     "#SBATCH --output=/dev/null",
                     "#SBATCH --partition=optimum",
                     "module load python/3.12.0",
@@ -305,196 +306,3 @@ def compute_grid_julia(
             f.write('sleep 60')
             
         logger.info(f"Compute grid exported : {output_file}")
-            
-
-
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def compute_grid_process_result_before_vs_after(
-                                                input_directory_graphs:str='',
-                                                input_directory_transformations:str='',
-                                                input_directory_results:str='',
-                                                export_directory_grid:str='',
-                                                export_directory_results:str='',
-                                                output_filename:str='',
-                                                batch_size:int=1,
-                                            ):
-    # Logic for file and directory existence                   
-    # input_directory_graphs ? no -> return error  
-    # input_directory_transformations ? no -> return error          
-    # input_directory_results ? no -> return error
-    # export_directory_grid ? no -> create directory
-    # export_directory_results ? no -> create directory
-    
-    command_list = []
-    input_output_list = []
-    for root, dirs, files in os.walk(input_directory_graphs):
-        for filename in files:
-            if filename.endswith(".json"):
-                problem_path = os.path.join(root, filename)
-                base_name, ext = os.path.splitext(filename)
-                subdirectory = root.replace(input_directory_graphs, '').split(os.sep)
-                
-                number = base_name.split('-')[0]          
-                input_g_file = os.path.join(root,filename.replace(number,'000000')) # original graph problem
-                input_t_file = os.path.join(input_directory_transformations, *subdirectory, f"{base_name}-T.pkl") # transformation file
-                input_r_file = os.path.join(input_directory_results, *subdirectory, f"{base_name}-RR{ext}") # raw result file of the transformed graph problem
-                
-                tmp_bool_1 = os.path.isfile(input_t_file)
-                tmp_bool_2 = os.path.isfile(input_r_file)
-                    
-                #if not tmp_bool_1 or not tmp_bool_2:
-                #    logger.warning(f"The problem file is not compatible: {problem_path}")
-                if not tmp_bool_1:
-                    logger.warning(f"The transformation file does not exists: {input_t_file}")
-                if not tmp_bool_2:
-                    logger.warning(f"The result file does not exists: {input_r_file}")
-                
-                if tmp_bool_1 and tmp_bool_2:
-                    output_directory_results = os.path.join(export_directory_results, *subdirectory)
-                    
-                    if not os.path.exists(output_directory_results):
-                        os.makedirs(output_directory_results)
-                        logger.info(f"directory created : {output_directory_results}")
-                    
-                    output_r_file = f"{base_name}-PR.pkl"
-                    command = f"python src/python/main.py option5 5-2 --before_graph_file {input_g_file} --after_graph_result_file {input_r_file} --transformation_file {input_t_file} --export_directory {output_directory_results} --output_filename {output_r_file}"
-                    command_list.append(command)
-                    
-                    grtr = (input_g_file, input_r_file, input_t_file,output_directory_results, output_r_file)
-                    input_output_list.append(grtr)
-                    
-
-    # Batch command
-    if batch_size > 1 :
-        command_list = []
-        split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
-        for j, sublist in enumerate(split_list, start=1):
-            output_file = os.path.join(export_directory_grid, f"result_process_batch_{j}.csv")
-            
-            with open(output_file, 'w') as f:
-                f.write('before_graph_file,transformation_file,after_graph_result_file,export_directory,output_filename')
-                f.write('\n')
-                for (i, t, r, x, rr) in sublist:
-                    f.write(f"{i},{t},{r},{x},{rr}")
-                    f.write('\n')
-            
-            logger.info(f"Batch {j} exported: {output_file}")
-            command = f"python src{os.sep}python{os.sep}main.py option5 5-3 --input_file {output_file}"
-            command_list.append(command)
-    
-    
-    # Exporting computing grid
-    if not output_filename.endswith('.txt'):
-        output_filename += '.txt'
-        
-    output_file = os.path.join(export_directory_grid, output_filename)
-    with open(output_file, 'w') as f:
-        for command in command_list:
-            f.write(command)
-            f.write('\n')
-            
-    logger.info(f"Compute grid exported : {output_file}")
-    
-    return output_file
-    
-    
-    
-    
-
-def compute_grid_stack_result_into_dataframe(
-                                            input_directory_processed_results:str='',
-                                            export_directory_dataframes:str='',
-                                            export_directory_grid:str='',
-                                            output_filename:str='',
-                                            batch_size:int=1,
-                                        ):
-    command_list = []
-    input_output_list = []
-    for root, dirs, files in os.walk(input_directory_processed_results):
-        for filename in files:
-            if filename.endswith(".pkl"):
-                
-                processed_result_after_path = os.path.join(root, filename)
-                base_name, ext = os.path.splitext(filename)
-                subdirectory = root.replace(input_directory_processed_results, '').split(os.sep)
-                
-                number = base_name.split('-')[0]
-                processed_result_path_before = os.path.join(root,filename.replace(number, '000000')) # original graph problem
-                
-                if not os.path.exists(export_directory_dataframes):
-                    os.makedirs(export_directory_dataframes)
-                    logger.info(f"directory created: {export_directory_dataframes}")
-
-                export_edge_dataframe_file = os.path.join(export_directory_dataframes, "edge_dataframe.pkl")
-                export_meta_dataframe_file = os.path.join(export_directory_dataframes, "meta_dataframe.pkl")
-                
-                command = f"python src/python/main.py option5 5-3 --input_process_result_file_before {processed_result_path_before} --input_process_result_file_after {processed_result_after_path} --export_edge_dataframe_file {export_edge_dataframe_file} --export_meta_dataframe_file {export_meta_dataframe_file}"
-                command_list.append(command)
-                input_output_list.append((
-                                            processed_result_path_before,
-                                            processed_result_after_path,
-                                            export_edge_dataframe_file,
-                                            export_meta_dataframe_file,
-                                            ))
-    ###
-    if batch_size > 1:
-        command_list = []
-        split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
-        for i, sublist in enumerate(split_list, start=1):
-            output_file = os.path.join(export_directory_grid, f"result_process_batch_{i}.csv")
-            
-            with open(output_file, 'w') as f:
-                f.write('input_process_result_file_before,input_process_result_file_after,export_edge_dataframe_file,export_meta_dataframe_file')
-                f.write('\n')
-                for (iprfb, iprfa, eed, emd) in sublist:
-                    f.write(f"{iprfb},{iprfa},{eed},{emd}")
-                    f.write('\n')
-            
-            logger.info(f"Batch {i} exported: {output_file}")
-            command = f"python src{os.sep}python{os.sep}main.py option5 5-5 --input_file {output_file}"
-            command_list.append(command)
-    ###       
-    if not output_filename.endswith('.txt'):
-        output_filename += '.txt'
-        
-    output_file = os.path.join(export_directory_grid, output_filename)
-    with open(output_file, 'w') as f:
-        for command in command_list:
-            f.write(command)
-            f.write('\n')
-            
-    logger.info(f"Compute grid exported : {output_file}")
-    
-    return output_file
-    
-    
-

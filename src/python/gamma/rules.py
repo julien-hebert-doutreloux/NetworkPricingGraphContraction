@@ -5,13 +5,13 @@ from gamma.gamma import Edge, Node
 PARAMETERS = config.gamma_rules(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
-def make_rules(edges_list:iter, H4:bool=False) -> dict:
+def make_rules(edges_list:iter, H1:bool, H2:bool, H3:bool, H4:bool) -> dict:
     # H1 : Continuity-free edge equivalence class hypothesis (True by default)
     # H2 : Equivalence class assumption for elements of equal value (False by default)
     # H3 : Tolled element equivalence class hypothesis (True by default)
     # H4 : Local element only (False by default)
     
-    H1, H2, H3 = True, True, True
+    #H1, H2, H3, H4 = True, True, True, 
     #for edge in edges_list:
     #    if edge.toll:
     #        logger.debug(f"{edge.src}, {edge.dst}, {edge.label}, {edge.cost}, {edge.toll}")
@@ -225,83 +225,75 @@ class Rules(dict):
             return unions, max_clique
         
         return max_clique
+    
+    # TO DO : unit test
+    def random_partition(self, n:int, min_sl:int, max_sl:int, m:int, max_attemp:int):
+        # n      : number of transformations
+        # min_sl : minimum length allowed for an element of a partition
+        # max_sl : maximum length allowed for an element of a partition  (if 0, no restriction)
+        # m      : number of element with length strictly greater than 1 (if 0, no restriction)
+        # max_attemp : number of try allowed to find one partition
         
-    def random_partition(self,
-                            number_or_partition:int, 
-                            min_len:int,
-                            max_len:int,
-                            number_not_trivial_class:int,
-                            ):
-        if min_len < 2:
-            logger.warning("min_len<2")
+        
+        max_sl += len(self) if max_sl == 0 else 0
+        m = -1 if m==0 else m
+        valid = True
+        if n < 1:
+            logger.warning(f"Invalid parameter n : {n}")
+        elif min_sl < 2:
+            logger.warning(f"Invalid parameter min_sl : {min_sl}")
+        elif max_sl < 2 or  min_sl > max_sl or max_sl > len(self):
+            logger.warning(f"Invalid parameter max_sl : {max_sl}")
+        elif m <1 and m!=-1:
+            logger.warning(f"Invalid parameter m : {m}")
+        else:
+            valid = True
+        if not valid:
             return
             
-        if max_len == 0:
-            max_len = len(self)
-            
-        if number_not_trivial_class == 0:
-            number_not_trivial_class = -1
-        
-            
-        if min_len>max_len:
-            logger.warning("min_len>max_len")
-            return
-        
         generators, max_gen = self.approx_max_clique(return_all=True)
         
         partitions = []
         full_set = set(self)
         
-        for _ in range(number_or_partition):
-            partition = []
-            union = set()
-            n_not_trivial_class = 0
-            attempt = 0
+        for _ in range(n):
+            partition, union = set(), set()
+            m_ctn, attempt = 0, 0
             
-            while union != full_set and attempt < 1000:
+            while union != full_set and attempt < max_attemp:
                 attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
-                #input(f"random_generator = {random_generator}")
                 
                 if random_generator:
-                    max_length = min(len(self) - len(union), len(random_generator), max_len)
-                    min_length = max(1, min(min_len, max_length))
+                    max_length = min(len(self) - len(union), len(random_generator), max_sl)
+                    min_length = max(1, min(min_sl, max_length))
                     
                     random_size = random.randint(min_length, max_length)
                     random_subset = set(random.sample(list(random_generator), random_size))
                         
                     # correction des duplicats
-                    random_subset -= set().union(*partition)
+                    random_subset -= union #set().union(*partition)
                     
                     if random_subset != set():
-                        if random_size>=2:
-                            n_not_trivial_class+=1
-                            
-                        partition += [random_subset]
-                        random_generator -= random_subset
-                        
+                        m_ctn += 1 if random_size>=2 else 0
+                        partition |= {frozenset(random_subset), }
                         union |= random_subset
                         
-                
-                if n_not_trivial_class == number_not_trivial_class:
-                    partition += [set((x,)) for x in full_set-union]
+                m_ctn = m if random.random()>0.5 and m_ctn!=0 else m_ctn
+                if m_ctn == m:
+                    partition |= set_of_frozenset([(x,) for x in full_set - union])
                     union = full_set
             
-            
-            
             if union != full_set:
-                partition += [set((x,)) for x in full_set-union]
+                partition |= set_of_frozenset([(x,) for x in full_set - union])
                 union = full_set
                 
-                       
-              
-            if (n_not_trivial_class == number_not_trivial_class) or (number_not_trivial_class == -1):
-                partition = set_of_frozenset(partition)
+            if ((m_ctn == m) or (m == -1)) and  (m_ctn!=0):
+                #partition = set_of_frozenset(partition)
                 if not partition in partitions:
                     #length = len(set(chain.from_iterable(partition)))
                     #readable_partition = list(map(lambda x: list(map(str, x)), partition))
-                    #logger.debug(f"Lenght: {length}; Partition: {readable_partition}")
+                    #logger.debug(f"Lenght: {length};")# Partition: {readable_partition}")
                     partitions.append(partition)
-                    partition = []
-    
+        logger.debug(f"number of partition found: {len(partitions)}")
         return partitions

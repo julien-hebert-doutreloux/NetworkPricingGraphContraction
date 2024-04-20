@@ -54,7 +54,7 @@ function import_problem_from_str(str::AbstractString)
 end
 
 
-function solve_and_get_values(prob::Problem, id::AbstractString)
+function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int)
 
     # Measure preprocessing time
     # obligatoire
@@ -68,7 +68,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString)
     
      # Set GurobiSolver parameters
     set_optimizer(model, Gurobi.Optimizer)
-    set_optimizer_attribute(model, "TimeLimit", 100) # stop the process after 100 second
+    set_optimizer_attribute(model, "TimeLimit", time_limit) # stop the process after x seconds
     
     # Measure solving time
     solve_time = @elapsed begin
@@ -107,13 +107,15 @@ function main(args)
 
     input_file = args[1]
     output_file = args[2]
+    time_limit = parse(Int, args[3])
+
     
     if endswith(input_file, ".json")
 	    # Individual solver
 		# input file : json
 		# output file: json
 		try
-			result = solve_and_get_values(import_problem_from_file(input_file)...)
+			result = solve_and_get_values(import_problem_from_file(input_file)..., time_limit)
 			save_result_individual(result, output_file)
 	    catch
 			println("An error occurred.", input_file)
@@ -132,7 +134,7 @@ function main(args)
 		for item in data
 			k, v = item
 			try
-				result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k)
+				result = solve_and_get_values(import_problem_from_str(JSON.json(v)), k, time_limit)
 				push!(results_array, result)
 			catch
 				println("An error occurred.", k)

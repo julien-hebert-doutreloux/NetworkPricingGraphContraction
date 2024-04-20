@@ -2866,3 +2866,771 @@ def result_post_process(
         pickle.dump(to_export, f)
     
     return output_file
+    
+    
+
+
+def compute_grid_process_result_before_vs_after(
+                                                input_directory_graphs:str='',
+                                                input_directory_transformations:str='',
+                                                input_directory_results:str='',
+                                                export_directory_grid:str='',
+                                                export_directory_results:str='',
+                                                output_filename:str='',
+                                                batch_size:int=1,
+                                            ):
+    # Logic for file and directory existence                   
+    # input_directory_graphs ? no -> return error  
+    # input_directory_transformations ? no -> return error          
+    # input_directory_results ? no -> return error
+    # export_directory_grid ? no -> create directory
+    # export_directory_results ? no -> create directory
+    
+    command_list = []
+    input_output_list = []
+    for root, dirs, files in os.walk(input_directory_graphs):
+        for filename in files:
+            if filename.endswith(".json"):
+                problem_path = os.path.join(root, filename)
+                base_name, ext = os.path.splitext(filename)
+                subdirectory = root.replace(input_directory_graphs, '').split(os.sep)
+                
+                number = base_name.split('-')[0]          
+                input_g_file = os.path.join(root,filename.replace(number,'000000')) # original graph problem
+                input_t_file = os.path.join(input_directory_transformations, *subdirectory, f"{base_name}-T.pkl") # transformation file
+                input_r_file = os.path.join(input_directory_results, *subdirectory, f"{base_name}-RR{ext}") # raw result file of the transformed graph problem
+                
+                tmp_bool_1 = os.path.isfile(input_t_file)
+                tmp_bool_2 = os.path.isfile(input_r_file)
+                    
+                #if not tmp_bool_1 or not tmp_bool_2:
+                #    logger.warning(f"The problem file is not compatible: {problem_path}")
+                if not tmp_bool_1:
+                    logger.warning(f"The transformation file does not exists: {input_t_file}")
+                if not tmp_bool_2:
+                    logger.warning(f"The result file does not exists: {input_r_file}")
+                
+                if tmp_bool_1 and tmp_bool_2:
+                    output_directory_results = os.path.join(export_directory_results, *subdirectory)
+                    
+                    if not os.path.exists(output_directory_results):
+                        os.makedirs(output_directory_results)
+                        logger.info(f"directory created : {output_directory_results}")
+                    
+                    output_r_file = f"{base_name}-PR.pkl"
+                    command = f"python src/python/main.py option5 5-2 --before_graph_file {input_g_file} --after_graph_result_file {input_r_file} --transformation_file {input_t_file} --export_directory {output_directory_results} --output_filename {output_r_file}"
+                    command_list.append(command)
+                    
+                    grtr = (input_g_file, input_r_file, input_t_file,output_directory_results, output_r_file)
+                    input_output_list.append(grtr)
+                    
+
+    # Batch command
+    if batch_size > 1 :
+        command_list = []
+        split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
+        for j, sublist in enumerate(split_list, start=1):
+            output_file = os.path.join(export_directory_grid, f"result_process_batch_{j}.csv")
+            
+            with open(output_file, 'w') as f:
+                f.write('before_graph_file,transformation_file,after_graph_result_file,export_directory,output_filename')
+                f.write('\n')
+                for (i, t, r, x, rr) in sublist:
+                    f.write(f"{i},{t},{r},{x},{rr}")
+                    f.write('\n')
+            
+            logger.info(f"Batch {j} exported: {output_file}")
+            command = f"python src{os.sep}python{os.sep}main.py option5 5-3 --input_file {output_file}"
+            command_list.append(command)
+    
+    
+    # Exporting computing grid
+    if not output_filename.endswith('.txt'):
+        output_filename += '.txt'
+        
+    output_file = os.path.join(export_directory_grid, output_filename)
+    with open(output_file, 'w') as f:
+        for command in command_list:
+            f.write(command)
+            f.write('\n')
+            
+    logger.info(f"Compute grid exported : {output_file}")
+    
+    return output_file
+    
+    
+    
+    
+
+def compute_grid_stack_result_into_dataframe(
+                                            input_directory_processed_results:str='',
+                                            export_directory_dataframes:str='',
+                                            export_directory_grid:str='',
+                                            output_filename:str='',
+                                            batch_size:int=1,
+                                        ):
+    command_list = []
+    input_output_list = []
+    for root, dirs, files in os.walk(input_directory_processed_results):
+        for filename in files:
+            if filename.endswith(".pkl"):
+                
+                processed_result_after_path = os.path.join(root, filename)
+                base_name, ext = os.path.splitext(filename)
+                subdirectory = root.replace(input_directory_processed_results, '').split(os.sep)
+                
+                number = base_name.split('-')[0]
+                processed_result_path_before = os.path.join(root,filename.replace(number, '000000')) # original graph problem
+                
+                if not os.path.exists(export_directory_dataframes):
+                    os.makedirs(export_directory_dataframes)
+                    logger.info(f"directory created: {export_directory_dataframes}")
+
+                export_edge_dataframe_file = os.path.join(export_directory_dataframes, "edge_dataframe.pkl")
+                export_meta_dataframe_file = os.path.join(export_directory_dataframes, "meta_dataframe.pkl")
+                
+                command = f"python src/python/main.py option5 5-3 --input_process_result_file_before {processed_result_path_before} --input_process_result_file_after {processed_result_after_path} --export_edge_dataframe_file {export_edge_dataframe_file} --export_meta_dataframe_file {export_meta_dataframe_file}"
+                command_list.append(command)
+                input_output_list.append((
+                                            processed_result_path_before,
+                                            processed_result_after_path,
+                                            export_edge_dataframe_file,
+                                            export_meta_dataframe_file,
+                                            ))
+    ###
+    if batch_size > 1:
+        command_list = []
+        split_list = [input_output_list[i:i + batch_size] for i in range(0, len(input_output_list), batch_size)]
+        for i, sublist in enumerate(split_list, start=1):
+            output_file = os.path.join(export_directory_grid, f"result_process_batch_{i}.csv")
+            
+            with open(output_file, 'w') as f:
+                f.write('input_process_result_file_before,input_process_result_file_after,export_edge_dataframe_file,export_meta_dataframe_file')
+                f.write('\n')
+                for (iprfb, iprfa, eed, emd) in sublist:
+                    f.write(f"{iprfb},{iprfa},{eed},{emd}")
+                    f.write('\n')
+            
+            logger.info(f"Batch {i} exported: {output_file}")
+            command = f"python src{os.sep}python{os.sep}main.py option5 5-5 --input_file {output_file}"
+            command_list.append(command)
+    ###       
+    if not output_filename.endswith('.txt'):
+        output_filename += '.txt'
+        
+    output_file = os.path.join(export_directory_grid, output_filename)
+    with open(output_file, 'w') as f:
+        for command in command_list:
+            f.write(command)
+            f.write('\n')
+            
+    logger.info(f"Compute grid exported : {output_file}")
+    
+    return output_file
+    
+    
+    
+    
+    original_npp_file = './data/generated/graphs/progressive-2/o45-04/000000-NPP-o45-04.json'
+    original_npp_transformation = './data/generated/transformations/progressive-2/o45-04/000000-NPP-o45-04.json'
+    original_npp_result = './data/generated/results/progressive-2/o45-04/000000-NPP-o45-04.json'
+    results_directory = './data/generated/results/progressive-2/o45-04/'
+    transformations_directory = './data/generated/transformations/progressive-2/o45-04/'
+    
+    nodes, edges, problems = npp_from_json(original_npp_file)
+    process_data = {}
+    keys = ['sub_id', 'min_sub_length', 'max_sub_length', 'number_not_trivial_class', 'H4', 'npp_id']
+    
+    # import original probleme result
+    with open(original_npp_result, 'r') as f:
+        results_data = json.load(f)
+        
+    with open(original_npp_transformation, 'r') as f:
+        # trivial only for testing shortest path
+        transformations_data = json.load(f)
+    
+    id_ = results_data['id']
+    result = results_data
+    transformation = transformations_data
+    sub_id, *npp_id = id_.split('-')
+    values = [sub_id, 0,0,0,0,'-'.join(npp_id)]
+    paramaters = dict(zip(keys, values))
+    process_data[id_] = post_process_result(nodes, edges, problems, transformation, result, **paramaters)
+    
+    for filename in os.listdir(results_directory):
+    
+        if filename.endswith('.json') and not filename.startswith('%06d' % 0):
+            results_file = os.path.join(results_directory, filename)
+            transformations_file = os.path.join(transformations_directory, filename.replace('.json', '.pkl'))
+            
+            with open(results_file, 'r') as f:
+                results_data = json.load(f)
+                
+            with open(transformations_file, 'rb') as f:
+                transformations_data = pickle.load(f)
+            
+            for result in tqdm(results_data, desc=f'Process {filename}'): 
+                id_ = result['id']
+                transformation = transformations_data[id_]
+                
+                sub_id, min_sub_length, max_sub_length, number_not_trivial_class, H4, *npp_id = id_.split('-')
+                values = [sub_id, min_sub_length, max_sub_length, number_not_trivial_class, H4, '-'.join(npp_id)]
+                paramaters = dict(zip(keys, values))
+                process_data[id_] = post_process_result(nodes, edges, problems, transformation, result, **paramaters)
+    
+    return process_data
+
+
+
+
+
+        
+    original_npp_file = './data/generated/graphs/progressive-2/o45-04/000000-NPP-o45-04.json'
+    original_npp_transformation = './data/generated/transformations/progressive-2/o45-04/000000-NPP-o45-04.json'
+    original_npp_result = './data/generated/results/progressive-2/o45-04/000000-NPP-o45-04.json'
+    results_directory = './data/generated/results/progressive-2/o45-04/'
+    transformations_directory = './data/generated/transformations/progressive-2/o45-04/'
+    
+    nodes, edges, problems = npp_from_json(original_npp_file)
+    process_data = {}
+    keys = ['sub_id', 'min_sub_length', 'max_sub_length', 'number_not_trivial_class', 'H4', 'npp_id']
+    
+    # import original probleme result
+    with open(original_npp_result, 'r') as f:
+        results_data = json.load(f)
+        
+    with open(original_npp_transformation, 'r') as f:
+        # trivial only for testing shortest path
+        transformations_data = json.load(f)
+    
+    id_ = results_data['id']
+    result = results_data
+    transformation = transformations_data
+    sub_id, *npp_id = id_.split('-')
+    values = [sub_id, 0,0,0,0,'-'.join(npp_id)]
+    paramaters = dict(zip(keys, values))
+    process_data[id_] = post_process_result(nodes, edges, problems, transformation, result, **paramaters)
+    
+    for filename in os.listdir(results_directory):
+    
+        if filename.endswith('.json') and not filename.startswith('%06d' % 0):
+            results_file = os.path.join(results_directory, filename)
+            transformations_file = os.path.join(transformations_directory, filename.replace('.json', '.pkl'))
+            
+            with open(results_file, 'r') as f:
+                results_data = json.load(f)
+                
+            with open(transformations_file, 'rb') as f:
+                transformations_data = pickle.load(f)
+            
+            for result in tqdm(results_data, desc=f'Process {filename}'): 
+                id_ = result['id']
+                transformation = transformations_data[id_]
+                
+                sub_id, min_sub_length, max_sub_length, number_not_trivial_class, H4, *npp_id = id_.split('-')
+                values = [sub_id, min_sub_length, max_sub_length, number_not_trivial_class, H4, '-'.join(npp_id)]
+                paramaters = dict(zip(keys, values))
+                process_data[id_] = post_process_result(nodes, edges, problems, transformation, result, **paramaters)
+    
+    return process_data
+    
+    
+    
+    @timing_decorator
+def main(
+        num_partitions:int,
+        min_sub_length:int,
+        max_sub_length:int,
+        number_not_trivial_class:int,
+        H4:bool=False,
+        batch_size:int=1000,
+        input_file:str='',
+        export_directory_problems:str='',
+        export_directory_transformations:str='',
+    ):
+    
+    """
+    This function partitions a graph into subsets and exports the resulting transformations and problems.
+
+    Parameters:
+    num_partitions (int): The number of partitions to create. Default is 1000.
+    min_sub_length (int): The minimum length of the element in a partition. Default is 3.
+    max_sub_length (int): The maximum length of the element in a partition. Default is 3.
+    number_not_trivial_class (int): The number of none trivial equivalence class in partition. Default is 3.
+    H4 (bool): Applied the local hypothesis for making the partition. Default is False.
+    batch_size (int): The number of problem in one file. Default is 1000.
+    input_file (str): The path to the input JSON file containing the graph data. Default is an empty string.
+    export_directory (str): The path to the output directory where the results will be saved. Default is an empty string.
+    """
+    
+    # Check if the file does not exists
+    if not os.path.isfile(input_file):
+        logger.warning(f"The specified file does not exists: {input_file}")
+        return
+        
+    # Check if the export_directory exists
+    if not os.path.isdir(export_directory_problems):
+        logger.warning(f"The specified directory does not exist: {export_directory_problems}")
+        os.makedirs(export_directory_problems)
+        logger.info(f"The specified directory has been created: {export_directory_problems}")
+        
+    # Check if the export_directory exists
+    if not os.path.isdir(export_directory_transformations):
+        logger.warning(f"The specified directory does not exist: {export_directory_transformations}")
+        os.makedirs(export_directory_transformations)
+        logger.info(f"The specified directory has been created: {export_directory_transformations}")
+    
+    
+    base_filename, file_extension = os.path.splitext(os.path.basename(input_file))
+    
+    # Import JSON
+    # Extraction Graph (nodes, edges)
+    # Extraction Problem
+    nodes, edges, problems = npp_from_json(input_file)
+    
+    def preprocessing():
+        for edge in edges:
+            # every tolled arc starting cost is 1
+            if edge.toll:
+                edge.cost = max(int(round(edge.cost, 0)), 1)
+                
+            # only integer cost
+            else:
+                edge.cost = max(int(round(edge.cost, 0)), 1)
+           
+        # Problems structures
+        #[...,
+        #    {
+        #        "orig": 1,
+        #        "dest": 4,
+        #        "demand": 1.0
+        #    },... 
+        #]
+        # only integer demand
+        for problem in problems:
+            problem['demand'] = max(int(round(problem['demand'], 0)), 1)
+            
+    preprocessing()
+    
+    # Compatibility graph extraction
+    compatibility_graph = make_rules(edges, H4)
+    if all(map(lambda x: 0<=len(x)<=1, compatibility_graph.values())):
+        logger.warning(f"Only the trivial partition is feasible")
+        return
+        
+    logger.debug(f"Number of tolled edge : {len(compatibility_graph)}")
+    minimal = all(map(lambda v: len(v)>1, compatibility_graph.values()))
+    
+    if not minimal:
+        logger.debug("Rules not minimal")
+        compatibility_graph = {k:v for k,v in compatibility_graph.items() if len(v)>1}
+        
+    compatibility_graph = Rules(compatibility_graph)
+    difference = set(edges) - set(compatibility_graph)
+    singleton = list(map(lambda x: (x,), difference))
+    
+    # Random Partition
+    partitions = compatibility_graph.random_partition(
+                                                        num_partitions,
+                                                        min_sub_length,
+                                                        max_sub_length,
+                                                        number_not_trivial_class,
+                                                        )
+    if not partitions:
+        logger.warning('No partition have been found')
+        logger.debug(f'Parameter:\nnum_partitions: {num_partitions}\nmin_sub_length: {min_sub_length}\nmax_sub_length:{max_sub_length}\nnumber_not_trivial_class:{number_not_trivial_class}')
+        return
+    
+    for partition in partitions:
+        logger.debug(list(map(lambda x: list(map(str, x)), partition)))
+        
+    # trivial partition first
+    trivial_partition = set_of_frozenset([(e, ) for e in edges])
+    if trivial_partition in partitions:
+        partitions.remove(trivial_partition)
+    partitions.insert(0, trivial_partition)
+    
+    logger.debug(f"number of partition found: {len(partitions)}")
+    transformations_array = []
+    problems_array = []
+    for i, partition in enumerate(partitions, start=0):
+    
+        if i != 0:
+            partition = list(map(tuple, partition))
+            partition += singleton
+        
+        if (len(edges) != sum(map(len, partition))):
+            logger.warning('Not a partition')
+            logger.debug(list(map(str, set(edges) - set(chain.from_iterable(partition)))))
+            return
+            
+            
+        # Gamma
+        g_gamma = GammaNPP(nodes, edges, partition, problems)
+        number = "%06d" % i
+        #logger.debug(number)
+        filename = f"{number}-NPP-{base_filename}"
+        id_ = f"{number}-{min_sub_length}-{max_sub_length}-{number_not_trivial_class}-{int(H4)}-NPP-{base_filename}"
+        if batch_size == 1 or i == 0:
+            
+            # indivudual export
+            # Export NPP in JSON
+            problem_file = to_json(g_gamma.image_problem_to_dict(), export_directory_problems, filename)
+            tranformation_file = to_json(g_gamma.transformation_to_dict(), export_directory_transformations, filename)
+            
+            logger.info(f'NPP JSON file created : {problem_file}')
+            logger.info(f'Transformation JSON file created : {tranformation_file}')
+        
+        else:
+            if (i%(batch_size+1))==0 or i==1:
+                transformations_array.append([])
+                problems_array.append([])
+                
+            logger.debug(f"created problem id_ {id_}")
+            
+            problems_array[-1].append(
+                                    (id_, g_gamma.image_problem_to_dict())
+                                )
+            
+            transformations_array[-1].append(
+                                        (id_, g_gamma.transformation_to_dict())
+                                    )
+    
+    if batch_size > 1:
+        for j, (p_batch, t_batch) in enumerate(zip(problems_array, transformations_array), start=1):
+            # Export problems
+            prefix = f"{'%06d' % len(p_batch)}-{min_sub_length}-{max_sub_length}-{number_not_trivial_class}-{int(H4)}"
+            filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}.pkl"
+            problems_file = os.path.join(export_directory_problems, filename)
+            json_compression(p_batch, problems_file)
+            
+            # Export transformation
+            filename = f"{'%06d' % j}-{prefix}-NPP-{base_filename}.pkl"
+            transformations_file = os.path.join(export_directory_transformations, filename)
+            json_compression(t_batch, transformations_file)
+            
+            logger.info(f'NPP batch PKL file created : {problems_file}')
+            logger.info(f'Transformation batch PKL file created : {transformations_file}')
+            
+  
+  
+def distribute_tuples(
+                    tuples_list:list,
+                    min_element:int=50,
+                    max_element:int=110
+                    ) -> list:
+    # list of tuple of the form (str, integer) 1<=integer<=100
+    tuples_list.sort(key=lambda x: x[1], reverse=True)
+    groups = []
+    current_group = []
+    current_sum = 0
+
+    # Stage 1: Distribute tuples to groups with sum between min_element and max_element
+    for t in tuples_list:
+        if current_sum + t[1] <= max_element and current_sum + t[1] >= min_element:
+            current_group.append(t)
+            current_sum += t[1]
+        elif current_sum >= min_element:
+            groups.append(current_group)
+            current_group = [t]
+            current_sum = t[1]
+        else:
+            current_group = [t]
+            current_sum = t[1]
+
+    if current_group:
+        groups.append(current_group)
+
+    # Stage 2: Distribute remaining tuples to the smallest group
+    remaining_tuples = [t for t in tuples_list if t not in chain.from_iterable(groups)]
+    while remaining_tuples:
+        smallest_group = min(groups, key=lambda x: sum(y[1] for y in x))
+        if sum(y[1] for y in smallest_group) + remaining_tuples[0][1] <= max_element:
+            smallest_group.append(remaining_tuples.pop(0))
+        else:
+            new_group = [remaining_tuples.pop(0)]
+            groups.append(new_group)
+
+    return groups
+    
+def merging_batch(
+                    input_file_list,
+                    output_directory:str,
+                    output_name:str,
+                    erease:bool=True
+                ):
+                
+    combined_data = {}
+    for file in input_file_list:
+    
+        with open(file, 'rb') as f:
+            data = pickle.load(f)
+            combined_data.update(data)
+            
+        if erease:
+            os.remove(file)
+            logger.info(f"File has been deleted : {file}")
+                      
+    output_file = os.path.join(output_directory, output_name)
+    with open(output_file, 'wb') as f:
+        # save the combined data to a new PKL file
+        pickle.dump(combined_data, f)
+        logger.info(f"File has been created : {output_file}")
+    
+def uniform_batch_merging(
+                            input_directory_graphs:str,
+                            input_directory_transformations:str,
+                            min_element:int=50,
+                            max_element:int=110,
+                            erease=True
+                        ):
+
+    # To have uniform batches
+    list_tuple = []
+    for filename in os.listdir(input_directory_graphs):
+        if filename.endswith('.pkl'):
+            # batch number, cardinality, parameters...
+            #000001-000001-2-0-0-1-NPP-j40-07.pkl
+            
+            base_filename, _ = os.path.splitext(filename)
+            batch_number,number_of_problem, *_ = base_filename.split('-')
+            list_tuple.append(
+                                (filename, int(number_of_problem))
+                            )
+            
+    uniform_batchs = distribute_tuples(list_tuple)
+    
+    for i, batch in enumerate(uniform_batchs, start=1):
+            
+        number = "%06d" % i
+        output_name = f'{number}-super_batch.pkl'
+        
+        # graphs
+        output_directory = input_directory_graphs
+        input_file_list = map(lambda x: os.path.join(input_directory_graphs, x[0]), batch)
+        merging_batch(
+                        input_file_list,
+                        output_directory,
+                        output_name,
+                        erease
+                    )
+        logger.info(f"Graphs batches have been uniformized : {input_directory_graphs}")
+        
+        # transformations
+        output_directory = input_directory_transformations
+        input_file_list = map(lambda x: os.path.join(input_directory_transformations, x[0]), batch)
+        merging_batch(
+                input_file_list,
+                output_directory,
+                output_name,
+                erease
+            )
+        logger.info(f"Transformations batches have been uniformized : {input_directory_transformations}")
+        
+            
+
+    
+# number in the filename
+#batch_number, batch_size, min_sub_len, max_sub_len, number_not_trivial_class, H4
+
+
+ parameters['probleme_generation_combinaison'] = [
+                        # num_partitions, min_sub_length, max_sub_length, number_not_trivial_class, H4, batch_size
+                        (100, 2, 2, 1, False, 100),
+                        (100, 2, 2, 2, False, 100),
+                        (100, 2, 2, 3, False, 100),
+                        (100, 2, 2, 4, False, 100),
+                        (100, 2, 2, 5, False, 100),
+                        (100, 3, 3, 1, False, 100),
+                        (100, 3, 3, 2, False, 100),
+                        (100, 4, 4, 1, False, 100),
+                        (100, 5, 5, 1, False, 100),
+                        (100, 2, 5, 5, False, 100),
+                        (100, 2, 0, 0, False, 100),
+                        (100, 2, 2, 1, True, 100),
+                        (100, 2, 2, 2, True, 100),
+                        (100, 2, 2, 3, True, 100),
+                        (100, 2, 2, 4, True, 100),
+                        (100, 2, 2, 5, True, 100),
+                        (100, 3, 3, 1, True, 100),
+                        (100, 3, 3, 2, True, 100),
+                        (100, 4, 4, 1, True, 100),
+                        (100, 5, 5, 1, True, 100),
+                        (100, 2, 5, 5, True, 100),
+                        (100, 2, 0, 0, True, 100),
+                    ]
+                    
+elif selected_option == 'option4':
+        # Process compute grid for the problem generation
+        compute_grid = args.input_file
+        n_core = args.n_core
+        with open(compute_grid, 'rb') as file:
+            commands = file.readlines()
+            
+        if n_core>1:
+            # Create a ThreadPoolExecutor with n workers
+            with concurrent.futures.ThreadPoolExecutor(max_workers=n_core) as executor:
+                # Create a progress bar with tqdm
+                progress_bar = tqdm(total=len(commands))
+                futures = {executor.submit(subprocess.run, command.strip(), shell=True, capture_output=True): command for command in commands}
+                for future in concurrent.futures.as_completed(futures):
+                    command = futures[future]
+                    try:
+                        result = future.result()
+                        logger.debug(f'Output : {result.stdout.decode()}')
+                        logger.error(f'Error : {result.stderr.decode()}')
+                            
+                    except Exception as exc:
+                        logger.exception(f'Command {command} failed: {exc}')
+                    progress_bar.update(1)
+        else:
+            for command in tqdm(commands):
+                #process = subprocess.Popen(command.strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                #stdout, stderr = process.communicate()
+                process = subprocess.Popen(command.strip(), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                process.wait()
+                
+                #logger.debug(f'Output : {result.stdout.decode()}')
+                #logger.error(f'{result.stderr.decode()}')
+
+                    
+                #time.sleep(0.1)  # laptop in fire
+                
+                
+                def option_4(subparsers_):
+    name = 'option4'
+    description = textwrap.dedent("Process compute grid")
+    help = '...'
+    parser_ = subparsers_.add_parser(
+                                    name=name,
+                                    description=description,
+                                    formatter_class=argparse.RawTextHelpFormatter,
+                                    help=help
+                                )
+                                
+    parser_.add_argument('--input_file', type=str, help='input compute grid file')
+    parser_.add_argument('--n_core', type=int, help='number of cores')
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    if selected_option_3 == '3-1':
+            input_directory = args.input_directory
+            export_directory_grid = args.export_directory_grid
+            export_directory_graphs = args.export_directory_graphs
+            export_directory_transformations = args.export_directory_transformations
+            output_filename = args.output_filename
+            
+            compute_grid_problem_generation(
+                                            input_directory,
+                                            export_directory_grid,
+                                            export_directory_graphs,
+                                            export_directory_transformations,
+                                            output_filename,
+                                        )
+        
+        elif selected_option_3 == '3-2':
+            input_directory_graphs = args.input_directory_graphs
+            input_directory_transformations = args.input_directory_transformations
+            min_element = args.min_element
+            max_element = args.max_element
+            export_directory_grid = args.export_directory_grid
+            output_filename = args.output_filename
+            
+            compute_grid_merging(
+                                input_directory_graphs,
+                                input_directory_transformations,
+                                min_element,
+                                max_element,
+                                export_directory_grid,
+                                output_filename,
+                            )
+                            
+                            
+        elif selected_option_3 == '3-3':
+            input_directory_graphs = args.input_directory_graphs
+            export_directory_grid = args.export_directory_grid
+            export_directory_results = args.export_directory_results
+            output_filename = args.output_filename
+            
+            compute_grid_julia(
+                                input_directory_graphs,
+                                export_directory_grid,
+                                export_directory_results,
+                                output_filename,
+                            )
+                            
+        elif selected_option_5 == '5-2':
+            input_directory_graphs = args.input_directory_graphs
+            input_directory_transformations = args.input_directory_transformations
+            min_element = args.min_element
+            max_element = args.max_element
+            uniform_batch_merging(
+                                    input_directory_graphs,
+                                    input_directory_transformations,
+                                    min_element,
+                                    max_element
+                                )
+                                
+def option_3_1(subparsers_): 
+        name = '3-1'
+        description = textwrap.dedent("Problem transformation generation (parameters in config.test_compute_grid)")
+        help = 'test.compute_grid.py'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_directory', type=str, help='input directory where the original NPP json file are')
+        parser_.add_argument('--export_directory_grid', type=str, required=True, help='Path to the export compute grid')
+        parser_.add_argument('--export_directory_graphs', type=str, required=True, help='Path to the export NPP json')
+        parser_.add_argument('--export_directory_transformations', type=str, required=True, help='Path to the export transformation PKL')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+    
+    
+    def option_3_2(subparsers_):
+        name = '3-2'
+        description = textwrap.dedent("Batch uniformisation")
+        help = 'test.compute_grid.batch '
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_directory_graphs', type=str, help='directory where the batches of graphs are')
+        parser_.add_argument('--input_directory_transformations', type=str, required=True, help='directory where the batches of transformations are')
+        parser_.add_argument('--min_element', type=int, help='TO DO')
+        parser_.add_argument('--max_element', type=int, help='TO DO')
+        parser_.add_argument('--export_directory_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+    
+    def option_3_3(subparsers_): 
+        name = '3-3'
+        description = textwrap.dedent("Julia commands")
+        help = 'test.compute_grid.compute_grid_julia'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+        parser_.add_argument('--input_directory_graphs', type=str, help='input parent directory where are the original NPP json file')
+        parser_.add_argument('--export_directory_grid', type=str, required=True, help='path to the export compute grid')
+        parser_.add_argument('--export_directory_results', type=str, required=True, help='prepare parent directory to the export result of julia result')
+        parser_.add_argument('--output_filename', type=str, required=True, help='Output filename')
+        
+
+
+    
+    option_3_1(subparsers__)
+    option_3_2(subparsers__)
+    option_3_3(subparsers__)
+

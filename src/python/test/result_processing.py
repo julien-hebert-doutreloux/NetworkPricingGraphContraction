@@ -43,11 +43,11 @@ def post_process_result(
     
     # (i) based on the index from I_T_AV
     edge_av = lambda i : g_gamma.alpha(i) 
-    opt_val_av = lambda i : max(1, tvals_0[i-1]) # index correction and value correction 
+    opt_val_av = lambda i : tvals_0[i-1] # index correction and value correction 
     opt_flow_av = lambda i : flow_0[i] 
     
     edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
-    opt_val_ap = lambda i : max(1, tvals[g_gamma.conv2(i)-1])  # index correction and value correction 
+    opt_val_ap = lambda i : tvals[g_gamma.conv2(i)-1]  # index correction and value correction 
     opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
     
     reduce_row_fun = (edge_av, edge_ap, opt_val_ap, opt_flow_ap)
