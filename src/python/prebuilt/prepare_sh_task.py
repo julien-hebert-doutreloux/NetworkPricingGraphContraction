@@ -6,7 +6,7 @@ logger = config.log(**PARAMETERS['logger'])
 
 
 def main():
-    directory_npp = './data/generated/problems/paper/d30-07'
+    directory_npp = './data/generated/problems/paper/v50-10'
     directory_sh = './src/sh/'
     
     independant = True
@@ -36,7 +36,7 @@ def main():
                 command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit}'
                 
                 if independant:
-                    sh_file = os.path.join(directory_sh, filename.replace(f'P{ext}', 'R.sh'))
+                    sh_file = os.path.join(directory_sh, filename.replace(f'P{ext}', '.sh'))
                     with open(sh_file, 'w') as f:
                         f.write('\n'.join(preamble(cpu, ram, h, m, s)))
                         f.write('\n'+command)
