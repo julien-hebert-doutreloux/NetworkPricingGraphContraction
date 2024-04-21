@@ -12,6 +12,7 @@ struct OptimizationResult
     preprocess_time::Float64
     solve_time::Float64
     flow::Dict
+    finish::Bool
 end
 
 
@@ -99,8 +100,8 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 	for val in all_flow
 		freq_dict[val] += 1
 	end
-	
-    return OptimizationResult(id, tvals, obj_value, preprocess_time, solve_time, freq_dict)
+	finish = (solve_time <= time_limit + 2)
+    return OptimizationResult(id, tvals, obj_value, preprocess_time, solve_time, freq_dict, finish)
 end
 
 function main(args)
