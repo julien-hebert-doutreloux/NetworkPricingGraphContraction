@@ -6,20 +6,25 @@ logger = config.log(**PARAMETERS['logger'])
 from menu.menu import *
 from unit_test.unit_test import main as unit_test
 from test.test_approx_max_clique import main as test_approx_max_clique
+
+
 from prebuilt.problem_generation import main as problem_generation   
 from prebuilt.prepare_sh_task import main as prepare_sh_task
+from prebuilt.post_processing_result import main as post_processing_result
+
 from test.test import main as test
                                 
 
 # Option
-# X 1) unit test
-# X 2) networkx.approximation.max_clique vs my.max_clique performance test
+# 1) unit test
+# 2) networkx.approximation.max_clique vs my.max_clique performance test
 # 3) prebuilt
-# X 3.1) problem generation
-# X 3.2) experience launch
+#   3.1) problem generation
+#   3.2) experience launch
+#   3.3) processing result
 # 5) indivual result_process
-# X 5.1) problem generation
-
+#   5.1) problem generation
+#   5.3) processing result
 
 if '__main__' == __name__:
 
@@ -73,6 +78,9 @@ if '__main__' == __name__:
             
         elif selected_option_3 == '3-2':
             prepare_sh_task()
+            
+        elif selected_option_3 == '3-3':
+            post_processing_result()
             
     elif selected_option == 'option5':
         selected_option_5 = args.pop('selected_option_5')

@@ -71,7 +71,6 @@ def post_process_result(
     rewind_optimal_2, rewind_time_2 = shortest_path_rewind(g_gamma, result, option=2)
     rewind_optimal_1, rewind_time_1 = shortest_path_rewind(g_gamma, result, option=1)
     
-    
     return {
                 'edge':data,
                 'obj_value':result['obj_value'],

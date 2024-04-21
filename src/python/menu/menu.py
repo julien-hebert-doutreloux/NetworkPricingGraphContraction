@@ -68,10 +68,23 @@ def option_3(subparsers_):
                                         formatter_class=argparse.RawTextHelpFormatter,
                                         help=help
                                     )
+                                    
+                                    
+    def option_3_3(subparsers_): 
+        name = '3-3'
+        description = textwrap.dedent("Processing result (parameters in config.prebuilt_post_processing_result)")
+        help = 'prebuilt.post_processing_result.py'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
     
     
     option_3_1(subparsers__)
     option_3_2(subparsers__)
+    option_3_3(subparsers__)
         
 def option_5(subparsers_):
     name = 'option5'

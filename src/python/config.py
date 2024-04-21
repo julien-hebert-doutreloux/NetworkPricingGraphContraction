@@ -419,6 +419,7 @@ def prebuilt_problem_generation(name):
     parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    
     # OTHER PARAMETERS
     # Problem generation parameters
     parameters['MISC'] = {}
@@ -475,6 +476,27 @@ def prebuilt_prepare_sh_task(name):
     parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+        
+    # OTHER PARAMETERS
     return parameters
+    
+    
+def prebuilt_post_processing_result(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.problem_generation.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+        
+    # OTHER PARAMETERS
+    return parameters
+    
+    
+    
 ###################################
 # plot

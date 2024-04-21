@@ -36,7 +36,14 @@ def main():
                 command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit}'
                 
                 if independant:
-                    sh_file = os.path.join(directory_sh, filename.replace(f'P{ext}', '.sh'))
+                    sh_file = os.path.join(directory_sh, filename.replace(f'-P{ext}', '.sh'))
+                    
+                    if filename.endswith("P.json"):
+                        h, m , s = '%02d' % (time_limit // 3600), '%02d' % ((time_limit % 3600) // 60), '00'
+                    
+                    else:
+                        h, m, s = '15', '00', '00'
+                        
                     with open(sh_file, 'w') as f:
                         f.write('\n'.join(preamble(cpu, ram, h, m, s)))
                         f.write('\n'+command)

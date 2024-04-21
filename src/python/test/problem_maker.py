@@ -12,6 +12,7 @@ logger = config.log(**PARAMETERS['logger'])
 def problem_maker(
                 file_npp:str,
                 directory_npp:str,
+                directory_original:str,
                 n, min_sl, max_sl, m,
                 H1, H2, H3, H4,
                 max_attemp,
@@ -111,8 +112,9 @@ def problem_maker(
     
     # 5) export in batch
     filename = f"{'%06d' % 0}-{'%06d' % 0}-{basename}"
-    to_json(all_contraction[(0, 0, 0, 0, 0, 0, 0, 0, 0)][0].image_problem_to_dict(), directory_npp, filename+'-P')
-    to_json(all_contraction[(0, 0, 0, 0, 0, 0, 0, 0, 0)][0].transformation_to_dict(), directory_npp, filename+'-T')
+    
+    to_json(all_contraction[(0, 0, 0, 0, 0, 0, 0, 0, 0)][0].image_problem_to_dict(), directory_original, filename+'-P')
+    to_json(all_contraction[(0, 0, 0, 0, 0, 0, 0, 0, 0)][0].transformation_to_dict(), directory_original, filename+'-T')
     
     all_contraction.pop((0, 0, 0, 0, 0, 0, 0, 0, 0))
     
