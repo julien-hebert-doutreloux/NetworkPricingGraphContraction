@@ -100,7 +100,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 	for val in all_flow
 		freq_dict[val] += 1
 	end
-	finish = (solve_time <= time_limit + 2)
+	finish = (solve_time <= time_limit)
     return OptimizationResult(id, tvals, obj_value, preprocess_time, solve_time, freq_dict, finish)
 end
 
