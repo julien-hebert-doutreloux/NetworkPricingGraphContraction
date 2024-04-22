@@ -448,7 +448,7 @@ def prebuilt_problem_generation(name):
 
     directory_input = './data/from_github/problems/paper'
     directory_output =  './data/generated/problems/paper'
-    
+    directory_original = './data/generated/problems/paper/original'
     parameters['MISC']['n'] = n
     parameters['MISC']['min_sl'] = min_sl
     parameters['MISC']['max_sl'] = max_sl
@@ -461,6 +461,8 @@ def prebuilt_problem_generation(name):
     parameters['MISC']['batch_size'] = batch_size
     parameters['MISC']['directory_input'] = directory_input
     parameters['MISC']['directory_output'] = directory_output
+    parameters['MISC']['directory_original'] = directory_original
+    
     
     return parameters
     
