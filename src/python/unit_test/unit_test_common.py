@@ -25,7 +25,7 @@ def UNIT_TEST_npp_from_json_to_json():
     If the data is not equal, an AssertionError is raised with an appropriate message.
 
     """
-    directory = 'other'
+    directory = 'tmp/unit_test'
     filename = 'adaptivetest'
     input_file1 = os.path.join(directory, f"{filename}.json")
     nodes, edges, problems = npp_from_json(input_file1)
@@ -35,7 +35,7 @@ def UNIT_TEST_npp_from_json_to_json():
         
     #summary(nodes, edges)
     
-    directory = 'other'
+    directory = 'tmp/unit_test/'
     filename = 'adaptivetest_rebuild'
     #input_file2 = os.path.join(directory, f"{filename}.json")
     

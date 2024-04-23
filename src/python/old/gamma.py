@@ -3633,4 +3633,290 @@ def option_3_1(subparsers_):
     option_3_1(subparsers__)
     option_3_2(subparsers__)
     option_3_3(subparsers__)
+idx = []
+data = []
+for root, dirs, files in os.walk('./data/generated/problems/paper/original/'):
+    for filename in files:
+        if filename.endswith("R.json"):
+            with open(os.path.join(root, filename), 'r') as f:
+                result = json.load(f)
+            idx.append(result['id'])
+            data.append( (result['id'], result['solve_time']))
+df = pd.DataFrame(data, index=idx, columns=['id', 'solve_time',])
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+file_path = './data/generated/problems/paper/original/'
+command_list = []
+for id_, _ in df[df['solve_time']>=1500].values:
+    p_path = os.path.join(file_path, f"{id_}.json")
+    r_path = os.path.join(file_path, f"{id_[:-1:]}R.json")
+    command = f"julia ./src/julia/script.jl '{p_path}' '{r_path}' 5000" 
+    command_list.append(command)
+preamble =  lambda : [
+            "#!/bin/bash",
+            "#SBATCH --cpus-per-task=1",
+            "#SBATCH --mem=5G",
+            "#SBATCH --time=03:00:00",
+            "#SBATCH --output=/dev/null",
+            "#SBATCH --partition=optimum",
+            "module load julia",
+            "module load gurobi",
+        ]
+
+tmp = []
+j=1
+for i, command in enumerate(command_list):
+    if i%2 == 0 and i>0:
+        print(i)
+        with open(f"{j}-2-original.sh", 'w') as f:
+            f.write('\n'.join(preamble()+tmp+['sleep 60',]))
+        tmp = []
+        j+=1
+    tmp.append(command)
+        
+preamble =  lambda : [
+            "#!/bin/bash",
+            "#SBATCH --cpus-per-task=1",
+            "#SBATCH --mem=5G",
+            "#SBATCH --time=03:30:00",
+            "#SBATCH --output=/dev/null",
+            "#SBATCH --partition=optimum",
+            "module load julia",
+            "module load gurobi",
+        ]
+total_t = 0
+command_list = []
+j=1
+for id_, time_ in df[df['solve_time']<1500].values:
+    total_t+=round(time_,0)+250
+    p_path = os.path.join(file_path, f"{id_}.json")
+    r_path = os.path.join(file_path, f"{id_[:-1:]}R.json")
+    command = f"julia ./src/julia/script.jl '{p_path}' '{r_path}' {int(round(time_,0))+250}" 
+    command_list.append(command)
+    if total_t>10800:
+        with open(f'{j}-{len(command_list)}-original.sh', 'w') as f:
+            f.write('\n'.join(preamble()+command_list+['sleep 60', ]))
+        total_t = 0
+        command_list = []
+        j+=1
+        
+tmp = [
+    '000000-000000-d50-01-P.json',
+    '000000-000000-d50-02-P.json',
+    '000000-000000-d50-03-P.json',
+    '000000-000000-d50-04-P.json',
+    '000000-000000-d50-05-P.json',
+    '000000-000000-d50-06-P.json',
+    '000000-000000-d50-07-P.json',
+    '000000-000000-d50-08-P.json',
+    '000000-000000-d50-09-P.json',
+    '000000-000000-d50-10-P.json',
+    '000000-000000-g30-01-P.json',
+    '000000-000000-g30-02-P.json',
+    '000000-000000-g30-03-P.json',
+    '000000-000000-g30-04-P.json',
+    '000000-000000-g30-05-P.json',
+    '000000-000000-g30-06-P.json',
+    '000000-000000-g30-07-P.json',
+    '000000-000000-g30-08-P.json',
+    '000000-000000-g30-09-P.json',
+    '000000-000000-g30-10-P.json',
+    '000000-000000-h50-06-P.json'
+]
+
+preamble =  lambda : [
+            "#!/bin/bash",
+            "#SBATCH --cpus-per-task=1",
+            "#SBATCH --mem=5G",
+            "#SBATCH --time=03:30:00",
+            "#SBATCH --output=/dev/null",
+            "#SBATCH --partition=optimum",
+            "module load julia",
+            "module load gurobi",
+        ]
+
+base_path = './data/generated/problems/paper/original/'
+command_list = []
+j=0
+for i,p in enumerate(tmp):
+    p_path = os.path.join(base_path, p)
+    r_path = os.path.join(base_path, p.replace("P.json", "R.json"))
+    command = f"julia ./src/julia/script.jl '{p_path}' '{r_path}' 5000" 
+    
+    command_list.append(command)
+    if i%2 == 0 and i>0:
+        with open(f'{j}-2-original.sh', 'w') as f:
+            f.write('\n'.join(preamble()+command_list+['sleep 60', ]))
+        command_list =[]
+        j+=1
+        
+        
+        
+        
+        
+        
+        
+        
+
+def result_post_process_csv_batch(input_file:str):
+    data = pd.read_csv(input_file)
+
+    for index, row in data.iterrows():
+        process_result_before_vs_after(
+                                        row['original_graph_file'],
+                                        row['transformations_file'],
+                                        row['results_file'],
+                                        row['export_folder'],
+                                        row['output_filename'],
+                                        )
+
+
+def stack_result_into_dataframe(
+                                input_process_result_file_before:str,
+                                input_process_result_file_after:str,
+                                export_edge_dataframe_file:str='',
+                                export_meta_dataframe_file:str='',
+                            ):
+    """
+    Compare the results of two process result files and return two pandas dataframes containing the comparison.
+    Args:
+        input_process_result_file_before (str): Single result in the file
+        input_process_result_file_after (str): Single or multiple result in file
+        export_edge_dataframe_file (str): The file path to the pkl dataframe about edge (create one if it does not exists)
+        export_meta_dataframe_file (str): The file path to the pkl dataframe about meta data (create one if it does not exists)
+    """
+    # Check if the file does not exists
+    if not os.path.isfile(input_process_result_file_before):
+        logger.warning(f"The specified file does not exists: {process_result_file_before}")
+        return False
+        
+    if not os.path.isfile(input_process_result_file_after):
+        logger.warning(f"The specified file does not exists: {process_result_file_after}")
+        return False
+    
+    # retrieve name of the original problem
+    base_name = os.path.basename(input_process_result_file_before)
+    filename_before, _ = os.path.splitext(base_name)
+    # retrieve name of the transformed problem
+    base_name = os.path.basename(input_process_result_file_after)
+    filename_after, _ = os.path.splitext(base_name)
+    
+    
+    # Before result
+    with open(input_process_result_file_before, 'rb') as f:
+        result_before = pickle.load(f)  
+    edge_before = result_before['edge']
+    obj_value_before = result_before['obj_value']
+    solve_time_before = result_before['solve_time'] 
+    preprocess_time_before= result_before['preprocess_time']
+    
+    
+    # After result
+    with open(input_process_result_file_after, 'rb') as f:
+        result_after = pickle.load(f)
+        
+    if type(result_after) != list:
+        # SINGLE CASE
+        result_after = [result_after, ]
+        
+    data1 = []
+    data2 = []
+    for res in result_after:
+        id_after = res['id']
+        edge_after = res['edge']
+        obj_value_after = res['obj_value']
+        solve_time_after = res['solve_time'] 
+        preprocess_time_after = res['preprocess_time']
+        n_edge = res['n_edge']
+        
+        n_vertex = res['n_vertex']
+        compression_factors = list(res['compression_factors'].values())
+        rewind_optimal = res['rewind_optimal']
+        rewind_time = res['rewind_time']
+
+        # edge result
+        combine = lambda i: [id_after,] + list(edge_before[i][0:1:])+list(edge_before[i][2::])+list(edge_after[i][::])
+        data1 += [combine(i) for i in range(len(edge_after))]
+        
+        # meta data and objective
+        data2 += [
+                    (
+                        id_after,
+                        obj_value_after,
+                        solve_time_after,
+                        preprocess_time_after,
+                        n_vertex,
+                        n_edge,
+                        rewind_optimal,
+                        rewind_time,
+                        *compression_factors
+                    ), 
+                ]
+        
+        
+    headers = (
+                'id',
+                'edge',
+                'opt. value',
+                'opt. flow',
+                'edge_ref',
+                '(edge)',
+                '(opt. value)',
+                '(opt. flow)'
+            )
+    df1 = pd.DataFrame(data, columns=headers)
+    logger.debug('\n'+tabulate(data, headers=headers))
+    
+    headers = (
+                'id',
+                'objective',
+                'solve time',
+                'preprocess time',
+                'number vertex',
+                'number edge',
+                'rewind optimal',
+                'rewind time',
+                'c.-f.1',
+                'c.-f.2',
+                'c.-f.3',
+                'c.-f.4',
+                'c.-f.5',
+                'c.-f.6',
+                'c.-f.7',
+                'c.-f.8',
+                'c.-f.9'
+            )
+    df2 = pd.DataFrame(data, columns=headers)
+    logger.debug('\n'+tabulate(data, headers=headers))
+    
+    
+    if os.path.isfile(export_edge_dataframe_file):
+        logger.warning(f"The specified file already exists: {export_edge_dataframe_file}")
+        logger.warning(f"The following file will be overwritten : {export_edge_dataframe_file}")
+    df1.to_pickle(export_edge_dataframe_file)
+        
+        
+    if os.path.isfile(export_meta_dataframe_file):
+        logger.warning(f"The specified file already exists: {export_meta_dataframe_file}")
+        logger.warning(f"The following file will be overwritten : {export_meta_dataframe_file}")
+    df2.to_pickle(export_meta_dataframe_file)
+        
+    return export_edge_dataframe_file, export_meta_dataframe_file
+    
+
+def stack_result_into_dataframe_batch(input_file:str):
+    data = pd.read_csv(input_file)
+
+    for index, row in data.iterrows():
+        stack_result_into_dataframe(
+                                        row['input_process_result_file_before'],
+                                        row['input_process_result_file_after'],
+                                        row['export_edge_dataframe_file'],
+                                        row['export_meta_dataframe_file'],
+                                        )
+                                        
+                                        
+                                        
+                                        
+                                        
 

@@ -12,7 +12,49 @@ def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp):
     'max_attemp':max_attemp
     }
     
+    
 def main():
+    directory_npp = './data/generated/problems/paper/original'
+    directory_output = './tmp/'
+    ptr = {}
+    for root, dirs, files in os.walk(directory_npp):
+        for filename in files:
+            if filename.endswith("-R.json"):
+                base_name, ext = os.path.splitext(filename)
+                file_results = os.path.join(directory_npp, filename)
+                file_problems = os.path.join(directory_npp, filename.replace(f'R.json', f'P.json'))
+                file_transformations = os.path.join(directory_npp, filename.replace(f'R.json', f'T.json'))
+                
+                
+                
+                ptr[base_name] = (file_problems, file_transformations, file_results)
+                
+    result_dict = {}
+    
+    
+    for problem_name, (p, t, r) in tqdm(ptr.items(), desc="Processing original"):
+    
+        with open(t, 'r') as f:
+            transformations = json.load(f)
+        
+        with open(r, 'r') as f:
+            results = json.load(f)
+            id_ = results.pop('id')
+
+        # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
+        params = [0,0,0,0,0,0,0,0,0]
+        o_nodes, o_edges, o_problems = npp_from_json(p)
+        result_dict[id_[14::].replace('-P', '')] = post_process_result(
+                    o_nodes, o_edges, o_problems,
+                    transformations, results,
+                    **parameter_kwargs(*params)
+                    )
+                        
+    with open(os.path.join(directory_output, f'result_original.pkl'), 'wb') as f:
+        pickle.dump(result_dict, f)
+    
+                
+def batch_result():
     directory_npp = './data/generated/problems/paper/v50-10'
     directory_original = './data/generated/problems/paper/original'
     directory_output = './tmp/'
@@ -34,33 +76,14 @@ def main():
                 
                 
 
-    #print(*ptr.items(), sep='\n')
-    
-    
     
     result_dict = {}
-    # Original problem
-    #(p, t, r) = #ptr.pop('%06d' % 0)
     
-    p = os.path.join(directory_original, f'000000-000000-{problem_name}-P.json'
-    t = os.path.join(directory_original, f'000000-000000-{problem_name}-T.json'
-    r = os.path.join(directory_original, f'000000-000000-{problem_name}-R.json'
+    p = os.path.join(directory_original, f'000000-000000-{problem_name}-P.json')
+    t = os.path.join(directory_original, f'000000-000000-{problem_name}-T.json')
+    r = os.path.join(directory_original, f'000000-000000-{problem_name}-R.json')
     
     o_nodes, o_edges, o_problems = npp_from_json(p)
-
-    #with open(t, 'r') as f:
-    #    o_transformation = json.load(f)
-        
-    #with open(r, 'r') as f:
-    #    o_result = json.load(f)
-        
-    
-    #id_ = f"{'%06d' % 0}-{'%06d' % 0}-0-0-0-0-0-0-0-0-0-{problem_name}"
-    #result_dict[id_] = post_process_result(
-    #                    o_nodes, o_edges, o_problems,
-    #                    o_transformation, o_result,
-    #                    **parameter_kwargs(0,0,0,0,0,0,0,0,0)
-    #                    )
                         
     for batch_id, (p, t, r) in ptr.items():
         
