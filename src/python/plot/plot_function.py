@@ -280,7 +280,7 @@ def advance_plots(
     # (0,1) with H4 - Time density
     # (1,0) Without H4 - (Objective)/Objective
     # (1,1) Without H4 - Time density
-    
+    df = df.copy()
     ## Advance plots
     o_time = df['solve_time'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']	
     o_obj = df['obj_value'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']
@@ -292,10 +292,10 @@ def advance_plots(
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(fig_x_size, fig_y_size))
     
     # With H4 - (Objective)/Objective
-    classes = df[df['H4'] == '1']['Class'].unique()
+    classes = df[df['H4'] == 1]['Class'].unique()
     classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
     sns.kdeplot(
-        data=df[df['H4']=='1'],
+        data=df[df['H4']==1],
         x='optimal_ratio',
         hue='Class',
         hue_order=classes_order,
@@ -309,11 +309,10 @@ def advance_plots(
     solve_time_min = df['solve_time'].min()
     solve_time_max = df['solve_time'].max()
     
-    classes = df[df['H4'] == '1']['Class'].unique()
+    classes = df[df['H4'] == 1]['Class'].unique()
     classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
-    
     sns.kdeplot(
-        data=df[df['H4']=='1'],
+        data=df[df['H4']==1],
         x='solve_time',
         hue='Class',
         hue_order=classes_order,
@@ -325,10 +324,10 @@ def advance_plots(
     
     
     # Without H4 - (Objective)/Objective
-    classes = df[df['H4'] == '0']['Class'].unique()
+    classes = df[df['H4'] == 0]['Class'].unique()
     classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
     sns.kdeplot(
-        data=df[df['H4']=='0'],
+        data=df[df['H4']==0],
         x='optimal_ratio',
         hue='Class',
         hue_order=classes_order,
@@ -339,10 +338,10 @@ def advance_plots(
 
     
     # Without H4 - Time density
-    classes = df[df['H4'] == '0']['Class'].unique()
+    classes = df[df['H4'] == 0]['Class'].unique()
     classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
     sns.kdeplot(
-        data=df[df['H4']=='0'],
+        data=df[df['H4']==0],
         x='solve_time',
         hue='Class',
         hue_order=classes_order,
@@ -406,24 +405,29 @@ def optimal_ratio_vs_time(
                         ticks_font_size:int=16,
                         label_font_size:int=22,
                         title_font_size:int=26,
-                        legend_font_size:int=18
+                        legend_font_size:int=18,
+                        log_option:bool=False
                     ):
 
-
+    df = df.copy()
     o_time = df['solve_time'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']
     o_obj = df['obj_value'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']
+    o_time = np.log(o_time) if log_option else o_time
+    
     columns = ['min_sl', 'max_sl', 'm', 'H4']
     df['Class'] = df[columns].astype(str).apply('-'.join, axis=1)
+    
     df['optimal_ratio'] = df['obj_value']/o_obj
-
+    df['solve_time'] = np.log(df['solve_time']) if log_option else df['solve_time']
+    
     
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(fig_x_size, fig_y_size))
     
     # Plot with H4
-    classes = df[df['H4'] == '1']['Class'].unique()
+    classes = df[df['H4'] == 1]['Class'].unique()
     classes = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
     for class_value in classes:
-        class_data = df[(df['Class'] == class_value) & (df['H4'] == '1')]
+        class_data = df[(df['Class'] == class_value) & (df['H4'] == 1)]
         sns.scatterplot(
             x='optimal_ratio',
             y='solve_time',
@@ -436,10 +440,10 @@ def optimal_ratio_vs_time(
     
     
     # Plot without H4
-    classes = df[df['H4'] == '0']['Class'].unique()
+    classes = df[df['H4'] == 0]['Class'].unique()
     classes = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
     for class_value in classes:
-        class_data = df[(df['Class'] == class_value) & (df['H4'] == '0')]
+        class_data = df[(df['Class'] == class_value) & (df['H4'] == 0)]
         sns.scatterplot(
             x='optimal_ratio',
             y='solve_time',
@@ -450,11 +454,11 @@ def optimal_ratio_vs_time(
     axes[1].axhline(y=o_time, color='red', linestyle='--')
     axes[1].axvline(x=1, color='red', linestyle='--')
 
-
+    y_label = 'Solve Time (log sec)' if log_option else 'Solve Time (sec)'
     # Config
     axes[0].set_xlabel('Optimal Ratio', fontsize=label_font_size);
     axes[0].tick_params(axis='x', labelsize=ticks_font_size);
-    axes[0].set_ylabel('Solve Time (sec)', fontsize=label_font_size);
+    axes[0].set_ylabel(y_label, fontsize=label_font_size);
     axes[0].tick_params(axis='y', labelsize=ticks_font_size);
     axes[0].set_title('Optimal Ratio vs. Solve Time by Class (H4=1)', fontsize=title_font_size);
 
@@ -467,7 +471,7 @@ def optimal_ratio_vs_time(
     # Config
     axes[1].set_xlabel('Optimal Ratio', fontsize=label_font_size);
     axes[1].tick_params(axis='x', labelsize=ticks_font_size);
-    axes[1].set_ylabel('Solve Time (sec)', fontsize=label_font_size);
+    axes[1].set_ylabel(y_label, fontsize=label_font_size);
     axes[1].tick_params(axis='y', labelsize=ticks_font_size);
     axes[1].set_title('Optimal Ratio vs. Solve Time by Class (H4=0)', fontsize=title_font_size);
 
@@ -491,6 +495,10 @@ def correlation_matrix(
                         title_font_size:int=26,
                         legend_font_size:int=18,
                     ):
+                    
+    df = df.copy()      
+    o_obj = df['obj_value'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']
+    df['optimal_ratio'] = df['obj_value']/o_obj
     # Calculate the correlation matrix
     corr_matrix = df[['optimal_ratio', 'solve_time', 'min_sl', 'max_sl', 'm', 'H4']].corr()
     

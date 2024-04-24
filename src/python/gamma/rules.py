@@ -279,7 +279,9 @@ class Rules(dict):
                         partition |= {frozenset(random_subset), }
                         union |= random_subset
                         
-                m_ctn = m if random.random()>0.5 and m_ctn!=0 else m_ctn
+                if m == -1:
+                    m_ctn = m if random.random()>0.5 and m_ctn!=0 else m_ctn
+                
                 if m_ctn == m:
                     partition |= set_of_frozenset([(x,) for x in full_set - union])
                     union = full_set
@@ -288,7 +290,7 @@ class Rules(dict):
                 partition |= set_of_frozenset([(x,) for x in full_set - union])
                 union = full_set
                 
-            if ((m_ctn == m) or (m == -1)) and  (m_ctn!=0):
+            if ((m_ctn == m) or ((m == -1) and (m_ctn!=0))):
                 #partition = set_of_frozenset(partition)
                 if not partition in partitions:
                     #length = len(set(chain.from_iterable(partition)))

@@ -10,7 +10,7 @@ from test.test_approx_max_clique import main as test_approx_max_clique
 
 from prebuilt.problem_generation import main as problem_generation   
 from prebuilt.prepare_sh_task import main as prepare_sh_task
-from prebuilt.post_processing_result import main as post_processing_result
+from prebuilt.post_processing_result import batch_result as post_processing_result
 
 from test.test import main as test
                                 
