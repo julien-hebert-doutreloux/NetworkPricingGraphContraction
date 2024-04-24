@@ -115,6 +115,7 @@ def option_5(subparsers_):
                                     )
         parser_.add_argument('--file_npp', type=str, help='file path to npp problem')
         parser_.add_argument('--directory_npp', type=str, help='directory path to export problem')
+        parser_.add_argument('--directory_original', type=str, help='directory path to export the preprocess original problem')
         parser_.add_argument('--n', type=int, help='number of problem to generate')
         parser_.add_argument('--min_sl', type=int, help='minimum length of none trivial equivalence class')
         parser_.add_argument('--max_sl', type=int, help='maximum length of none trivial equivalence class')

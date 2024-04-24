@@ -6,7 +6,7 @@ logger = config.log(**PARAMETERS['logger'])
 from menu.menu import *
 from unit_test.unit_test import main as unit_test
 from test.test_approx_max_clique import main as test_approx_max_clique
-
+from test.problem_maker import problem_maker
 
 from prebuilt.problem_generation import main as problem_generation   
 from prebuilt.prepare_sh_task import main as prepare_sh_task
