@@ -3919,4 +3919,196 @@ def stack_result_into_dataframe_batch(input_file:str):
                                         
                                         
                                         
+from preamble.preamble import *
 
+def merging_batch()
+    
+    problems = {}
+    transformations = {}
+    for root, dirs, files in os.walk(directory_npp):
+        for filename in files:
+            if filename.endswith("-P.json"):
+            
+                base_name, ext = os.path.splitext(filename)
+                file_problem = os.path.join(root, filename)
+                file_transformation = os.path.join(root, filename.replace(f'-P{ext}', f'-T{ext}'))
+                
+                with open(file_problem, 'r') as f:
+                    problems[base_name] = json.load(f)
+                    
+                with open(file_transformation, 'r') as f:
+                    transformations[base_name] = json.load(f)
+    
+    
+    
+    
+    combined_data = {}
+    for file in input_file_list:
+    
+        with open(file, 'rb') as f:
+            data = pickle.load(f)
+            combined_data.update(data)
+            
+        if erease:
+            os.remove(file)
+            logger.info(f"File has been deleted : {file}")
+                      
+    output_file = os.path.join(output_directory, output_name)
+    with open(output_file, 'wb') as f:
+        # save the combined data to a new PKL file
+        pickle.dump(combined_data, f)
+        logger.info(f"File has been created : {output_file}")
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    def optimal_ratio_vs_time(
+                        df,
+                        pb_name,
+                        fig_x_size:int=15,
+                        fig_y_size:int=15,
+                        ticks_font_size:int=16,
+                        label_font_size:int=22,
+                        title_font_size:int=26,
+                        legend_font_size:int=18,
+                        log_option:bool=False
+                    ):
+
+    df = df.copy()
+    o_time = df['solve_time'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']
+    o_obj = df['obj_value'][f'000000-000000-0-0-0-0-0-0-0-0-0-{pb_name}']
+    o_time = np.log(o_time) if log_option else o_time
+    
+    columns = ['min_sl', 'max_sl', 'm', 'H4']
+    df['Class'] = df[columns].astype(str).apply('-'.join, axis=1)
+    
+    df['optimal_ratio'] = df['obj_value']/o_obj
+    df['solve_time'] = np.log(df['solve_time']) if log_option else df['solve_time']
+    
+    
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(fig_x_size, fig_y_size))
+    
+    # Plot with H4
+    classes = df[df['H4'] == 1]['Class'].unique()
+    classes = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
+    for class_value in classes:
+        class_data = df[(df['Class'] == class_value) & (df['H4'] == 1)]
+        sns.scatterplot(
+            x='optimal_ratio',
+            y='solve_time',
+            data=class_data,
+            label=f'{class_value}',
+            ax=axes[0]
+        )
+    axes[0].axhline(y=o_time, color='red', linestyle='--')
+    axes[0].axvline(x=1, color='red', linestyle='--')
+    
+    
+    # Plot without H4
+    classes = df[df['H4'] == 0]['Class'].unique()
+    classes = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
+    for class_value in classes:
+        class_data = df[(df['Class'] == class_value) & (df['H4'] == 0)]
+        sns.scatterplot(
+            x='optimal_ratio',
+            y='solve_time',
+            data=class_data,
+            label=f'{class_value}',
+            ax=axes[1]
+        )
+    axes[1].axhline(y=o_time, color='red', linestyle='--')
+    axes[1].axvline(x=1, color='red', linestyle='--')
+
+    y_label = 'Solve Time (log sec)' if log_option else 'Solve Time (sec)'
+    # Config
+    axes[0].set_xlabel('Optimal Ratio', fontsize=label_font_size);
+    axes[0].tick_params(axis='x', labelsize=ticks_font_size);
+    axes[0].set_ylabel(y_label, fontsize=label_font_size);
+    axes[0].tick_params(axis='y', labelsize=ticks_font_size);
+    axes[0].set_title('Optimal Ratio vs. Solve Time by Class (H4=1)', fontsize=title_font_size);
+
+    legend = axes[0].get_legend()
+    legend.set_title('Class', prop={'size': legend_font_size+1})
+    # set the fontsize of the legend
+    for text in legend.get_texts():
+        text.set_fontsize(legend_font_size)
+
+    # Config
+    axes[1].set_xlabel('Optimal Ratio', fontsize=label_font_size);
+    axes[1].tick_params(axis='x', labelsize=ticks_font_size);
+    axes[1].set_ylabel(y_label, fontsize=label_font_size);
+    axes[1].tick_params(axis='y', labelsize=ticks_font_size);
+    axes[1].set_title('Optimal Ratio vs. Solve Time by Class (H4=0)', fontsize=title_font_size);
+
+    legend = axes[1].get_legend()
+    legend.set_title('Class', prop={'size': legend_font_size+1})
+    # set the fontsize of the legend
+    for text in legend.get_texts():
+        text.set_fontsize(legend_font_size)
+    
+    
+    plt.tight_layout()
+    return fig
+    
+    
+
+    # (1,0) Without H4 - (Objective)/Objective
+    # (1,1) Without H4 - Time density
+
+# Without H4 - (Objective)/Objective
+    classes = df[df['H4'] == 0]['Class'].unique()
+    classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
+    sns.kdeplot(
+        data=df[df['H4']==0],
+        x='optimal_ratio',
+        hue='Class',
+        hue_order=classes_order,
+        ax=axes[1, 0],
+        legend=False
+    )
+    axes[1, 0].axvline(x=1, color='red', linestyle='--');
+
+    
+    # Without H4 - Time density
+    classes = df[df['H4'] == 0]['Class'].unique()
+    classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
+    sns.kdeplot(
+        data=df[df['H4']==0],
+        x='solve_time',
+        hue='Class',
+        hue_order=classes_order,
+        ax=axes[1, 1],
+        clip=(solve_time_min, solve_time_max),
+        legend=True
+    )
+    axes[1, 1].axvline(x=o_time, color='red', linestyle='--');
+
+
+
+ # Config
+    axes[1, 0].set_xlabel('Optimal ratio', fontsize=label_font_size);
+    axes[1, 0].tick_params(axis='x', labelsize=ticks_font_size);
+    axes[1, 0].set_ylabel('Density', fontsize=label_font_size);
+    axes[1, 0].tick_params(axis='y', labelsize=ticks_font_size);
+    axes[1, 0].set_title('(Objective)/Objective without H4', fontsize=title_font_size);
+
+    # Config
+    axes[1, 1].set_xlabel('Time (sec)', fontsize=label_font_size);
+    axes[1, 1].tick_params(axis='x', labelsize=ticks_font_size);
+    axes[1, 1].set_ylabel('', fontsize=label_font_size);
+    axes[1, 1].tick_params(axis='y', labelsize=ticks_font_size);
+    axes[1, 1].set_title('Time without H4', fontsize=title_font_size);
+
+
+    legend = axes[1, 1].get_legend()
+    legend.set_title('Class', prop={'size': legend_font_size+1})
+    # set the fontsize of the legend
+    for text in legend.get_texts():
+        text.set_fontsize(legend_font_size)

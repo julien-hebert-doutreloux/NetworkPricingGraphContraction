@@ -34,7 +34,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                 
                     # *.sh config for server
                     h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
-                    cpu, ram = 1, 5
+                    cpu, ram = 1, 6
                 
                 
                     input_file = os.path.join(root, filename)
@@ -46,10 +46,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                                             
                         with open(file_sh, 'w') as f:
-                            f.write('\n'.join( preamble(cpu, ram, h, m, s)+[command,]+['sleep 60', ] ))
-                        # print(file_sh)
-                        # print('\n'.join( preamble(cpu, ram, h, m, s)+[command, ]+['sleep 60', ] ))
-                        # input()
+                            f.write('\n'.join( preamble(cpu, ram, h, m, s)+[command,]+['sleep 300', ] ))
                         
                         command_list_sh.append(f'sbatch {file_sh}')
                         time_limit_sh = 0
@@ -60,16 +57,13 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                     
             
             
-        time_limit_sh = max(time_limit_sh, 500)   
+        time_limit_sh = time_limit_sh + 600   
         file_sh = os.path.join(directory_sh, f"laucher_{problem_name}.sh")
         
         h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
-        cpu, ram = 1, (grouped*4+1)
+        cpu, ram = 1, (grouped*5+1)
         with open(file_sh, 'w') as f:
-            f.write('\n'.join( preamble(cpu, ram, h, m, s)+command_list_sh+['sleep 60', ] ))
-            # print(file_sh)
-            # print('\n'.join( preamble(cpu, ram, h, m, s)+command_list_sh+['sleep 60', ] ))
-            # input()
+            f.write('\n'.join( preamble(cpu, ram, h, m, s)+command_list_sh+['sleep 300', ] ))
 
 
 

@@ -59,7 +59,14 @@ def batch_result():
     #./d30-01
     #./g50-10
     #./v50-01
-    for pb_name in ['d30-01', 'g50-10', 'v50-01']:
+    pb_list = [
+                'd30-01','d30-02','d30-03','d30-05','d30-06','d30-07','d30-08','d30-09',
+                'g30-01','g30-02','g30-03','g30-04','g30-05','g30-06','g30-07','g30-08','g30-09',
+                'h30-01','h30-03','h30-07','h30-09',
+                'v30-01','v30-05','v30-06','v30-07','v30-08'
+                ]
+
+    for pb_name in pb_list:
         directory_npp = f'./data/generated/problems/paper/{pb_name}'
         directory_original = './data/generated/problems/paper/original'
         directory_output = './tmp/'
@@ -77,7 +84,7 @@ def batch_result():
                     file_results = os.path.join(directory_npp, filename)
                     file_problems = os.path.join(directory_npp, filename.replace(f'R.json', f'P{ext}'))
                     file_transformations = os.path.join(directory_npp, filename.replace(f'R.json', f'T{ext}'))
-                    ptr[base_name[:6:]] = (file_problems, file_transformations, file_results)
+                    ptr[base_name[:13:]] = (file_problems, file_transformations, file_results)
                     
                     
 
