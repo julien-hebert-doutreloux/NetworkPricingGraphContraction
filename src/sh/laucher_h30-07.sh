@@ -17,4 +17,4 @@ sbatch ./src/sh/000001-000092-h30-07.sh
 sbatch ./src/sh/000001-000091-h30-07.sh
 sbatch ./src/sh/000001-000099-h30-07.sh
 sbatch ./src/sh/000001-000014-h30-07.sh
-sleep 300
+sleep 600

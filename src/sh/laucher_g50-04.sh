@@ -24,4 +24,4 @@ sbatch ./src/sh/000001-000094-g50-04.sh
 sbatch ./src/sh/000001-000095-g50-04.sh
 sbatch ./src/sh/000001-000066-g50-04.sh
 sbatch ./src/sh/000001-000092-g50-04.sh
-sleep 300
+sleep 600

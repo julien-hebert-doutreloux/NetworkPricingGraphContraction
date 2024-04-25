@@ -7,4 +7,4 @@
 module load julia
 module load gurobi
 julia src/julia/script.jl ./data/generated/problems/paper/d35-10/000001-000098-d35-10-P.pkl ./data/generated/problems/paper/d35-10/000001-000098-d35-10-R.json 438
-sleep 300
+sleep 600

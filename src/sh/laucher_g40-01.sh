@@ -6,4 +6,4 @@
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-sleep 300
+sleep 600

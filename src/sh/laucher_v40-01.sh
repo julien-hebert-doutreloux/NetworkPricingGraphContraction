@@ -8,4 +8,4 @@ module load julia
 module load gurobi
 sbatch ./src/sh/000001-000003-v40-01.sh
 sbatch ./src/sh/000001-000005-v40-01.sh
-sleep 300
+sleep 600

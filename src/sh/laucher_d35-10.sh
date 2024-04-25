@@ -18,4 +18,4 @@ sbatch ./src/sh/000001-000099-d35-10.sh
 sbatch ./src/sh/000001-000098-d35-10.sh
 sbatch ./src/sh/000001-000068-d35-10.sh
 sbatch ./src/sh/000001-000051-d35-10.sh
-sleep 300
+sleep 600

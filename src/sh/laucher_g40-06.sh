@@ -30,4 +30,4 @@ sbatch ./src/sh/000001-000096-g40-06.sh
 sbatch ./src/sh/000001-000049-g40-06.sh
 sbatch ./src/sh/000001-000095-g40-06.sh
 sbatch ./src/sh/000001-000060-g40-06.sh
-sleep 300
+sleep 600

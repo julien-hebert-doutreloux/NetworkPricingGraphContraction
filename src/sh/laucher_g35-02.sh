@@ -16,4 +16,4 @@ sbatch ./src/sh/000001-000066-g35-02.sh
 sbatch ./src/sh/000001-000080-g35-02.sh
 sbatch ./src/sh/000001-000002-g35-02.sh
 sbatch ./src/sh/000001-000088-g35-02.sh
-sleep 300
+sleep 600

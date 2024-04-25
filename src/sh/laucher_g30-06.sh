@@ -9,4 +9,4 @@ module load gurobi
 sbatch ./src/sh/000001-000003-g30-06.sh
 sbatch ./src/sh/000001-000007-g30-06.sh
 sbatch ./src/sh/000001-000090-g30-06.sh
-sleep 300
+sleep 600

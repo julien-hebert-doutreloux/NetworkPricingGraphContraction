@@ -22,4 +22,4 @@ sbatch ./src/sh/000001-000014-g45-01.sh
 sbatch ./src/sh/000001-000099-g45-01.sh
 sbatch ./src/sh/000001-000013-g45-01.sh
 sbatch ./src/sh/000001-000012-g45-01.sh
-sleep 300
+sleep 600

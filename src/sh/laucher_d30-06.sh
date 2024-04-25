@@ -19,4 +19,4 @@ sbatch ./src/sh/000001-000014-d30-06.sh
 sbatch ./src/sh/000001-000054-d30-06.sh
 sbatch ./src/sh/000001-000005-d30-06.sh
 sbatch ./src/sh/000001-000051-d30-06.sh
-sleep 300
+sleep 600

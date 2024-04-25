@@ -46,7 +46,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                                             
                         with open(file_sh, 'w') as f:
-                            f.write('\n'.join( preamble(cpu, ram, h, m, s)+[command,]+['sleep 300', ] ))
+                            f.write('\n'.join( preamble(cpu, ram, h, m, s)+[command,]+['sleep 600', ] ))
                         
                         command_list_sh.append(f'sbatch {file_sh}')
                         time_limit_sh = 0
@@ -63,7 +63,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
         h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
         cpu, ram = 1, (grouped*5+1)
         with open(file_sh, 'w') as f:
-            f.write('\n'.join( preamble(cpu, ram, h, m, s)+command_list_sh+['sleep 300', ] ))
+            f.write('\n'.join( preamble(cpu, ram, h, m, s)+command_list_sh+['sleep 600', ] ))
 
 
 

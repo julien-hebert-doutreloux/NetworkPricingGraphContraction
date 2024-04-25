@@ -15,4 +15,4 @@ sbatch ./src/sh/000001-000089-v45-01.sh
 sbatch ./src/sh/000001-000002-v45-01.sh
 sbatch ./src/sh/000001-000087-v45-01.sh
 sbatch ./src/sh/000001-000083-v45-01.sh
-sleep 300
+sleep 600
