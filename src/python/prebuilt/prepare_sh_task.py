@@ -27,34 +27,37 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                 _, n_problems, *_ = base_name.split('-')
             
                 n_problems = int(n_problems)                 # number of problem in the *P.pkl file
-                time_limit_sh += n_problems*time_limit + 500 # time limit for the *.sh script (config for server)
-                time_limit_jl = time_limit                   # time limit for the julia command (limit applied individually for each problem)
-            
-                # *.sh config for server
-                h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
-                cpu, ram = 1, 5
-            
-            
-                input_file = os.path.join(root, filename)
-                output_file = os.path.join(directory_npp, filename.replace(f'P{ext}', 'R.json'))
-                command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit}'
-            
-                if not grouped:
-                    file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
-                                        
-                    with open(file_sh, 'w') as f:
-                        f.write('\n'.join( preamble(cpu, ram, h, m, s)+[command,]+['sleep 60', ] ))
-                    # print(file_sh)
-                    # print('\n'.join( preamble(cpu, ram, h, m, s)+[command, ]+['sleep 60', ] ))
-                    # input()
-                    
-                    command_list_sh.append(f'sbatch {file_sh}')
-                    time_limit_sh = 0
-                    
-                else:
-                    
-                    command_list_sh.append(command)
                 
+                if n_problems>0:
+                    time_limit_sh += n_problems*time_limit + 500 # time limit for the *.sh script (config for server)
+                    time_limit_jl = time_limit                   # time limit for the julia command (limit applied individually for each problem)
+                
+                    # *.sh config for server
+                    h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
+                    cpu, ram = 1, 5
+                
+                
+                    input_file = os.path.join(root, filename)
+                    output_file = os.path.join(directory_npp, filename.replace(f'P{ext}', 'R.json'))
+                    
+                    command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit}'
+                
+                    if not grouped:
+                        file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
+                                            
+                        with open(file_sh, 'w') as f:
+                            f.write('\n'.join( preamble(cpu, ram, h, m, s)+[command,]+['sleep 60', ] ))
+                        # print(file_sh)
+                        # print('\n'.join( preamble(cpu, ram, h, m, s)+[command, ]+['sleep 60', ] ))
+                        # input()
+                        
+                        command_list_sh.append(f'sbatch {file_sh}')
+                        time_limit_sh = 0
+                        
+                    else:
+                        
+                        command_list_sh.append(command)
+                    
             
             
         time_limit_sh = max(time_limit_sh, 500)   

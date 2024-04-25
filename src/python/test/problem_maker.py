@@ -138,17 +138,18 @@ def problem_maker(
         
         if (i%(batch_size+1)) == 0 or i == len(export_array):
             number = "%06d" % j
-            length = "%06d" % len(current_problems_dict)
-            filename = f"{number}-{length}-{basename}"            
-            with open(os.path.join(directory_npp, filename+'-P.pkl'), 'wb') as f:
-                pickle.dump(current_problems_dict, f)
-                
-            with open(os.path.join(directory_npp, filename+'-T.pkl'), 'wb') as f:
-                pickle.dump(current_transformations_dict, f)
-                
-            current_problems_dict = {}
-            current_transformations_dict = {}
-            j+=1
+            if len(current_problems_dict)>0:
+                length = "%06d" % len(current_problems_dict)
+                filename = f"{number}-{length}-{basename}"            
+                with open(os.path.join(directory_npp, filename+'-P.pkl'), 'wb') as f:
+                    pickle.dump(current_problems_dict, f)
+                    
+                with open(os.path.join(directory_npp, filename+'-T.pkl'), 'wb') as f:
+                    pickle.dump(current_transformations_dict, f)
+                    
+                current_problems_dict = {}
+                current_transformations_dict = {}
+                j+=1
         
         current_problems_dict[id_] = problem
         current_transformations_dict[id_] = transformation
