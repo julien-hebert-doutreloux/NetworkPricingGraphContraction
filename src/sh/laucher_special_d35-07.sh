@@ -1,0 +1,40 @@
+#!/bin/bash
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
+#SBATCH --time=00:10:00
+#SBATCH --output=/dev/null
+#SBATCH --partition=optimum
+module load julia
+module load gurobi
+sbatch ./src/sh/special_000001-000099-d35-08.sh
+sbatch ./src/sh/special_000001-000074-d35-01.sh
+sbatch ./src/sh/special_000001-000075-d35-01.sh
+sbatch ./src/sh/special_000001-000072-d35-01.sh
+sbatch ./src/sh/special_000001-000089-d35-01.sh
+sbatch ./src/sh/special_000001-000068-d35-09.sh
+sbatch ./src/sh/special_000001-000096-d35-09.sh
+sbatch ./src/sh/special_000001-000062-d35-09.sh
+sbatch ./src/sh/special_000001-000067-d35-09.sh
+sbatch ./src/sh/special_000001-000099-d35-09.sh
+sbatch ./src/sh/special_000001-000073-d35-09.sh
+sbatch ./src/sh/special_000001-000094-d35-09.sh
+sbatch ./src/sh/special_000001-000058-d35-09.sh
+sbatch ./src/sh/special_000001-000098-d35-09.sh
+sbatch ./src/sh/special_000001-000072-d35-09.sh
+sbatch ./src/sh/special_000001-000092-d35-09.sh
+sbatch ./src/sh/special_000001-000097-d35-03.sh
+sbatch ./src/sh/special_000001-000032-h35-04.sh
+sbatch ./src/sh/special_000001-000094-h35-04.sh
+sbatch ./src/sh/special_000001-000038-h35-04.sh
+sbatch ./src/sh/special_000001-000033-h35-04.sh
+sbatch ./src/sh/special_000001-000065-d35-10.sh
+sbatch ./src/sh/special_000001-000051-d35-10.sh
+sbatch ./src/sh/special_000001-000066-d35-10.sh
+sbatch ./src/sh/special_000001-000061-d35-10.sh
+sbatch ./src/sh/special_000001-000097-v35-01.sh
+sbatch ./src/sh/special_000001-000067-d35-07.sh
+sbatch ./src/sh/special_000001-000094-d35-07.sh
+sbatch ./src/sh/special_000001-000095-d35-07.sh
+sbatch ./src/sh/special_000001-000078-d35-07.sh
+sbatch ./src/sh/special_000001-000092-d35-07.sh
+sleep 300
