@@ -74,6 +74,7 @@ def main():
     
     if command_list!=[]:
         content = '\n'.join(preamble(1, 1, '00', '25', '00')+command_list+['sleep 600',])
+        #content ='\n'.join(command_list)
         file_sh = os.path.join(directory_sh, f'generation_{"_".join(pb_list)}.sh')
             
         with open(file_sh, 'w') as f:

@@ -7,7 +7,14 @@ from unit_test.tools import timing_decorator
 PARAMETERS = config.test_problem_maker(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
+def count_files_ending_with(extension, directory):
+    count = 0
+    for filename in os.listdir(directory):
+        if filename.endswith(extension):
+            count += 1
+    return count
 
+    
 @timing_decorator
 def problem_maker(
                 file_npp:str,
@@ -135,12 +142,14 @@ def problem_maker(
     current_transformations_dict = {}
     j = 1
     for i, (id_, problem, transformation) in enumerate(export_array, start=1):
-        
         if (i%(batch_size+1)) == 0 or i == len(export_array):
-            number = "%06d" % j
+            number2 = "%06d" % j
             if len(current_problems_dict)>0:
+            
+                number1 ="%06d" %  count_files_ending_with("P.pkl", directory_npp)
+                
                 length = "%06d" % len(current_problems_dict)
-                filename = f"{number}-{length}-{basename}"            
+                filename = f"{number2}-{number1}-{length}-{basename}"            
                 with open(os.path.join(directory_npp, filename+'-P.pkl'), 'wb') as f:
                     pickle.dump(current_problems_dict, f)
                     
