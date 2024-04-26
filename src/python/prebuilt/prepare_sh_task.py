@@ -24,7 +24,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
         for filename in files:
             if filename.endswith("P.pkl"):
                 base_name, ext = os.path.splitext(filename)
-                _, n_problems, *_ = base_name.split('-')
+                _, _,n_problems, *_ = base_name.split('-')
             
                 n_problems = int(n_problems)                 # number of problem in the *P.pkl file
                 
@@ -57,7 +57,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                     
             
             
-        time_limit_sh = time_limit_sh + 600   
+        time_limit_sh += 600   
         file_sh = os.path.join(directory_sh, f"laucher_{problem_name}.sh")
         
         h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
