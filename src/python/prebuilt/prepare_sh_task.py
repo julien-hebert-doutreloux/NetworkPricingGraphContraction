@@ -79,7 +79,7 @@ def main():
         config = pickle.load(f)
 
     for pb_name, time_limit in tqdm(config.items(), desc='Creating SH script'):
-        directory_pb = os.path.join(directory_npp,pb_name)
+        directory_pb = os.path.join(directory_npp, pb_name)
         prepare_sh_file(directory_pb, grouped, directory_sh, time_limit)
 
                 
