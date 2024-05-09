@@ -111,8 +111,10 @@ def edge_edge_mean_histplot(
                             label_font_size:int=22,
                             title_font_size:int=26,
                             legend_font_size:int=18,
+                            ax=None,
                            ):
     
+
     fig = plt.figure(figsize=(fig_x_size, fig_y_size))
     ax = fig.add_subplot(111)
 
@@ -275,11 +277,13 @@ def density_kdeplot(
                     legend:bool=True,
                     x_label:str='',
                     title:str='',
+                    fig=None,
+                    ax=None,
                     **kwargs
                 ):
 
-
-    fig, ax = plt.subplots(figsize=(fig_x_size, fig_y_size))
+    if not ax or not fig:
+        fig, ax = plt.subplots(figsize=(fig_x_size, fig_y_size))
     
     classes = data['Class'].unique()
     classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
@@ -313,6 +317,69 @@ def density_kdeplot(
     plt.tight_layout()
     return fig
 
+def boxplot_plot(
+                    data,
+                    x_,
+                    crosshairs:tuple,
+                    fig_x_size:int=15,
+                    fig_y_size:int=15,
+                    ticks_font_size:int=16,
+                    label_font_size:int=22,
+                    title_font_size:int=26,
+                    legend_font_size:int=18,
+                    legend:bool=False,
+                    x_label:str='',
+                    title:str='',
+                    fig=None,
+                    ax=None,
+                    **kwargs
+                ):
+
+    if not ax or not fig:
+        fig, ax = plt.subplots(figsize=(fig_x_size, fig_y_size))
+    
+    classes = data['Class'].unique()
+    classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
+
+    sns.boxplot(
+        x=x_,
+        y='Class',
+        data=data,
+        order=classes_order,
+        ax=ax,
+        )
+    ax.axvline(x=crosshairs[0], color='red', linestyle='--')
+
+    # Config
+    ax.set_xlabel(x_label, fontsize=label_font_size)
+    ax.tick_params(axis='x', labelsize=ticks_font_size)
+    
+    #ax.set_ylabel('Density', fontsize=label_font_size)
+    ax.set_ylabel('Class', fontsize=label_font_size)
+    ax.tick_params(axis='y', labelsize=ticks_font_size)
+    
+    ax.set_title(title, fontsize=title_font_size)
+    counts = data['Class'].value_counts()
+
+    if legend:
+        for i, class_ in enumerate(classes_order):
+            ax.text(
+                1.02,  # x position (just beyond the right side of the plot)
+                i,  # y position (corresponding to each class)
+                f'N={counts[class_]}',  # the text to display
+                verticalalignment='center',
+                fontsize=ticks_font_size,
+                transform=ax.get_yaxis_transform()
+            )
+    #if legend:
+    #    legend = ax.get_legend()
+    #    legend.set_title('Class', prop={'size': legend_font_size+1})
+    #    # set the fontsize of the legend
+    #    for text in legend.get_texts():
+    #        text.set_fontsize(legend_font_size)
+            
+    plt.tight_layout()
+    return fig
 
 
 

@@ -80,8 +80,16 @@ if '__main__' == __name__:
             prepare_sh_task()
             
         elif selected_option_3 == '3-3':
-            post_processing_result()
-            
+            #post_processing_result()
+            ##post_processing_result(['d30-03', 'd30-05', 'd30-06', 'd30-07', 'd30-08', 'd30-09', 'd35-01', 'd35-03', 'd35-04', 'd35-07'])
+            ##post_processing_result(['d35-08', 'd35-09', 'd35-10', 'd40-05', 'd40-06', 'd40-09', 'd45-02', 'd45-06', 'd50-06', 'g30-01'])
+            ##post_processing_result(['g30-02', 'g30-03', 'g30-04', 'g30-05', 'g30-06', 'g30-07', 'g30-08', 'g30-09', 'g35-01'])
+            ##post_processing_result(['g35-02', 'g35-03', 'g35-04', 'g35-05', 'g35-06', 'g35-07', 'g35-08', 'g35-09', 'g35-10'])
+            ##post_processing_result(['g40-02', 'g40-03', 'g40-04', 'g40-05', 'g40-06', 'g40-07', 'g40-09', 'g40-10', 'g45-01'])
+            ##post_processing_result(['g45-06', 'g45-07', 'g45-08', 'g45-10', 'g50-01', 'g50-02', 'g50-03', 'g50-04', 'g50-08'])
+            ##post_processing_result(['g50-10', 'h30-01', 'h30-03', 'h30-07', 'h30-09', 'h35-04', 'h35-10', 'v30-01', 'v30-05'])
+            ##post_processing_result(['v30-06', 'v30-07', 'v30-08', 'v35-01', 'v35-02', 'v40-01', 'v40-02', 'v45-01', 'v50-01'])
+            ...
     elif selected_option == 'option5':
         selected_option_5 = args.pop('selected_option_5')
         

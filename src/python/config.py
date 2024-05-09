@@ -430,7 +430,7 @@ def prebuilt_problem_generation(name):
     max_sl = [2, 2, 2, 2, 2, 3, 3, 4, 5, 5, 0, 0, 0]
     max_sl += max_sl
 
-    m = [2, 3, 4, 5, 7, 3, 5, 3, 2, 0, 0, 0, 0]
+    m = [2, 3, 4, 5, 7, 3, 5, 3, 2, 0, 0, 0, 0] # il faut mettre 1 aussi
 
     H1 = [1 for _ in m]
     H2 = [1 for _ in m]
