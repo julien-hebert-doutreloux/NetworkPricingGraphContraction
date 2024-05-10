@@ -421,16 +421,27 @@ def prebuilt_problem_generation(name):
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     
     # OTHER PARAMETERS
+    preamble = lambda cpu, ram, h, m, s : [
+                                        "#!/bin/bash",
+                                        f"#SBATCH --cpus-per-task={cpu}",
+                                        f"#SBATCH --mem={ram}G",
+                                        f"#SBATCH --time={h}:{m}:{s}",
+                                        "#SBATCH --output=/dev/null",
+                                        "#SBATCH --partition=optimum",
+                                        "module load python/3.12.0",
+                                        "source venev/bin/activate"
+                                    ]
+    parameters['preamble'] = preamble
     # Problem generation parameters
     parameters['MISC'] = {}
     
-    min_sl = [2, 2, 2, 2, 2, 3, 3, 4, 5, 2, 2, 3, 3]
+    min_sl = [2, 3, 4, 5, 2,     2, 3, 4, 5, 2,   2, 3, 4, 5, 2,  2, 3, 4, 5, 2,    2, 3, 4, 5, 2, 2]
     min_sl += min_sl
 
-    max_sl = [2, 2, 2, 2, 2, 3, 3, 4, 5, 5, 0, 0, 0]
+    max_sl = [2, 3, 4, 5, 0,     2, 3, 4, 5, 0,   2, 3, 4, 5, 0,  2, 3, 4, 5, 0,    2, 3, 4, 5, 0, 0]
     max_sl += max_sl
-
-    m = [2, 3, 4, 5, 7, 3, 5, 3, 2, 0, 0, 0, 0] # il faut mettre 1 aussi
+    
+    m      = [1, 1, 1, 1, 1,     2, 2, 2, 2, 2,   3, 3, 3, 3, 3,  4, 4, 4, 4, 4,    5, 5, 5, 5, 5, 0]
 
     H1 = [1 for _ in m]
     H2 = [1 for _ in m]
@@ -450,6 +461,10 @@ def prebuilt_problem_generation(name):
     directory_output =  './data/generated/problems/paper'
     directory_original = './data/generated/problems/paper/original'
     directory_sh = './src/sh'
+    
+    
+    
+    
     parameters['MISC']['n'] = n
     parameters['MISC']['min_sl'] = min_sl
     parameters['MISC']['max_sl'] = max_sl
@@ -464,6 +479,11 @@ def prebuilt_problem_generation(name):
     parameters['MISC']['directory_output'] = directory_output
     parameters['MISC']['directory_original'] = directory_original
     parameters['MISC']['directory_sh'] = directory_sh
+    
+    
+    
+    
+    
     return parameters
     
     

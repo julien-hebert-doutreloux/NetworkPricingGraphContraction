@@ -52,10 +52,6 @@ add https://github.com/julien-hebert-doutreloux/NetPricing.jl
 ```bash  
 import Pkg; Pkg.add("JuMP")  
 ```
-### Gurobi
-```bash  
-import Pkg; Pkg.add("Gurobi")  
-```
 
 
 ### Python

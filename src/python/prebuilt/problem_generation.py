@@ -5,16 +5,8 @@ PARAMETERS = config.prebuilt_problem_generation(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 
-preamble = lambda cpu, ram, h, m, s : [
-    "#!/bin/bash",
-    f"#SBATCH --cpus-per-task={cpu}",
-    f"#SBATCH --mem={ram}G",
-    f"#SBATCH --time={h}:{m}:{s}",
-    "#SBATCH --output=/dev/null",
-    "#SBATCH --partition=optimum",
-    "module load python/3.12.0",
-    "source venev/bin/activate"
-]
+preamble = PARAMETERS['preamble']
+
 def main():
     n, min_sl, max_sl, m,\
     H1, H2, H3, H4,\
@@ -32,10 +24,9 @@ def main():
                 directory_ = os.path.join(directory_output, *subdirectory, base_name)
                 
                 if not os.path.exists(directory_):
-                    #os.makedirs(directory_)
-                    #logger.info(f"directory created : {directory_}")
-                    
+                    logger.info(f"directory created : {directory_}")
                     command_list.append(f'mkdir {directory_}')
+                    
                     pb_list.append(base_name)
                     for arg in zip(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp):
                         kwargs = {
@@ -58,7 +49,7 @@ def main():
                         command_list.append(f"python src/python/main.py option5 5-1 {str_kwargs}")
                         
                         if len(command_list)%batch_size==0 and command_list!=[]:
-                            content = '\n'.join(preamble(1, 1, '00', '30', '00')+command_list+['sleep 600',])
+                            content = '\n'.join(preamble(1, 1, '00', '30', '00') + command_list + ['sleep 600',])
                             #content = '\n'.join(command_list)
                             file_sh = os.path.join(directory_sh, f'generation_{"_".join(pb_list)}.sh')
                                 
@@ -68,13 +59,10 @@ def main():
                             command_list = []
                             pb_list = []
     
-    
-    
-    
+        
     
     if command_list!=[]:
-        content = '\n'.join(preamble(1, 1, '00', '25', '00')+command_list+['sleep 600',])
-        #content ='\n'.join(command_list)
+        content = '\n'.join(preamble(1, 1, '00', '30', '00')+command_list + ['sleep 600',])
         file_sh = os.path.join(directory_sh, f'generation_{"_".join(pb_list)}.sh')
             
         with open(file_sh, 'w') as f:
