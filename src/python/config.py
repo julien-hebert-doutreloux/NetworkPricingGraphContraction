@@ -408,12 +408,12 @@ def test_test_approx_max_clique(name):
 ## PREBUILT ##
 ##############
 
-def prebuilt_problem_generation(name):
+def prebuilt_a01_prepare_sh_original(name):
     parameters = {}
 
     # LOGGER PARAMETERS
     parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.problem_generation.log')
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.prepare_a01_sh_original.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
     parameters['logger']['stream_handler_level'] = logging.ERROR
@@ -421,17 +421,49 @@ def prebuilt_problem_generation(name):
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     
     # OTHER PARAMETERS
-    preamble = lambda cpu, ram, h, m, s : [
-                                        "#!/bin/bash",
-                                        f"#SBATCH --cpus-per-task={cpu}",
-                                        f"#SBATCH --mem={ram}G",
-                                        f"#SBATCH --time={h}:{m}:{s}",
-                                        "#SBATCH --output=/dev/null",
-                                        "#SBATCH --partition=optimum",
-                                        "module load python/3.12.0",
-                                        "source venev/bin/activate"
-                                    ]
-    parameters['preamble'] = preamble
+    parameters['MISC'] = {}
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
+    parameters['MISC']['directory_sh'] = './src/sh'
+    parameters['MISC']['time_limit'] = 1005
+    parameters['MISC']['lenght_batch'] = 25 # must divide the number of problem in directory_npp
+    
+    
+    return parameters
+    
+def prebuilt_a02_time_config(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a02_time_config.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    
+    # OTHER PARAMETERS
+    parameters['MISC'] = {}
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
+    parameters['MISC']['time_filename'] = 'time_config.pkl'
+    parameters['MISC']['time_limit'] = 1000
+    
+    return parameters
+    
+    
+def prebuilt_a03_problem_generation(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a03_problem_generation.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    
+    # OTHER PARAMETERS
     # Problem generation parameters
     parameters['MISC'] = {}
     
@@ -457,14 +489,6 @@ def prebuilt_problem_generation(name):
     max_attemp = [1500 for _ in m]
     batch_size = 100        
 
-    directory_input = './data/from_github/problems/paper'
-    directory_output =  './data/generated/problems/paper'
-    directory_original = './data/generated/problems/paper/original'
-    directory_sh = './src/sh'
-    
-    
-    
-    
     parameters['MISC']['n'] = n
     parameters['MISC']['min_sl'] = min_sl
     parameters['MISC']['max_sl'] = max_sl
@@ -475,40 +499,39 @@ def prebuilt_problem_generation(name):
     parameters['MISC']['H4'] = H4
     parameters['MISC']['max_attemp'] = max_attemp
     parameters['MISC']['batch_size'] = batch_size
-    parameters['MISC']['directory_input'] = directory_input
-    parameters['MISC']['directory_output'] = directory_output
-    parameters['MISC']['directory_original'] = directory_original
-    parameters['MISC']['directory_sh'] = directory_sh
-    
-    
-    
-    
-    
+    parameters['MISC']['directory_input'] = './data/from_github/problems/paper'
+    parameters['MISC']['directory_output'] = './data/generated/problems/paper'
+    parameters['MISC']['directory_original'] = './data/generated/problems/paper/original'
+    parameters['MISC']['directory_sh'] = './src/sh'
     return parameters
     
-    
-def prebuilt_prepare_sh_task(name):
+
+def prebuilt_a04_prepare_sh_task(name):
     parameters = {}
 
     # LOGGER PARAMETERS
     parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.problem_generation.log')
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a04_prepare_sh_task.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
     parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-        
+    
     # OTHER PARAMETERS
     return parameters
     
     
-def prebuilt_post_processing_result(name):
+
+
+
+
+def prebuilt_a05_post_processing_result(name):
     parameters = {}
 
     # LOGGER PARAMETERS
     parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.problem_generation.log')
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a05_post_processing_result.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
     parameters['logger']['stream_handler_level'] = logging.ERROR

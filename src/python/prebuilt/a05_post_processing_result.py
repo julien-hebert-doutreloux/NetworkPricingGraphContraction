@@ -1,7 +1,8 @@
 from preamble.preamble import *
 from gamma.common import npp_from_json
-from test.result_processing import post_process_result
-PARAMETERS = config.prebuilt_prepare_sh_task(__name__)
+from testing.result_processing import post_process_result
+
+PARAMETERS = config.prebuilt_a05_post_processing_result(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 
@@ -72,6 +73,7 @@ def batch_result(pb_list):
             'v40-01','v40-02',
             'v45-01','v50-01',
             ]
+            
     for pb_name in pb_list:
         directory_npp = f'./data/generated/problems/paper/{pb_name}'
         problem_name = directory_npp.split(os.sep)[-1]

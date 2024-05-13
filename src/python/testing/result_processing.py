@@ -1,7 +1,7 @@
 from preamble.preamble import *
 from gamma.common import npp_from_json, npp_from_dict
 from gamma.gamma import Function, Algebra, Gamma, GammaNPP
-from test.shortest_path_rewind import shortest_path_rewind 
+from testing.shortest_path_rewind import shortest_path_rewind 
 
 PARAMETERS = config.test_result_processing(__name__)
 logger = config.log(**PARAMETERS['logger'])

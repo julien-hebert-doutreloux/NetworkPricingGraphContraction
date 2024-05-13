@@ -22,3 +22,22 @@ import time
 import sys
 import os
 import re
+
+
+def preamble_sh(cpu, ram, h, m, s, *args):
+
+            # h,m,s must be in forme '00' digit in str
+            # args exemple 1
+            # "module load python/3.12.0"
+            # "source venev/bin/activate"
+            # args exemple 2
+            # "module load julia"
+            # "module load gurobi"
+            return [
+                    "#!/bin/bash",
+                    f"#SBATCH --cpus-per-task={cpu}",
+                    f"#SBATCH --mem={ram}G",
+                    f"#SBATCH --time={h}:{m}:{s}",
+                    "#SBATCH --output=/dev/null",
+                    "#SBATCH --partition=optimum"
+                    ] + list(args)

@@ -5,14 +5,14 @@ logger = config.log(**PARAMETERS['logger'])
 
 from menu.menu import *
 from unit_test.unit_test import main as unit_test
-from test.test_approx_max_clique import main as test_approx_max_clique
-from test.problem_maker import problem_maker
+from testing.test_approx_max_clique import main as test_approx_max_clique
+from testing.problem_maker import problem_maker
 
-from prebuilt.problem_generation import main as problem_generation   
-from prebuilt.prepare_sh_task import main as prepare_sh_task
-from prebuilt.post_processing_result import batch_result as post_processing_result
+from prebuilt.a03_problem_generation import main as problem_generation   
+from prebuilt.a04_prepare_sh_task import main as prepare_sh_task
+from prebuilt.a05_post_processing_result import batch_result as post_processing_result
 
-from test.test import main as test
+from testing.test import main as test
                                 
 
 # Option
@@ -90,6 +90,7 @@ if '__main__' == __name__:
             ##post_processing_result(['g50-10', 'h30-01', 'h30-03', 'h30-07', 'h30-09', 'h35-04', 'h35-10', 'v30-01', 'v30-05'])
             ##post_processing_result(['v30-06', 'v30-07', 'v30-08', 'v35-01', 'v35-02', 'v40-01', 'v40-02', 'v45-01', 'v50-01'])
             ...
+            
     elif selected_option == 'option5':
         selected_option_5 = args.pop('selected_option_5')
         
@@ -97,9 +98,6 @@ if '__main__' == __name__:
             problem_maker(**args)
                         
                         
-        
-            
-                                        
     if selected_option == 'option8':
         test()
         

@@ -1,8 +1,8 @@
 from preamble.preamble import *
 from unit_test.tools import timing_decorator, unit_test_decorator
-from test.result_processing import post_process_result
+from testing.result_processing import post_process_result
 from gamma.common import npp_from_json
-from test.problem_maker import problem_maker
+from testing.problem_maker import problem_maker
 PARAMETERS = config.test_test(__name__)
 logger = config.log(**PARAMETERS['logger'])
 def bell_number(n):
