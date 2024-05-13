@@ -10,8 +10,8 @@ def main():
     directory_npp = PARAMETERS['MISC']['directory_npp']
     directory_sh  = PARAMETERS['MISC']['directory_sh'] 
     
-    time_limit_jl = parameters['MISC']['time_limit']
-    len_group = parameters['MISC']['lenght_batch'] 
+    time_limit_jl = PARAMETERS['MISC']['time_limit']
+    len_group = PARAMETERS['MISC']['lenght_batch'] 
     args = ["module load julia", "module load gurobi"]
 
     command_list = []
@@ -34,9 +34,9 @@ def main():
 
     for i, commands in enumerate(split_list, start=1):
         n = '%02d' % i
-        sh_file = os.path.join(directory_sh, f'original_batch_{n}.sh')
+        file_sh = os.path.join(directory_sh, f'original_batch_{n}.sh')
         
-        with open(sh_file, 'w') as f:
+        with open(file_sh, 'w') as f:
             commands = preamble_sh(cpu, ram, h, m, s, *args) + commands + ['sleep 750',]
             code = '\n'.join(commands)
             f.write(code)
