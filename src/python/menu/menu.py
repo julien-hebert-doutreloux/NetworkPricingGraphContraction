@@ -47,55 +47,33 @@ def option_3(subparsers_):
                                         help='Option',
                                         required=True
                                     )
-    def option_3_1(subparsers_):
-        name = '3-1'
-        description = textwrap.dedent("Prepare original (parameters in config.prebuilt_a01_prepare_sh_original)")
-        help = 'prebuilt.a01_prepare_sh_original.py'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-    def option_3_2(subparsers_):
-        name = '3-2'
-        description = textwrap.dedent("Time config original problem (parameters in config.prebuilt_a02_time_config)")
-        help = 'prebuilt.a02_time_config.py'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
                                     
-                                    
-                                    
-    def option_3_3(subparsers_): 
-        name = '3-3'
-        description = textwrap.dedent("Problem generation (parameters in config.prebuilt_a03_problem_generation)")
-        help = 'prebuilt.a03_problem_generation.py'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-    def option_3_4(subparsers_): 
-        name = '3-4'
-        description = textwrap.dedent("Prepare sh task (parameters in config.prebuilt_a04_prepare_sh_task)")
-        help = 'prebuilt.a04_prepare_sh_task.py'
-        parser_ = subparsers_.add_parser(
-                                        name=name,
-                                        description=description,
-                                        formatter_class=argparse.RawTextHelpFormatter,
-                                        help=help
-                                    )
-                                    
-                                    
-    def option_3_5(subparsers_): 
-        name = '3-5'
-        description = textwrap.dedent("Processing result (parameters in config.a05_prebuilt_post_processing_result)")
-        help = 'prebuilt.a05_post_processing_result.py'
+    # key : name, values: (description:str, help:str)   
+    options = {}
+    
+    options['3-1'] = (
+                    'Prepare original (parameters in config.prebuilt_a01_prepare_sh_original)',
+                    'prebuilt.a01_prepare_sh_original.py'
+                )
+    options['3-2'] = (
+                'Time config original problem (parameters in config.prebuilt_a02_time_config)',
+                'prebuilt.a02_time_config.py'
+                )
+    options['3-3'] = (
+                'Problem generation (parameters in config.prebuilt_a03_problem_generation)',
+                'prebuilt.a03_problem_generation.py'
+                )
+    options['3-4'] = (
+                'Prepare sh task (parameters in config.prebuilt_a04_prepare_sh_task)',
+                'prebuilt.a04_prepare_sh_task.py'
+                )
+    options['3-5'] = (
+                'Processing result (parameters in config.a05_prebuilt_post_processing_result)',
+                'prebuilt.a05_post_processing_result.py'
+                )
+    
+    def option_3_(subparsers_, name, description, help):
+        description = textwrap.dedent(description)
         parser_ = subparsers_.add_parser(
                                         name=name,
                                         description=description,
@@ -103,10 +81,8 @@ def option_3(subparsers_):
                                         help=help
                                     )
     
-    
-    option_3_1(subparsers__)
-    option_3_2(subparsers__)
-    option_3_3(subparsers__)
+    for name, (description, help) in options.items():
+        option_3_(subparsers__, name, description, help)
         
 def option_5(subparsers_):
     name = 'option5'

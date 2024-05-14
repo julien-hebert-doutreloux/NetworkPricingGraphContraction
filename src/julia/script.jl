@@ -7,12 +7,12 @@ using NetPricing, JuMP, Gurobi
 # Define a struct to store the results
 struct OptimizationResult
 	id::AbstractString
-    tvals::Vector{Float64}
-    obj_value::Float64
-    preprocess_time::Float64
-    solve_time::Float64
-    flow::Dict
-    finish::Bool
+	tvals::Vector{Float64}
+	obj_value::Float64
+	preprocess_time::Float64
+	solve_time::Float64
+	flow::Dict
+	finish::Bool
 end
 
 

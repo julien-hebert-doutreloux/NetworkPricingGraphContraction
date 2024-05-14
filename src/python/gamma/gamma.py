@@ -276,10 +276,8 @@ class Algebra(Function):
         
         # Construire l'ensemble quotient partiel V/~
         for equiv_cls in edge_partition:
-            
             # Couplage des sommets initiaux
             start_nodes = frozenset([elem.src for elem in equiv_cls])
-            
             # Couplage des sommets finaux
             end_nodes = frozenset([elem.dst for elem in equiv_cls])
            
@@ -388,8 +386,9 @@ class Gamma(Algebra):
     def from_transformation(cls, nodes, edges, transformation, **kwargs):
         ## Transformation as the method transformation_to_dict
         index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
+        
         edge_partition = [tuple(map(index_edge, x)) for x in transformation['RA']]
-        return cls(nodes, edges, edge_partition, **kwargs)
+        return cls(nodes, edges, edge_partition=edge_partition, **kwargs)
         
     ## To Do : unit test
     def transformation_to_dict(self):
@@ -400,6 +399,9 @@ class Gamma(Algebra):
         
         # Edge domain-image index correspondance
         transformation['A'] = dict(self.conv1)
+        
+        # Edge domain-image index correspondance pour les arcs controlles
+        transformation['TA'] = dict(self.conv2)
         
         # Vertex domain index relation
         transformation['RV'] = [
@@ -418,6 +420,7 @@ class Gamma(Algebra):
                                         )
                                     ) for cls in self.P_A
                                 ]
+        
         return transformation
         
     

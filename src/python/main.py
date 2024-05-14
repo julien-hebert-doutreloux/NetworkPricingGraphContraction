@@ -8,7 +8,9 @@ from unit_test.unit_test import main as unit_test
 from testing.test_approx_max_clique import main as test_approx_max_clique
 from testing.problem_maker import problem_maker
 
-from prebuilt.a01_prepare_sh_original import main as prepare_sh_original 
+from prebuilt.a01_prepare_sh_original import main as prepare_sh_original
+from prebuilt.a02_time_config import main as time_config
+
 from prebuilt.a03_problem_generation import main as problem_generation   
 from prebuilt.a04_prepare_sh_task import main as prepare_sh_task
 from prebuilt.a05_post_processing_result import batch_result as post_processing_result
@@ -77,7 +79,10 @@ if '__main__' == __name__:
         
         if selected_option_3 == '3-1':
             prepare_sh_original()
-        
+            
+        elif selected_option_3 == '3-2':
+            time_config()
+            
         elif selected_option_3 == '3-3':
             problem_generation()
             

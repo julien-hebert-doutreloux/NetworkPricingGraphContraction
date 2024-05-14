@@ -1,5 +1,4 @@
 from preamble.preamble import *
-from testing.problem_maker import problem_maker
 
 PARAMETERS = config.prebuilt_a03_problem_generation(__name__)
 logger = config.log(**PARAMETERS['logger'])

@@ -1071,15 +1071,17 @@ def UNIT_TEST_export_transformation_2():
         g_gamma = Gamma(nodes, edges, edge_partition)
         
 
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         transformation = g_gamma.transformation_to_dict()
-        output_file = to_json(transformation, directory, filename)
+        file_output = to_json(transformation, directory, filename)
         
-        with open(output_file, 'rb') as f:
+        with open(output_file, 'r') as f:
             d = json.load(f)
         
         test_edge_partition = [tuple(map(lambda x: edges[x-1], cls)) for cls in d['RA']]
         test_node_partition = [tuple(map(lambda x: nodes[x-1], cls)) for cls in d['RV']]
+        test_edge_correspondance = {int(k):v for k,v in d['TA'].items()}
+        
         
         test_gamma = Gamma(nodes, edges, test_edge_partition)
         equal = True
@@ -1111,14 +1113,15 @@ def UNIT_TEST_export_transformation_2():
         # imported node_partition vs node_partition in reconstructed gamma test
         test5 = (set_of_frozenset(test_node_partition) == set_of_frozenset(test_gamma.P_V))
         
-        
-        equal = equal and test1 and test2 and test3 and test4 and test5
+        # original tolled edge index vs imported tolled edge index
+        test6 = (dict(g_gamma.conv2) == test_edge_correspondance == dict(test_gamma.conv2)) 
+        equal = equal and test1 and test2 and test3 and test4 and test5 and test6
         return equal
         
     def UNIT_TEST_exemple1():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple1_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple1
         
         try:
@@ -1137,7 +1140,7 @@ def UNIT_TEST_export_transformation_2():
     def UNIT_TEST_exemple2():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple2_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple2
         
         try:
@@ -1156,7 +1159,7 @@ def UNIT_TEST_export_transformation_2():
     def UNIT_TEST_exemple3():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple3_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple3
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1173,7 +1176,7 @@ def UNIT_TEST_export_transformation_2():
     def UNIT_TEST_exemple5():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exemple5_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exemple5
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1191,7 +1194,7 @@ def UNIT_TEST_export_transformation_2():
     def UNIT_TEST_exempleX():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleX_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exempleX
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1209,7 +1212,7 @@ def UNIT_TEST_export_transformation_2():
     def UNIT_TEST_exempleXI():
         directory = os.path.join('.', 'tmp', 'unit_test')
         filename = 'exempleXI_export_transformation'
-        output_file = os.path.join(directory, f"{filename}.pkl")
+        output_file = os.path.join(directory, f"{filename}.json")
         exemple = exempleXI
         try:
             test = UNIT_TEST_exemple_i(exemple, directory, filename)
@@ -1241,10 +1244,11 @@ def UNIT_TEST_from_transformation():
         transformation = g_gamma.transformation_to_dict()
         output_file = to_json(transformation, directory, filename)
         #output_file = os.path.join(directory, f"{filename}.pkl")
+        
         with open(output_file, 'r') as f:
             imported_transformation = json.load(f)
             
-        test_gamma = Gamma.from_transformation(nodes, edges, transformation)
+        test_gamma = Gamma.from_transformation(nodes, edges, imported_transformation)
         equal = True
         
         for node in nodes:
@@ -1269,8 +1273,7 @@ def UNIT_TEST_from_transformation():
         # edge_partition in gamma vs reconstructed edge_partition 
         test2 = (set_of_frozenset(g_gamma.P_A) == set_of_frozenset(test_gamma.P_A))
         # node_partition in gamma vs reconstructed node_partition
-        test3 = (set_of_frozenset(g_gamma.P_V) == set_of_frozenset(test_gamma.P_V))
-        
+        test3 = (set_of_frozenset(g_gamma.P_V) == set_of_frozenset(test_gamma.P_V))       
         
         equal = equal and test1 and test2 and test3
         return equal

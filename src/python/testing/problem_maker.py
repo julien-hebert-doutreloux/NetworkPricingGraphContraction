@@ -155,7 +155,7 @@ def problem_maker(
                     
                 with open(os.path.join(directory_npp, filename+'-T.pkl'), 'wb') as f:
                     pickle.dump(current_transformations_dict, f)
-                    
+                print(len(current_problems_dict))
                 current_problems_dict = {}
                 current_transformations_dict = {}
                 j+=1

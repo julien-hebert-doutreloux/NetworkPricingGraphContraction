@@ -42,7 +42,7 @@ python script.py argsn
 
 The suboptions are the following:
 
-#### 3-1. Problem generation
+#### 3-3. Problem generation
 The necessary arguments are
 ____________________________________________________________________________________________________________________
 | Parameter                     | Description                                                                      |
