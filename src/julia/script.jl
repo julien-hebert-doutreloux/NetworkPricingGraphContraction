@@ -5,7 +5,7 @@ using NetPricing, JuMP, Gurobi
 #ENV["JULIA_NUM_THREADS"] = "1"
 
 # Define a struct to store the results
-struct OptimizationResult
+struct OptimizationResultfilter
 	id::AbstractString
 	tvals::Vector{Float64}
 	obj_value::Float64
@@ -235,7 +235,6 @@ function experience(M_original, N_original,
     result_list = []
     
     # Transform Big M, N
-    println(keys(transformation))
     trans = transformation["TA"]
     NT_min, NT_avg, NT_max = projectionN(trans, N_original) # minimal, average, maximal projection
     MT_min, MT_avg, MT_max = projectionM(trans, M_original) # minimal, average, maximal projection
@@ -386,6 +385,8 @@ function experience(M_original, N_original,
 			println("An error occured in retro max.", id)
 		end
 	end
+	
+	
     return result_list
 end
 
@@ -500,7 +501,7 @@ function main(args)
 			result = experience(M_original, N_original, transformation, prob_original, prob_trans, k, time_limit)
 			 
             if result!=nothing
-                append!(filter(!isequal(nothing), results_array), result)
+                append!(results_array, filter(!isequal(nothing), result))
             else
 				println("An error occurred.", k)
 			end
