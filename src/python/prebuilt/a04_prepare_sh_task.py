@@ -8,7 +8,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
     # n experience 8
     n_exp = 8
     min_time = 3600
-    max_time = 43200
+    max_time = 7200
     server_time_buffer = 601
     
     args = ["module load julia", "module load gurobi"]
@@ -93,7 +93,6 @@ def main():
 
     for pb_name, (time_limit, finish) in tqdm(config.items(), desc='Creating SH script'):
         time_limit = min(200, time_limit)
-        
         directory_pb = os.path.join(directory_npp, pb_name)
         prepare_sh_file(directory_pb, grouped, directory_sh, time_limit)
 
