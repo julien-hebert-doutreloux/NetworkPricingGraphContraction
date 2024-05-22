@@ -3,7 +3,7 @@ from preamble.preamble import *
 PARAMETERS = config.prebuilt_a04_prepare_sh_task(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
-def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
+def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit, index):
     # original directory as a subfolder of directory_npp
     # n experience 8
     n_exp = 8
@@ -54,23 +54,24 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit):
                     
     stack_time = 0
     stack_command = []
-    j = 1
+    j = 0
     for i, (command, time_) in enumerate(command_time_list_tuple_sh, start=1):
+        print(command)
         if (stack_time <= max_time) and (i!= len(command_time_list_tuple_sh)):
             stack_time+=time_
             stack_command.append(command)
         else:
-            
-            file_sh = os.path.join(directory_sh, f"laucher_{'%04d'%j}.sh")
+            j+=1
+            file_sh = os.path.join(directory_sh, f"laucher_{'%04d'%index}_{'%04d'%j}.sh")
             stack_time = max(min_time, stack_time) if grouped else server_time_buffer
-            
+            stack_time + server_time_buffer
             h, m, s = '%02d' % (stack_time // 3600), '%02d' % ((stack_time % 3600) // 60), '00'
             cpu, ram = 1, (grouped*7+1)
             if len(stack_command)>0:
                 with open(file_sh, 'w') as f:
-                    f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + stack_command+['sleep 600', ] ))
+                    f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + stack_command+[f'sleep {server_time_buffer}', ] ))
                     logger.info(f'File created : {file_sh}')
-                j+=1
+                
                 stack_time = 0
                 stack_command = []
     
@@ -91,9 +92,9 @@ def main():
     with open(file_time_config,'rb') as f:
         config = pickle.load(f)
 
-    for pb_name, (time_limit, finish) in tqdm(config.items(), desc='Creating SH script'):
+    for i, (pb_name, (time_limit, finish)) in tqdm(enumerate(config.items(), start=1), desc='Creating SH script'):
         time_limit = min(200, time_limit)
         directory_pb = os.path.join(directory_npp, pb_name)
-        prepare_sh_file(directory_pb, grouped, directory_sh, time_limit)
+        prepare_sh_file(directory_pb, grouped, directory_sh, time_limit, i)
 
                 
