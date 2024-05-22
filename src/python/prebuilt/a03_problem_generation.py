@@ -7,8 +7,9 @@ def main():
     n, min_sl, max_sl, m,\
     H1, H2, H3, H4,\
     max_attemp, batch_size,\
-    directory_input, directory_output, directory_original, directory_sh = PARAMETERS['MISC'].values()
-    args = ["module load python/3.12.0", "source venev/bin/activate"]
+    directory_input, directory_output, directory_original, directory_sh, 
+    server_time_buffer, args= PARAMETERS['MISC'].values()
+    
     command_list, pb_list, mkdir_list = [], [], []
     
     k = 1
@@ -47,7 +48,7 @@ def main():
                         command_list.append(f"python src/python/main.py option5 5-1 {str_kwargs}")
                         
                         if len(command_list)%batch_size==0 and command_list!=[]:
-                            content = '\n'.join(preamble_sh(1, 1, '00', '30', '00', *args) + command_list + ['sleep 600',])
+                            content = '\n'.join(preamble_sh(1, 1, '00', '30', '00', *args) + command_list + [f'sleep {server_time_buffer}',])
                             number = '%04d' % k
                             k+=1
                             file_sh = os.path.join(directory_sh, f'generation_{number}_{"_".join(pb_list)}.sh')
@@ -56,13 +57,10 @@ def main():
                                 f.write(content)
                                 logger.info(f'File created : {file_sh}')
                                 
-                            command_list = []
-                            pb_list = []
-    
-        
+                            command_list, pb_list = [], []
     
     if command_list!=[]:
-        content = '\n'.join(preamble_sh(1, 5, '00', '30', '00', *args) + command_list + ['sleep 600',])
+        content = '\n'.join(preamble_sh(1, 5, '00', '30', '00', *args) + command_list + [f'sleep {server_time_buffer}',])
         file_sh = os.path.join(directory_sh, f'generation_{"_".join(pb_list)}.sh')
             
         with open(file_sh, 'w') as f:
