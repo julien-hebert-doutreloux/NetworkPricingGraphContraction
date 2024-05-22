@@ -485,7 +485,7 @@ def prebuilt_a03_problem_generation(name):
     H3 += H3
     m += m
 
-    n  = [100 for _ in m]
+    n  = [50 for _ in m]
     max_attemp = [1500 for _ in m]
     batch_size = 100        
 

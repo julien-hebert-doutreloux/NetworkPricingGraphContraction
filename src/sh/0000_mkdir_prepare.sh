@@ -4,8 +4,6 @@
 #SBATCH --time=00:10:30
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
-module load python/3.12.0
-source venev/bin/activate
 mkdir ./data/generated/problems/paper/d40-08
 mkdir ./data/generated/problems/paper/g30-10
 mkdir ./data/generated/problems/paper/d35-02

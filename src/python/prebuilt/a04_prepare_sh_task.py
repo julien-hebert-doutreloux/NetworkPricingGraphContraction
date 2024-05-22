@@ -57,7 +57,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
     j = 0
     for i, (command, time_) in enumerate(command_time_list_tuple_sh, start=1):
         
-       
+        time_ = round(time_,0)
         if stack_time <= max_time:
             stack_time+=time_
             stack_command.append(command)

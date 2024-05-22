@@ -235,9 +235,10 @@ function experience(M_original, N_original,
     result_list = []
     
     # Transform Big M, N
-    transformation = transformation["TA"]
-    NT_min, NT_avg, NT_max = projectionN(transformation, N_original) # minimal, average, maximal projection
-    MT_min, MT_avg, MT_max = projectionM(transformation, M_original) # minimal, average, maximal projection
+    println(keys(transformation))
+    trans = transformation["TA"]
+    NT_min, NT_avg, NT_max = projectionN(trans, N_original) # minimal, average, maximal projection
+    MT_min, MT_avg, MT_max = projectionM(trans, M_original) # minimal, average, maximal projection
 
 
     # id-zip/min/avg/max-option
@@ -274,7 +275,7 @@ function experience(M_original, N_original,
     	try
 			# Solving in transformed space
 			result_trans = solve_and_get_values(prob_trans, id*"-zip-x", time_limit);
-			N_retro = retroprojectionN(transformation, result_trans.tvals);
+			N_retro = retroprojectionN(trans, result_trans.tvals);
 			
 			# Option 1 - Shortest path
 			result_retro_1 = solve_and_get_values(prob_original, id*"-1", 10, M_original, N_retro, option=1);
@@ -303,7 +304,7 @@ function experience(M_original, N_original,
     	try
 			# Solving in transformed space with custom values for M and N
 			result_trans_min = solve_and_get_values(prob_trans, id*"-min-x", time_limit , MT_min, NT_min, option=0);
-			N_retro_min = retroprojectionN(transformation, result_trans_min.tvals);
+			N_retro_min = retroprojectionN(trans, result_trans_min.tvals);
 			
 			# Option 1 - Shortest path
 			result_retro_1_min = solve_and_get_values(prob_original, id*"-min-1", 10, M_original, N_retro_min, option=1);
@@ -332,7 +333,7 @@ function experience(M_original, N_original,
     	try
 			# Solving in transformed space with custom values for M and N
 			result_trans_avg = solve_and_get_values(prob_trans, id*"-avg-x", time_limit , MT_avg, NT_avg, option=0);
-			N_retro_avg = retroprojectionN(transformation, result_trans_avg.tvals);
+			N_retro_avg = retroprojectionN(trans, result_trans_avg.tvals);
 			
 			# Option 1 - Shortest path
 			result_retro_1_avg = solve_and_get_values(prob_original, id*"-avg-1", 10, M_original, N_retro_avg, option=1);
@@ -361,7 +362,7 @@ function experience(M_original, N_original,
 		try
 			# Solving in transformed space with custom values for M and N
 			result_trans_max = solve_and_get_values(prob_trans, id*"-max-x", time_limit , MT_max, NT_max, option=0);
-			N_retro_max = retroprojectionN(transformation, result_trans_max.tvals);
+			N_retro_max = retroprojectionN(trans, result_trans_max.tvals);
 			
 			# Option 1 - Shortest path
 			result_retro_1_max = solve_and_get_values(prob_original, id*"-max-1", 10, M_original, N_retro_max, option=1);

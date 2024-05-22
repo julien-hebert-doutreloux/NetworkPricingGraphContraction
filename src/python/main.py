@@ -78,12 +78,15 @@ if '__main__' == __name__:
         selected_option_3 = args.pop('selected_option_3')
         
         if selected_option_3 == '3-1':
+            # Batch original problem (produce sh script ready to run)
             prepare_sh_original()
             
         elif selected_option_3 == '3-2':
+            # Compile time data from the original solution
             time_config()
             
         elif selected_option_3 == '3-3':
+            # generate problem
             problem_generation()
             
         elif selected_option_3 == '3-4':

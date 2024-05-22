@@ -15,7 +15,6 @@ def main():
     for root, dirs, files in os.walk(directory_input):
         for filename in files:
             if filename.endswith(".json"):
-                
                 file_npp = os.path.join(root, filename)
                 base_name, ext = os.path.splitext(filename)
                 subdirectory = root.replace(directory_input, '').split(os.sep)
@@ -72,5 +71,5 @@ def main():
         command_list = []
         
     with open(os.path.join(directory_sh, '0000_mkdir_prepare.sh'), 'w') as f:
-        content = '\n'.join(preamble_sh(1, 1, '00', '10', '30', *args) + mkdir_list + ['sleep 600',])
+        content = '\n'.join(preamble_sh(1, 1, '00', '10', '30') + mkdir_list + ['sleep 600',])
         f.write(content)
