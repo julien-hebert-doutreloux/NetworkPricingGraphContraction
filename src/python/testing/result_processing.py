@@ -68,8 +68,8 @@ def post_process_result(
     for i in range(5, 10):
         compression_factors[i] = 2**compression_factors[i-4]
     
-    rewind_optimal_2, rewind_time_2 = shortest_path_rewind(g_gamma, result, option=2)
-    rewind_optimal_1, rewind_time_1 = shortest_path_rewind(g_gamma, result, option=1)
+    #rewind_optimal_2, rewind_time_2 = shortest_path_rewind(g_gamma, result, option=2)
+    #rewind_optimal_1, rewind_time_1 = shortest_path_rewind(g_gamma, result, option=1)
     finish = result['finish']
     return {
                 'edge':data,
@@ -80,10 +80,10 @@ def post_process_result(
                 'n_edge':len(g_gamma.A_),
                 'n_tolled':len(g_gamma.I_T_A_),
                 'compression_factors':compression_factors,
-                'rewind_optimal_1':rewind_optimal_1,
-                'rewind_time_1':rewind_time_1,
-                'rewind_optimal_2':rewind_optimal_2,
-                'rewind_time_2':rewind_time_2,
+                #'rewind_optimal_1':rewind_optimal_1,
+                #'rewind_time_1':rewind_time_1,
+                #'rewind_optimal_2':rewind_optimal_2,
+                #'rewind_time_2':rewind_time_2,
                 'finish':finish,
                 **parameter_kwargs
                 #'n_simple_path_for_od':0,

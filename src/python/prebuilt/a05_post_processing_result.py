@@ -6,11 +6,27 @@ PARAMETERS = config.prebuilt_a05_post_processing_result(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 
-def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp):
+def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, space, option, heuristic):
+    # n
+    # min_sl
+    # max_sl
+    # m
+    # H1
+    # H2
+    # H3
+    # H4
+    # max_attemp
+    # space
+    # option
+    # heuristic : the way of going back to original space
+    
     return {
     'n':n, 'min_sl':min_sl, 'max_sl':max_sl, 'm':m,
     'H1':H1, 'H2':H2, 'H3':H3, 'H4':H4,
-    'max_attemp':max_attemp
+    'max_attemp':max_attemp,
+    'space':space,
+    'option':option,
+    'heuristic':heuristic
     }
     
     
@@ -42,7 +58,8 @@ def main():
             id_ = results.pop('id')
 
         # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
-        params = [0,0,0,0,0,0,0,0,0]
+        #         n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, space, option, heuristic
+        params = [0,      0,      0, 0,  0,  0,  0,  0,          0,     0,      0,         0]
         o_nodes, o_edges, o_problems = npp_from_json(p)
         result_dict[id_[14::].replace('-P', '')] = post_process_result(
                     o_nodes, o_edges, o_problems,
@@ -73,6 +90,7 @@ def batch_result(pb_list):
             'v40-01','v40-02',
             'v45-01','v50-01',
             ]
+            
             
     for pb_name in pb_list:
         directory_npp = f'./data/generated/problems/paper/{pb_name}'
@@ -113,7 +131,7 @@ def batch_result(pb_list):
                 results = json.load(f)
                 results = {r.pop('id'): r for r in results}
             
-            for id_ in tqdm(results.keys(), desc=f'Processing batch : {batch_id}'):
+            for id_ in tqdm(results.keys(), desc=f'Processing batch : {batch_id}'): 
                 # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
                 
                 _, *params, _ = id_.replace(problem_name, '').split('-')

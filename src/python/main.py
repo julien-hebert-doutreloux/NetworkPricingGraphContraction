@@ -13,7 +13,7 @@ from prebuilt.a02_time_config import main as time_config
 
 from prebuilt.a03_problem_generation import main as problem_generation   
 from prebuilt.a04_prepare_sh_task import main as prepare_sh_task
-from prebuilt.a05_post_processing_result import batch_result as post_processing_result
+from prebuilt.a05_post_processing_result import main as post_processing_result
 
 from testing.test import main as test
                                 
@@ -90,7 +90,7 @@ if '__main__' == __name__:
             prepare_sh_task()
             
         elif selected_option_3 == '3-5':
-            #post_processing_result()
+            post_processing_result()
             ##post_processing_result(['d30-03', 'd30-05', 'd30-06', 'd30-07', 'd30-08', 'd30-09', 'd35-01', 'd35-03', 'd35-04', 'd35-07'])
             ##post_processing_result(['d35-08', 'd35-09', 'd35-10', 'd40-05', 'd40-06', 'd40-09', 'd45-02', 'd45-06', 'd50-06', 'g30-01'])
             ##post_processing_result(['g30-02', 'g30-03', 'g30-04', 'g30-05', 'g30-06', 'g30-07', 'g30-08', 'g30-09', 'g35-01'])
@@ -100,6 +100,7 @@ if '__main__' == __name__:
             ##post_processing_result(['g50-10', 'h30-01', 'h30-03', 'h30-07', 'h30-09', 'h35-04', 'h35-10', 'v30-01', 'v30-05'])
             ##post_processing_result(['v30-06', 'v30-07', 'v30-08', 'v35-01', 'v35-02', 'v40-01', 'v40-02', 'v45-01', 'v50-01'])
             ...
+            
             
     elif selected_option == 'option5':
         selected_option_5 = args.pop('selected_option_5')
