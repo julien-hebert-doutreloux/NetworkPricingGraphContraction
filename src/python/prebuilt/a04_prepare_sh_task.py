@@ -3,12 +3,12 @@ from preamble.preamble import *
 PARAMETERS = config.prebuilt_a04_prepare_sh_task(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
-def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit, index):
+def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit, index):
     # original directory as a subfolder of directory_npp
     # n experience 8
     n_exp = 8
     min_time = 3600
-    max_time = 7200
+    max_time = 5*3600
     server_time_buffer = 601
     
     args = ["module load julia", "module load gurobi"]
@@ -29,7 +29,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit, index):
                     ## Command arguments
                     input_file = os.path.join(root, filename)
                     output_file = os.path.join(directory_npp, filename.replace(f'P{ext}', 'R.json'))
-                    original_file = os.path.join(directory_npp, f"{problem_name}.json")
+                    original_file = os.path.join(directory_original, f'000000-000000-{problem_name}-P.json')
                     transformation_file = os.path.join(root, filename.replace(f"-P{ext}", "-T.pkl"))
                     
                     command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit} {original_file} {transformation_file}'
@@ -38,7 +38,7 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit, index):
                     if not grouped:
                         # *.sh config for server
                         h, m, s = '%02d' % (estimated_time // 3600), '%02d' % ((estimated_time % 3600) // 60), '00'
-                        cpu, ram = 1, 8
+                        cpu, ram = 1, 10
                         
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                                             
@@ -56,17 +56,19 @@ def prepare_sh_file(directory_npp, grouped, directory_sh, time_limit, index):
     stack_command = []
     j = 0
     for i, (command, time_) in enumerate(command_time_list_tuple_sh, start=1):
-        print(command)
-        if (stack_time <= max_time) and (i!= len(command_time_list_tuple_sh)):
+        
+       
+        if stack_time <= max_time:
             stack_time+=time_
             stack_command.append(command)
-        else:
+            
+        if i==len(command_time_list_tuple_sh) or stack_time > max_time:
             j+=1
             file_sh = os.path.join(directory_sh, f"laucher_{'%04d'%index}_{'%04d'%j}.sh")
             stack_time = max(min_time, stack_time) if grouped else server_time_buffer
             stack_time + server_time_buffer
             h, m, s = '%02d' % (stack_time // 3600), '%02d' % ((stack_time % 3600) // 60), '00'
-            cpu, ram = 1, (grouped*7+1)
+            cpu, ram = 1, (grouped*9+1)
             if len(stack_command)>0:
                 with open(file_sh, 'w') as f:
                     f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + stack_command+[f'sleep {server_time_buffer}', ] ))
@@ -86,15 +88,19 @@ def main():
     #file_time_config = './result/time_limit_config.pkl'
     file_time_config = './result/config_file_1000.pkl'
     directory_npp = './data/generated/problems/paper/'
+    directory_original = './data/generated/problems/paper/original'
     directory_sh = './src/sh/'
     grouped = True
     
     with open(file_time_config,'rb') as f:
         config = pickle.load(f)
-
-    for i, (pb_name, (time_limit, finish)) in tqdm(enumerate(config.items(), start=1), desc='Creating SH script'):
-        time_limit = min(200, time_limit)
-        directory_pb = os.path.join(directory_npp, pb_name)
-        prepare_sh_file(directory_pb, grouped, directory_sh, time_limit, i)
-
+        
+    i = 1
+    for pb_name, (time_limit, finish) in tqdm(config.items(), desc='Creating SH script'):
+        if time_limit <= 500 and 'g' in pb_name:
+            print(pb_name)
+            time_limit = min(200, time_limit)
+            directory_pb = os.path.join(directory_npp, pb_name)
+            prepare_sh_file(directory_pb, directory_original, grouped, directory_sh, time_limit, i)
+            i+=1
                 

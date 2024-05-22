@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=8G
-#SBATCH --time=19:44:00
+#SBATCH --mem=10G
+#SBATCH --time=06:01:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-julia src/julia/script.jl ./data/generated/problems/paper/g45-10/000001-000010-000062-g45-10-P.pkl ./data/generated/problems/paper/g45-10/000001-000010-000062-g45-10-R.json 142.091734587 ./data/generated/problems/paper/g45-10/g45-10.json ./data/generated/problems/paper/g45-10/000001-000010-000062-g45-10-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-08/000001-000000-000086-g30-08-P.pkl ./data/generated/problems/paper/g30-08/000001-000000-000086-g30-08-R.json 30.684817335 ./data/generated/problems/paper/original/000000-000000-g30-08-P.json ./data/generated/problems/paper/g30-08/000001-000000-000086-g30-08-T.pkl
 sleep 601

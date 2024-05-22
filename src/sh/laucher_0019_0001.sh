@@ -1,10 +1,14 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=8G
-#SBATCH --time=44:10:00
+#SBATCH --mem=10G
+#SBATCH --time=05:28:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-julia src/julia/script.jl ./data/generated/problems/paper/g35-08/000001-000013-000099-g35-08-P.pkl ./data/generated/problems/paper/g35-08/000001-000013-000099-g35-08-R.json 200 ./data/generated/problems/paper/g35-08/g35-08.json ./data/generated/problems/paper/g35-08/000001-000013-000099-g35-08-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-06/000001-000004-000007-g30-06-P.pkl ./data/generated/problems/paper/g30-06/000001-000004-000007-g30-06-R.json 67.376855187 ./data/generated/problems/paper/original/000000-000000-g30-06-P.json ./data/generated/problems/paper/g30-06/000001-000004-000007-g30-06-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-06/000001-000003-000007-g30-06-P.pkl ./data/generated/problems/paper/g30-06/000001-000003-000007-g30-06-R.json 67.376855187 ./data/generated/problems/paper/original/000000-000000-g30-06-P.json ./data/generated/problems/paper/g30-06/000001-000003-000007-g30-06-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-06/000001-000005-000007-g30-06-P.pkl ./data/generated/problems/paper/g30-06/000001-000005-000007-g30-06-R.json 67.376855187 ./data/generated/problems/paper/original/000000-000000-g30-06-P.json ./data/generated/problems/paper/g30-06/000001-000005-000007-g30-06-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-06/000001-000001-000003-g30-06-P.pkl ./data/generated/problems/paper/g30-06/000001-000001-000003-g30-06-R.json 67.376855187 ./data/generated/problems/paper/original/000000-000000-g30-06-P.json ./data/generated/problems/paper/g30-06/000001-000001-000003-g30-06-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-06/000001-000002-000007-g30-06-P.pkl ./data/generated/problems/paper/g30-06/000001-000002-000007-g30-06-R.json 67.376855187 ./data/generated/problems/paper/original/000000-000000-g30-06-P.json ./data/generated/problems/paper/g30-06/000001-000002-000007-g30-06-T.pkl
 sleep 601

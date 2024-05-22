@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=8G
-#SBATCH --time=29:01:00
+#SBATCH --mem=10G
+#SBATCH --time=10:40:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-julia src/julia/script.jl ./data/generated/problems/paper/g40-10/000001-000000-000002-g40-10-P.pkl ./data/generated/problems/paper/g40-10/000001-000000-000002-g40-10-R.json 127.82496234 ./data/generated/problems/paper/g40-10/g40-10.json ./data/generated/problems/paper/g40-10/000001-000000-000002-g40-10-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g40-10/000001-000008-000099-g40-10-P.pkl ./data/generated/problems/paper/g40-10/000001-000008-000099-g40-10-R.json 127.82496234 ./data/generated/problems/paper/g40-10/g40-10.json ./data/generated/problems/paper/g40-10/000001-000008-000099-g40-10-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g35-04/000001-000001-000002-g35-04-P.pkl ./data/generated/problems/paper/g35-04/000001-000001-000002-g35-04-R.json 67.472126547 ./data/generated/problems/paper/original/000000-000000-g35-04-P.json ./data/generated/problems/paper/g35-04/000001-000001-000002-g35-04-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g35-04/000001-000012-000067-g35-04-P.pkl ./data/generated/problems/paper/g35-04/000001-000012-000067-g35-04-R.json 67.472126547 ./data/generated/problems/paper/original/000000-000000-g35-04-P.json ./data/generated/problems/paper/g35-04/000001-000012-000067-g35-04-T.pkl
 sleep 601
