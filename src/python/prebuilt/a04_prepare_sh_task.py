@@ -7,7 +7,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
     # original directory as a subfolder of directory_npp
     # n experience 8
     n_exp = 8
-    min_time = 3600
+    min_time = 1000
     max_time = 5*3600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]

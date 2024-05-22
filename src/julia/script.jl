@@ -229,8 +229,13 @@ end
 function experience(M_original, N_original,
 					transformation::Dict, 
 					prob_original::Problem, prob_trans::Problem, 
-					id::AbstractString, time_limit::Int, 
-					random::Bool=true,retro::Bool=true, retro_min::Bool=true, retro_avg::Bool=false, retro_max::Bool=false)
+					id::AbstractString, time_limit::Int)
+					
+	random = true
+	retro = true
+	retro_min = true
+	retro_avg = false
+	retro_max = false
     
     result_list = []
     
@@ -247,17 +252,21 @@ function experience(M_original, N_original,
     # Option random
     if random
 		try
+			println("RANDOM")
 			N_rand = [rand(0:x_i) for x_i in N_original]
 			# Option 1 - Shortest path
 			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 10, M_original, N_rand, option=1);
+			println("RANDOM")
 			# Option 2 - Lower bound
 			#result_rand_2 = solve_and_get_values(prob_original, id*"-rnd-2", time_limit, M_original, N_rand, option=2);
 			# Option 3 - Upper bound
 			#result_rand_3 = solve_and_get_values(prob_original, id*"-rnd-3", time_limit, M_original, N_rand, option=3);
 			# Option 4 - Comprehensive lower bound
 			result_rand_4 = solve_and_get_values(prob_original, id*"-rnd-4", time_limit, M_original, N_rand, option=4);
+			println("RANDOM")
 			# Option 5 - Comprehensive upper bound
 			result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_rand, option=5);
+			println("RANDOM")
 			
 			# Storing results
 			push!(result_list, result_rand_1)
@@ -277,15 +286,15 @@ function experience(M_original, N_original,
 			N_retro = retroprojectionN(trans, result_trans.tvals);
 			
 			# Option 1 - Shortest path
-			result_retro_1 = solve_and_get_values(prob_original, id*"-1", 10, M_original, N_retro, option=1);
+			result_retro_1 = solve_and_get_values(prob_original, id*"-zip-1", 10, M_original, N_retro, option=1);
 			# Option 2 - Lower bound
-			#result_retro_2 = solve_and_get_values(prob_original, id*"-2", time_limit, M_original, N_retro, option=2);
+			#result_retro_2 = solve_and_get_values(prob_original, id*"-zip-2", time_limit, M_original, N_retro, option=2);
 			# Option 3 - Upper bound
-			#result_retro_3 = solve_and_get_values(prob_original, id*"-3", time_limit, M_original, N_retro, option=3);
+			#result_retro_3 = solve_and_get_values(prob_original, id*"-zip-3", time_limit, M_original, N_retro, option=3);
 			# Option 4 - Comprehensive lower bound
-			result_retro_4 = solve_and_get_values(prob_original, id*"-4", time_limit, M_original, N_retro, option=4);
+			result_retro_4 = solve_and_get_values(prob_original, id*"-zip-4", time_limit, M_original, N_retro, option=4);
 			# Option 5 - Comprehensive lower bound
-			result_retro_5 = solve_and_get_values(prob_original, id*"-5", time_limit, M_original, N_retro, option=5);
+			result_retro_5 = solve_and_get_values(prob_original, id*"-zip-5", time_limit, M_original, N_retro, option=5);
 			
 			# Storing results
 			push!(result_list, result_trans)
