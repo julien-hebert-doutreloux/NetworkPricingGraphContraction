@@ -5,7 +5,7 @@ using NetPricing, JuMP, Gurobi
 #ENV["JULIA_NUM_THREADS"] = "1"
 
 # Define a struct to store the results
-struct OptimizationResultfilter
+struct OptimizationResult
 	id::AbstractString
 	tvals::Vector{Float64}
 	obj_value::Float64
