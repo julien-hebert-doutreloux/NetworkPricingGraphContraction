@@ -6,9 +6,9 @@ logger = config.log(**PARAMETERS['logger'])
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     # original directory as a subfolder of directory_npp
     # n experience 10
-    n_exp = 12
+    n_exp = 14
     min_time = 1000
-    max_time = 10*3600
+    max_time = 15*3600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]
     
@@ -66,9 +66,9 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
             
             file_sh = os.path.join(directory_sh, f"launcher_{problem_name}_{'%04d'%j}.sh")
             stack_time = max(min_time, stack_time) if grouped else server_time_buffer
-            stack_time + server_time_buffer
+            stack_time += server_time_buffer
             
-            
+            stack_time = min(int(round(2.5*max_time,0)), stack_time)
             h, m, s = '%02d' % (stack_time // 3600), '%02d' % ((stack_time % 3600) // 60), '00'
             cpu, ram = 1, (grouped*9+1)
             
