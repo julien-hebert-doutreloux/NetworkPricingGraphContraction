@@ -320,6 +320,7 @@ def density_kdeplot(
 def boxplot_plot(
                     data,
                     x_,
+                    yclass_,
                     crosshairs:tuple,
                     fig_x_size:int=15,
                     fig_y_size:int=15,
@@ -330,6 +331,7 @@ def boxplot_plot(
                     legend:bool=False,
                     x_label:str='',
                     title:str='',
+                    xrange:tuple=tuple(),
                     fig=None,
                     ax=None,
                     **kwargs
@@ -338,12 +340,13 @@ def boxplot_plot(
     if not ax or not fig:
         fig, ax = plt.subplots(figsize=(fig_x_size, fig_y_size))
     
-    classes = data['Class'].unique()
+        
+    classes = data[yclass_].unique()
     classes_order = sorted(classes, key=lambda x: list(map(int, x.split('-')[:3])))
 
     sns.boxplot(
         x=x_,
-        y='Class',
+        y=yclass_,
         data=data,
         order=classes_order,
         ax=ax,
@@ -359,8 +362,12 @@ def boxplot_plot(
     ax.tick_params(axis='y', labelsize=ticks_font_size)
     
     ax.set_title(title, fontsize=title_font_size)
-    counts = data['Class'].value_counts()
+    counts = data[yclass_].value_counts()
 
+    if xrange:
+        # Set x-axis limits
+        ax.set_xlim(*xrange)
+        
     if legend:
         for i, class_ in enumerate(classes_order):
             ax.text(
@@ -446,11 +453,13 @@ def correlation_matrix(
                         title_font_size:int=26,
                         legend_font_size:int=18,
                         title:str='',
+                        fig=None,
+                        ax=None,
                         **kwargs
                     ):
-                    
-    # Create a heatmap of the correlation matrix
-    fig, ax = plt.subplots(figsize=(fig_x_size, fig_y_size))
+    if not ax or not fig:
+        fig, ax = plt.subplots(figsize=(fig_x_size, fig_y_size))
+    
 
     # Calculate the correlation matrix
     corr_matrix = df[columns].corr()

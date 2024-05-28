@@ -6,7 +6,7 @@ PARAMETERS = config.prebuilt_a05_post_processing_result(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 
-def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, space, option, heuristic):
+def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, heuristic):
     # n
     # min_sl
     # max_sl
@@ -16,7 +16,6 @@ def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, space, op
     # H3
     # H4
     # max_attemp
-    # space
     # option
     # heuristic : the way of going back to original space
     
@@ -24,7 +23,6 @@ def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, space, op
     'n':n, 'min_sl':min_sl, 'max_sl':max_sl, 'm':m,
     'H1':H1, 'H2':H2, 'H3':H3, 'H4':H4,
     'max_attemp':max_attemp,
-    'space':space,
     'option':option,
     'heuristic':heuristic
     }
@@ -58,8 +56,8 @@ def main():
             id_ = results.pop('id')
 
         # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
-        #         n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, space, option, heuristic
-        params = [0,      0,      0, 0,  0,  0,  0,  0,          0,     0,      0,         0]
+        #         n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, heuristic
+        params = [0,      0,      0, 0,  0,  0,  0,  0,          0,      0,         0]
         o_nodes, o_edges, o_problems = npp_from_json(p)
         result_dict[id_[14::].replace('-P', '')] = post_process_result(
                     o_nodes, o_edges, o_problems,
@@ -133,11 +131,17 @@ def batch_result(pb_list):
             
             for id_ in tqdm(results.keys(), desc=f'Processing batch : {batch_id}'): 
                 # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
+                transformation_id = id_.split(pb_name)[0]+pb_name
                 
-                _, *params, _ = id_.replace(problem_name, '').split('-')
+                
+                _, *params = id_.replace(problem_name, '').split('-')
+                params.pop(-3) # pop the redundant empty string '' from params (resulting from the replace below)
+                
+                
+                
                 result_dict[id_] = post_process_result(
                             o_nodes, o_edges, o_problems,
-                            transformations[id_], results[id_],
+                            transformations[transformation_id], results[id_],
                             **parameter_kwargs(*params)
                             )
                             

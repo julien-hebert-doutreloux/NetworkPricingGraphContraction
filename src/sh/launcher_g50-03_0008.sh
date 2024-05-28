@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10G
-#SBATCH --time=21:52:00
+#SBATCH --time=27:17:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia

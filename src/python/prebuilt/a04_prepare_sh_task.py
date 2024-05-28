@@ -6,9 +6,9 @@ logger = config.log(**PARAMETERS['logger'])
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     # original directory as a subfolder of directory_npp
     # n experience 8
-    n_exp = 8
+    n_exp = 10
     min_time = 1000
-    max_time = 5*3600
+    max_time = 10*3600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]
     
