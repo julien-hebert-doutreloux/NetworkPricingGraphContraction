@@ -7,7 +7,7 @@ logger = config.log(**PARAMETERS['logger'])
 def main():
     ## Gather time needed to solve original problem in a dictionary of the form dict[pb_name] = (time:float, finish:bool)
     ## Will be use to set up the time limit for every transformation
-    directory_npp, time_filename, time_limit = PARAMETERS['MISC'].values()
+    directory_npp, time_filename, _ = PARAMETERS['MISC'].values()
     config = {}
     for root, dirs, files in os.walk(directory_npp):
         

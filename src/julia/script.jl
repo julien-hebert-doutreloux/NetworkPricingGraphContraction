@@ -252,28 +252,29 @@ function experience(M_original, N_original,
     # Option random
     if random
 		try
-			println("RANDOM")
-			N_rand = [rand(0:x_i) for x_i in N_original]
+			#println("RANDOM")
+			NT_rand_min, NT_rand_avg, NT_rand_max  = projectionN(trans, [rand(0:x_i) for x_i in N_original])
+			N_retro = retroprojectionN(trans, NT_rand_max)
 			# Option 1 - Shortest path
-			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 10, M_original, N_rand, option=1);
+			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 30, M_original, N_rand, option=1);
 			#println("RANDOM")
 			# Option 2 - Lower bound
-			result_rand_2 = solve_and_get_values(prob_original, id*"-rnd-2", time_limit, M_original, N_rand, option=2);
+			#result_rand_2 = solve_and_get_values(prob_original, id*"-rnd-2", time_limit, M_original, N_rand, option=2);
 			# Option 3 - Upper bound
-			result_rand_3 = solve_and_get_values(prob_original, id*"-rnd-3", time_limit, M_original, N_rand, option=3);
+			#result_rand_3 = solve_and_get_values(prob_original, id*"-rnd-3", time_limit, M_original, N_rand, option=3);
 			# Option 4 - Comprehensive lower bound
 			result_rand_4 = solve_and_get_values(prob_original, id*"-rnd-4", time_limit, M_original, N_rand, option=4);
 			#println("RANDOM")
 			# Option 5 - Comprehensive upper bound
-			result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_rand, option=5);
+			#result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_rand, option=5);
 			#println("RANDOM")
 			
 			# Storing results
 			push!(result_list, result_rand_1)
-			push!(result_list, result_rand_2)
-			push!(result_list, result_rand_3)
+			#push!(result_list, result_rand_2)
+			#push!(result_list, result_rand_3)
 			push!(result_list, result_rand_4)
-			push!(result_list, result_rand_5)
+			#push!(result_list, result_rand_5)
 		catch
 			println("An error occured in random.", id)
 		end
@@ -286,23 +287,23 @@ function experience(M_original, N_original,
 			N_retro = retroprojectionN(trans, result_trans.tvals);
 			
 			# Option 1 - Shortest path
-			result_retro_1 = solve_and_get_values(prob_original, id*"-zip-1", 10, M_original, N_retro, option=1);
+			result_retro_1 = solve_and_get_values(prob_original, id*"-zip-1", 30, M_original, N_retro, option=1);
 			# Option 2 - Lower bound
-			result_retro_2 = solve_and_get_values(prob_original, id*"-zip-2", time_limit, M_original, N_retro, option=2);
+			#result_retro_2 = solve_and_get_values(prob_original, id*"-zip-2", time_limit, M_original, N_retro, option=2);
 			# Option 3 - Upper bound
-			result_retro_3 = solve_and_get_values(prob_original, id*"-zip-3", time_limit, M_original, N_retro, option=3);
+			#result_retro_3 = solve_and_get_values(prob_original, id*"-zip-3", time_limit, M_original, N_retro, option=3);
 			# Option 4 - Comprehensive lower bound
 			result_retro_4 = solve_and_get_values(prob_original, id*"-zip-4", time_limit, M_original, N_retro, option=4);
 			# Option 5 - Comprehensive lower bound
-			result_retro_5 = solve_and_get_values(prob_original, id*"-zip-5", time_limit, M_original, N_retro, option=5);
+			#result_retro_5 = solve_and_get_values(prob_original, id*"-zip-5", time_limit, M_original, N_retro, option=5);
 			
 			# Storing results
 			push!(result_list, result_trans)
 			push!(result_list, result_retro_1)
-			push!(result_list, result_retro_2)
-			push!(result_list, result_retro_3)
+			#push!(result_list, result_retro_2)
+			#push!(result_list, result_retro_3)
 			push!(result_list, result_retro_4)
-			push!(result_list, result_retro_5)
+			#push!(result_list, result_retro_5)
     	catch
     		println("An error occured in retro.", id)
     	end
@@ -315,23 +316,23 @@ function experience(M_original, N_original,
 			N_retro_min = retroprojectionN(trans, result_trans_min.tvals);
 			
 			# Option 1 - Shortest path
-			result_retro_1_min = solve_and_get_values(prob_original, id*"-min-1", 10, M_original, N_retro_min, option=1);
+			result_retro_1_min = solve_and_get_values(prob_original, id*"-min-1", 30, M_original, N_retro_min, option=1);
 			# Option 2 - Lower bound
-			result_retro_2_min = solve_and_get_values(prob_original, id*"-min-2", time_limit, M_original, N_retro_min, option=2);
+			#result_retro_2_min = solve_and_get_values(prob_original, id*"-min-2", time_limit, M_original, N_retro_min, option=2);
 			# Option 3 - Upper bound
-			result_retro_3_min = solve_and_get_values(prob_original, id*"-min-3", time_limit, M_original, N_retro_min, option=3);
+			#result_retro_3_min = solve_and_get_values(prob_original, id*"-min-3", time_limit, M_original, N_retro_min, option=3);
 			# Option 4 - Comprehensive lower bound
 			result_retro_4_min = solve_and_get_values(prob_original, id*"-min-4", time_limit, M_original, N_retro_min, option=4);
 			# Option 5 - Comprehensive upper bound
-			result_retro_5_min = solve_and_get_values(prob_original, id*"-min-5", time_limit, M_original, N_retro_min, option=5);
+			#result_retro_5_min = solve_and_get_values(prob_original, id*"-min-5", time_limit, M_original, N_retro_min, option=5);
 			
 			# Storing results		
 			push!(result_list, result_trans_min)
 			push!(result_list, result_retro_1_min)
-			push!(result_list, result_retro_2_min)
-			push!(result_list, result_retro_3_min)
+			#push!(result_list, result_retro_2_min)
+			#push!(result_list, result_retro_3_min)
 			push!(result_list, result_retro_4_min)
-			push!(result_list, result_retro_5_min)
+			#push!(result_list, result_retro_5_min)
 		catch
 			println("An error occured in retro min.", id)
 		end
@@ -344,7 +345,7 @@ function experience(M_original, N_original,
 			N_retro_avg = retroprojectionN(trans, result_trans_avg.tvals);
 			
 			# Option 1 - Shortest path
-			result_retro_1_avg = solve_and_get_values(prob_original, id*"-avg-1", 10, M_original, N_retro_avg, option=1);
+			result_retro_1_avg = solve_and_get_values(prob_original, id*"-avg-1", 30, M_original, N_retro_avg, option=1);
 			# Option 2 - Lower bound
 			#result_retro_2_avg = solve_and_get_values(prob_original, id*"-avg-2", time_limit, M_original, N_retro_avg, option=2);
 			# Option 3 - Upper bound
@@ -373,7 +374,7 @@ function experience(M_original, N_original,
 			N_retro_max = retroprojectionN(trans, result_trans_max.tvals);
 			
 			# Option 1 - Shortest path
-			result_retro_1_max = solve_and_get_values(prob_original, id*"-max-1", 10, M_original, N_retro_max, option=1);
+			result_retro_1_max = solve_and_get_values(prob_original, id*"-max-1", 30, M_original, N_retro_max, option=1);
 			# Option 2 - Lower bound
 			#result_retro_2_max = solve_and_get_values(prob_original, id*"-max-2", time_limit, M_original, N_retro_max, option=2);
 			# Option 3 - Upper bound

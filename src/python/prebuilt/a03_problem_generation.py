@@ -7,15 +7,16 @@ def main():
     n, min_sl, max_sl, m,\
     H1, H2, H3, H4,\
     max_attemp, batch_size,\
-    directory_input, directory_output, directory_original, directory_sh, 
+    directory_input, directory_output, directory_original, directory_sh,\
     server_time_buffer, args= PARAMETERS['MISC'].values()
     
-    command_list, pb_list, mkdir_list = [], [], []
+    command_list, mkdir_list = [], []
     
     k = 1
     for root, dirs, files in os.walk(directory_input):
-        for filename in files:
-            if filename.endswith(".json"):
+        for i, filename in enumerate(files, start=1):
+            if filename.endswith(".json") and 'g' in filename:
+                
                 file_npp = os.path.join(root, filename)
                 base_name, ext = os.path.splitext(filename)
                 subdirectory = root.replace(directory_input, '').split(os.sep)
@@ -25,7 +26,6 @@ def main():
                     logger.info(f"directory created : {directory_}")
                     mkdir_list.append(f'mkdir {directory_}')
                     
-                    pb_list.append(base_name)
                     for arg in zip(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp):
                         kwargs = {
                             'file_npp':file_npp,
@@ -47,21 +47,24 @@ def main():
                         str_kwargs = ' '.join([f"--{k} {str_v(v)}" for k, v in kwargs.items()])
                         command_list.append(f"python src/python/main.py option5 5-1 {str_kwargs}")
                         
-                        if len(command_list)%batch_size==0 and command_list!=[]:
+                        if len(command_list)%batch_size == 0 and command_list != []:
                             content = '\n'.join(preamble_sh(1, 1, '00', '30', '00', *args) + command_list + [f'sleep {server_time_buffer}',])
-                            number = '%04d' % k
+                            numberk = '%04d' % k
+                            numberi = '%04d' % i
                             k+=1
-                            file_sh = os.path.join(directory_sh, f'generation_{number}_{"_".join(pb_list)}.sh')
+                            file_sh = os.path.join(directory_sh, f'generation_{numberi}-{numberk}.sh')
                                 
                             with open(file_sh, 'w') as f:
                                 f.write(content)
                                 logger.info(f'File created : {file_sh}')
                                 
-                            command_list, pb_list = [], []
+                            command_list = []
     
-    if command_list!=[]:
+    if command_list != []:
+        numberk = '%04d' % (k+1)
+        numberi = '%04d' % (i+1)
         content = '\n'.join(preamble_sh(1, 5, '00', '30', '00', *args) + command_list + [f'sleep {server_time_buffer}',])
-        file_sh = os.path.join(directory_sh, f'generation_{"_".join(pb_list)}.sh')
+        file_sh = os.path.join(directory_sh, f'generation_{numberi}-{numberk}.sh')
             
         with open(file_sh, 'w') as f:
             f.write(content)
@@ -69,5 +72,5 @@ def main():
         command_list = []
         
     with open(os.path.join(directory_sh, '0000_mkdir_prepare.sh'), 'w') as f:
-        content = '\n'.join(preamble_sh(1, 1, '00', '10', '30') + mkdir_list + ['sleep 600',])
+        content = '\n'.join(preamble_sh(1, 1, '00', '10', '30') + mkdir_list + [f'sleep {server_time_buffer}',])
         f.write(content)

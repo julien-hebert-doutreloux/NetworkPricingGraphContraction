@@ -11,6 +11,7 @@ def main():
     directory_sh  = PARAMETERS['MISC']['directory_sh'] 
     
     time_limit_jl = PARAMETERS['MISC']['time_limit']
+    server_time_buffer = PARAMETERS['MISC']['server_time_buffer']
     len_group = PARAMETERS['MISC']['lenght_batch'] 
     args = ["module load julia", "module load gurobi"]
 
@@ -27,7 +28,7 @@ def main():
                 command_list.append(command)
 
 
-    time_limit_sh = len_group * time_limit_jl + 850
+    time_limit_sh = len_group * time_limit_jl + server_time_buffer
     h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
     cpu, ram = 1, 10
     split_list = [command_list[i:i+len_group] for i in range(0, len(command_list), len_group)]
@@ -37,7 +38,7 @@ def main():
         file_sh = os.path.join(directory_sh, f'original_batch_{n}.sh')
         
         with open(file_sh, 'w') as f:
-            commands = preamble_sh(cpu, ram, h, m, s, *args) + commands + ['sleep 750',]
+            commands = preamble_sh(cpu, ram, h, m, s, *args) + commands + [f'sleep {server_time_buffer}',]
             code = '\n'.join(commands)
             f.write(code)
             logger.info(f'File created : {file_sh}')

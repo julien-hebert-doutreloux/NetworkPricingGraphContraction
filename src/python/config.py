@@ -424,9 +424,9 @@ def prebuilt_a01_prepare_sh_original(name):
     parameters['MISC'] = {}
     parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
     parameters['MISC']['directory_sh'] = './src/sh'
-    parameters['MISC']['time_limit'] = 1005
+    parameters['MISC']['time_limit'] = 200
     parameters['MISC']['lenght_batch'] = 25 # must divide the number of problem in directory_npp
-    
+    parameters['MISC']['server_time_buffer'] = 600
     
     return parameters
     
@@ -446,8 +446,7 @@ def prebuilt_a02_time_config(name):
     parameters['MISC'] = {}
     parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
     parameters['MISC']['time_filename'] = 'time_config.pkl'
-    parameters['MISC']['time_limit'] = 1000
-    
+  
     return parameters
     
     
@@ -467,13 +466,13 @@ def prebuilt_a03_problem_generation(name):
     # Problem generation parameters
     parameters['MISC'] = {}
     
-    min_sl = [2, 3, 4, 5, 2,     2, 3, 4, 5, 2,   2, 3, 4, 5, 2,  2, 3, 4, 5, 2,    2, 3, 4, 5, 2, 2]
+    min_sl = [2, 3, 4, 5, 2,     2, 3, 4, 5, 2,   2, 3, 4, 5, 2,  2, 3, 4, 5, 2,    2, 3, 4, 5, 2, 2,    5, 5, 5, 5, 5,   10, 20, 40, 100]
     min_sl += min_sl
 
-    max_sl = [2, 3, 4, 5, 0,     2, 3, 4, 5, 0,   2, 3, 4, 5, 0,  2, 3, 4, 5, 0,    2, 3, 4, 5, 0, 0]
+    max_sl = [2, 3, 4, 5, 0,     2, 3, 4, 5, 0,   2, 3, 4, 5, 0,  2, 3, 4, 5, 0,    2, 3, 4, 5, 0, 0,    6, 7, 8, 9, 10,  0,  0,  0,  0]
     max_sl += max_sl
     
-    m      = [1, 1, 1, 1, 1,     2, 2, 2, 2, 2,   3, 3, 3, 3, 3,  4, 4, 4, 4, 4,    5, 5, 5, 5, 5, 0]
+    m      = [1, 1, 1, 1, 1,     2, 2, 2, 2, 2,   3, 3, 3, 3, 3,  4, 4, 4, 4, 4,    5, 5, 5, 5, 5, 0,    0, 0, 0, 0, 0,   0,  0,  0,  0]
 
     H1 = [1 for _ in m]
     H2 = [1 for _ in m]
@@ -485,9 +484,9 @@ def prebuilt_a03_problem_generation(name):
     H3 += H3
     m += m
 
-    n  = [50 for _ in m]
+    n  = [125 for _ in m]
     max_attemp = [1500 for _ in m]
-    batch_size = 100        
+    batch_size = 50
 
     parameters['MISC']['n'] = n
     parameters['MISC']['min_sl'] = min_sl

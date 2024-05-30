@@ -6,7 +6,7 @@ logger = config.log(**PARAMETERS['logger'])
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     # original directory as a subfolder of directory_npp
     # n experience 10
-    n_exp = 14
+    n_exp = 5
     min_time = 1000
     max_time = 15*3600
     server_time_buffer = 600
@@ -83,10 +83,6 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
     
 
 
-
-
-
-
 def main():
 
     #file_time_config = './result/time_limit_config.pkl'
@@ -100,8 +96,8 @@ def main():
         config = pickle.load(f)
         
     for pb_name, (time_limit, finish) in tqdm(config.items(), desc='Creating SH script'):
-        if time_limit <= 500 and 'g' in pb_name:
-            time_limit = min(250, int(round(time_limit,0)))
+        if 'g' in pb_name:
+            time_limit = min(200, int(round(time_limit,0)))
             print(pb_name, time_limit)
             directory_pb = os.path.join(directory_npp, pb_name)
             prepare_sh_file(directory_pb, directory_original, grouped, directory_sh, time_limit)
