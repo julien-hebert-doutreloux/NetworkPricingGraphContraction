@@ -7,6 +7,8 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
     # original directory as a subfolder of directory_npp
     # n experience 10
     n_exp = 5
+    n_eval = 3
+    eval_time = 30
     min_time = 1000
     max_time = 15*3600
     server_time_buffer = 600
@@ -32,7 +34,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                     transformation_file = os.path.join(root, filename.replace(f"-P{ext}", "-T.pkl"))
                     
                     command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit} {original_file} {transformation_file}'
-                    estimated_time = n_problems*time_limit*n_exp + server_time_buffer
+                    estimated_time = n_problems*time_limit*n_exp + n_eval*eval_time + server_time_buffer
                     
                     if not grouped:
 
