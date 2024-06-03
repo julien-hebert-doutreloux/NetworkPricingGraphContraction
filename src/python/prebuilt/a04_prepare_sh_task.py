@@ -34,7 +34,8 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                     transformation_file = os.path.join(root, filename.replace(f"-P{ext}", "-T.pkl"))
                     
                     command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit} {original_file} {transformation_file}'
-                    estimated_time = n_problems*time_limit*n_exp + n_eval*eval_time + server_time_buffer
+                    
+                    estimated_time = n_problems*((time_limit+10)*n_exp + n_eval*eval_time) + server_time_buffer
                     
                     if not grouped:
 

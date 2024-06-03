@@ -13,7 +13,7 @@ from prebuilt.a02_time_config import main as time_config
 
 from prebuilt.a03_problem_generation import main as problem_generation   
 from prebuilt.a04_prepare_sh_task import main as prepare_sh_task
-from prebuilt.a05_post_processing_result import batch_result as post_processing_result
+from prebuilt.a05_post_processing_result import main as post_processing_result
 
 from testing.test import main as test
                                 
@@ -93,7 +93,7 @@ if '__main__' == __name__:
             prepare_sh_task()
             
         elif selected_option_3 == '3-5':
-            #post_processing_result()
+            post_processing_result()
             
             #post_processing_result(['g40-01','g50-08','g35-06','g30-03','g30-05'])
             #post_processing_result(['g35-01','g40-07','g50-02','g45-07','g50-03'])
