@@ -508,12 +508,12 @@ def prebuilt_a03_problem_generation(name):
     return parameters
     
 
-def prebuilt_a04_prepare_sh_task(name):
+def prebuilt_a04_prepare_sh_julia(name):
     parameters = {}
 
     # LOGGER PARAMETERS
     parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a04_prepare_sh_task.log')
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a04_prepare_sh_julia.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
     parameters['logger']['stream_handler_level'] = logging.ERROR
@@ -524,10 +524,6 @@ def prebuilt_a04_prepare_sh_task(name):
     return parameters
     
     
-
-
-
-
 def prebuilt_a05_post_processing_result(name):
     parameters = {}
 
@@ -539,7 +535,21 @@ def prebuilt_a05_post_processing_result(name):
     parameters['logger']['stream_handler_level'] = logging.ERROR
     parameters['logger']['file_handle_level'] = logging.WARNING
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-        
+    
+    
+    parameters['MISC'] = {}
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/'
+    parameters['MISC']['directory_original'] = os.path.join(parameters['MISC']['directory_npp'], 'original')
+    parameters['MISC']['directory_output'] = './tmp/result/'
+    parameters['MISC']['output_name_prefix'] = 'result'
+    
+    parameters['MISC']['batch_size'] = 2
+    parameters['MISC']['directory_sh'] = './src/sh'
+    parameters['MISC']['server_time_buffer'] = 600
+    parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"]
+    
+    
+    
     # OTHER PARAMETERS
     return parameters
     

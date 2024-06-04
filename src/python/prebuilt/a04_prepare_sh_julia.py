@@ -1,6 +1,6 @@
 from preamble.preamble import *
 
-PARAMETERS = config.prebuilt_a04_prepare_sh_task(__name__)
+PARAMETERS = config.prebuilt_a04_prepare_sh_julia(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):

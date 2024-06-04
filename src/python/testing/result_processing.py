@@ -61,12 +61,12 @@ def post_process_result(
     
     # other result
     compression_factors = {}
-    compression_factors[1] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
-    compression_factors[2] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
-    compression_factors[3] = compression_factors[1]*compression_factors[2]
-    compression_factors[4] = len(g_gamma.domain)/len(g_gamma.image)
+    compression_factors['cf1'] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
+    compression_factors['cf2'] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
+    compression_factors['cf3'] = compression_factors['cf1']*compression_factors['cf2']
+    compression_factors['cf4'] = len(g_gamma.domain)/len(g_gamma.image)
     for i in range(5, 10):
-        compression_factors[i] = 2**compression_factors[i-4]
+        compression_factors[f'cf{i}'] = 2**compression_factors[f'cf{i-4}']
     
     #rewind_optimal_2, rewind_time_2 = shortest_path_rewind(g_gamma, result, option=2)
     #rewind_optimal_1, rewind_time_1 = shortest_path_rewind(g_gamma, result, option=1)
@@ -79,44 +79,138 @@ def post_process_result(
                 'n_vertex':len(g_gamma.V_),
                 'n_edge':len(g_gamma.A_),
                 'n_tolled':len(g_gamma.I_T_A_),
-                'compression_factors':compression_factors,
+                #'compression_factors':compression_factors,
                 #'rewind_optimal_1':rewind_optimal_1,
                 #'rewind_time_1':rewind_time_1,
                 #'rewind_optimal_2':rewind_optimal_2,
                 #'rewind_time_2':rewind_time_2,
                 'finish':finish,
-                **parameter_kwargs
+                **parameter_kwargs,
+                **compression_factors
                 #'n_simple_path_for_od':0,
                 }
     
     
-
-
+def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, heuristic):
+    # n
+    # min_sl
+    # max_sl
+    # m
+    # H1
+    # H2
+    # H3
+    # H4
+    # max_attemp
+    # option
+    # heuristic : the way of going back to original space
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    return {
+    'n':n, 'min_sl':min_sl, 'max_sl':max_sl, 'm':m,
+    'H1':H1, 'H2':H2, 'H3':H3, 'H4':H4,
+    'max_attemp':max_attemp,
+    'option':option,
+    'heuristic':heuristic
+    }
     
 
+
+def post_process_original(directory_input, directory_output, output_name=''):
+    # Post-process original problem data
+    
+    directory_npp = directory_input
+    if output_name == '':
+        output_name = 'original'
+    ptr = {}
+    for root, dirs, files in os.walk(directory_npp):
+        for filename in files:
+            if filename.endswith("-R.json"):
+                base_name, ext = os.path.splitext(filename)
+                file_results = os.path.join(directory_npp, filename)
+                file_problems = os.path.join(directory_npp, filename.replace(f'R.json', f'P.json'))
+                file_transformations = os.path.join(directory_npp, filename.replace(f'R.json', f'T.json'))
+                
+                ptr[base_name] = (file_problems, file_transformations, file_results)
+                
+    result_dict = {}
+    
+    
+    for problem_name, (p, t, r) in tqdm(ptr.items(), desc="Processing original"):
+    
+        with open(t, 'r') as f:
+            transformations = json.load(f)
+        
+        with open(r, 'r') as f:
+            results = json.load(f)
+            id_ = results.pop('id')
+
+        # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
+        #         n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, heuristic
+        params = [0,      0,      0, 0,  0,  0,  0,  0,          0,      0,         0]
+        o_nodes, o_edges, o_problems = npp_from_json(p)
+        result_dict[id_[14::].replace('-P', '')] = post_process_result(
+                    o_nodes, o_edges, o_problems,
+                    transformations, results,
+                    **parameter_kwargs(*params)
+                    )
+
+    export_path = os.path.join(directory_output, f'{output_name}'.pkl)
+    with open(export_path, 'wb') as f:
+        pickle.dump(result_dict, f)
+        logger.info(f'File created : {export_path}')
+    
+                
+def post_process(directory_input, directory_output, directory_original, output_name=''):
+    
+    directory_npp = directory_input
+    problem_name = directory_npp.split(os.sep)[-1]
+    if output_name == '':
+        output_name = problem_name 
+    ptr = {}
+    for root, dirs, files in os.walk(directory_npp):
+        for filename in files:
+            if filename.endswith("-R.json"):
+                
+                base_name, ext = os.path.splitext(filename)
+                
+                ext = '.pkl'
+                file_results = os.path.join(directory_npp, filename)
+                file_problems = os.path.join(directory_npp, filename.replace(f'R.json', f'P{ext}'))
+                file_transformations = os.path.join(directory_npp, filename.replace(f'R.json', f'T{ext}'))
+                ptr[base_name[:13:]] = (file_problems, file_transformations, file_results)
+                
+                
+    result_dict = {}
+    
+    p = os.path.join(directory_original, f'000000-000000-{problem_name}-P.json')
+    t = os.path.join(directory_original, f'000000-000000-{problem_name}-T.json')
+    r = os.path.join(directory_original, f'000000-000000-{problem_name}-R.json')
+    
+    o_nodes, o_edges, o_problems = npp_from_json(p)
+                        
+    for batch_id, (p, t, r) in ptr.items():
+        
+        with open(t, 'rb') as f:
+            transformations = pickle.load(f)
+        
+        with open(r, 'r') as f:
+            results = json.load(f)
+            results = {r.pop('id'): r for r in results}
+        
+        for id_ in tqdm(results.keys(), desc=f'Processing batch : {batch_id}'): 
+            # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
+            transformation_id = id_.split(problem_name)[0]+problem_name
+            
+            
+            _, *params = id_.replace(problem_name, '').split('-')
+            params.pop(-3) # pop the redundant empty string '' from params (resulting from the replace below)
+            
+            result_dict[id_] = post_process_result(
+                        o_nodes, o_edges, o_problems,
+                        transformations[transformation_id], results[id_],
+                        **parameter_kwargs(*params)
+                        )
+    
+    output_path = os.path.join(directory_output, f'{output_name}.pkl')
+    with open(output_path, 'wb') as f:
+        pickle.dump(result_dict, f)
+        logger.info(f'File created : {output_path}')

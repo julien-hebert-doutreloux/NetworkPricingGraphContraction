@@ -12,9 +12,10 @@ from prebuilt.a01_prepare_sh_original import main as prepare_sh_original
 from prebuilt.a02_time_config import main as time_config
 
 from prebuilt.a03_problem_generation import main as problem_generation   
-from prebuilt.a04_prepare_sh_task import main as prepare_sh_task
-from prebuilt.a05_post_processing_result import main as post_processing_result
+from prebuilt.a04_prepare_sh_julia import main as prepare_sh_task
+from prebuilt.a05_post_processing_result import main as prepare_sh_python
 
+from testing.result_processing import post_process, post_process_original
 from testing.test import main as test
                                 
 
@@ -90,32 +91,31 @@ if '__main__' == __name__:
             problem_generation()
             
         elif selected_option_3 == '3-4':
-            prepare_sh_task()
+            # prepare julia command in sh file
+            prepare_sh_julia()
             
         elif selected_option_3 == '3-5':
-            post_processing_result()
+            # prepare python post processing in sh file
+            prepare_sh_python()
             
-            #post_processing_result(['g40-01','g50-08','g35-06','g30-03','g30-05'])
-            #post_processing_result(['g35-01','g40-07','g50-02','g45-07','g50-03'])
-            #post_processing_result(['g35-08','g40-08','g35-05','g50-01','g40-02'])
-            #post_processing_result(['g45-05', 'g50-10','g30-01','g40-10','g45-01'])
-            #post_processing_result(['g45-04','g30-06','g30-04','g35-09', 'g35-03'])
-            #post_processing_result(['g50-05','g45-02','g50-09','g50-07','g45-09'])
-            #post_processing_result(['g45-08','g30-09','g35-10','g45-10','g30-08'])
-            #post_processing_result(['g40-06','g40-05','g40-04','g35-04','g30-10'])
-            #post_processing_result(['g45-03','g35-07','g30-02','g40-03','g40-09'])
-            #post_processing_result(['g35-02','g50-06','g50-04','g45-06','g30-07'])
-
-
-            ...
+                        
+            
             
             
     elif selected_option == 'option5':
         selected_option_5 = args.pop('selected_option_5')
         
         if selected_option_5 == '5-1':
+            # Generate problem
             problem_maker(**args)
-                        
+            
+        elif selected_option_5 == '5-2':
+            # Post process original result
+            post_process_original(**args)
+        
+        elif selected_option_5 == '5-3':
+            # Post process result
+            post_process(**args)
                         
     if selected_option == 'option8':
         test()

@@ -104,7 +104,7 @@ def option_5(subparsers_):
     def option_5_1(subparsers_): 
         name = '5-1'
         description = textwrap.dedent("Problem transformation generation")
-        help = 'test.problem_maker.py'
+        help = 'testing.problem_maker.py'
         parser_ = subparsers_.add_parser(
                                         name=name,
                                         description=description,
@@ -129,22 +129,39 @@ def option_5(subparsers_):
         
     def option_5_2(subparsers_):
         name = '5-2'
-        description = textwrap.dedent("Process raw result")
-        help = 'test.problem_maker.uniform_batch_merging'
+        description = textwrap.dedent("Post process original result")
+        help = 'testing.result_processing.post_process_original'
         parser_ = subparsers_.add_parser(
                                         name=name,
                                         description=description,
                                         formatter_class=argparse.RawTextHelpFormatter,
                                         help=help
                                     )
-        parser_.add_argument('--input_directory_graphs', type=str, help='directory with graphs pkl batches')
-        parser_.add_argument('--input_directory_transformations', type=str, help='directory with transformations pkl batches')
-        parser_.add_argument('--min_element', type=int, help='TO DO')
-        parser_.add_argument('--max_element', type=int, help='TO DO')
-    
+                                    
+        parser_.add_argument('--directory_input', type=str, help='directory with json batches')
+        parser_.add_argument('--directory_output', type=str, help='directory to output pkl post process result batches')
+        parser_.add_argument('--output_name', type=str, help='output name')
+        
+    def option_5_3(subparsers_):
+        name = '5-3'
+        description = textwrap.dedent("Post process result")
+        help = 'testing.result_processing.post_process'
+        parser_ = subparsers_.add_parser(
+                                        name=name,
+                                        description=description,
+                                        formatter_class=argparse.RawTextHelpFormatter,
+                                        help=help
+                                    )
+                                    
+        parser_.add_argument('--directory_input', type=str, help='directory with json batches')
+        parser_.add_argument('--directory_output', type=str, help='directory to output pkl post process result batches')
+        parser_.add_argument('--directory_original', type=str, help='directory where are the original problems and transformations')
+        parser_.add_argument('--output_name', type=str, help='output name')
+        
     
     option_5_1(subparsers__)
     option_5_2(subparsers__)
+    option_5_3(subparsers__)
     
     
     
