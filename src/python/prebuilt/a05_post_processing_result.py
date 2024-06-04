@@ -35,15 +35,15 @@ def main():
     
     sub_command = []
     j = 1
-    for i, command in enumerate(command_list, start=1):
+    for i, command in enumerate(command_list, start=0):
 
 
-        if (i%(batch_size+1) != 0) or (i == len(command_list)):
+        if (i%(batch_size) != 0) or (i == len(command_list)) or batch_size==1:
             sub_command.append(command)
 
-        elif (i%(batch_size+1) == 0) or (i == len(command_list)):
+        if (i%(batch_size) == 0) or (i == len(command_list)) or batch_size==1:
             
-            estimated_time = 15*60*len(sub_command) + server_time_buffer
+            estimated_time =server_time_buffer  #15*60*len(sub_command) + server_time_buffer
             h, m, s = '%02d' % (estimated_time // 3600), '%02d' % ((estimated_time % 3600) // 60), '00'
             cpu, ram = 1, 5
             
@@ -51,5 +51,6 @@ def main():
             with open(file_sh, 'w') as f:
                 f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + sub_command + [f'sleep {server_time_buffer}', ] ))
                 logger.info(f'File created : {file_sh}')
+            sub_command = []
             j+=1
 
