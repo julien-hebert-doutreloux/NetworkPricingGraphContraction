@@ -21,4 +21,7 @@ python ./src/python/main.py option5 5-3 --directory_input ./data/generated/probl
 python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g35-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g35-09
 python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-05 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g50-05
 python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g50-09
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g45-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g45-09
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g30-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g30-09
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g45-10 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g45-10
 sleep 900

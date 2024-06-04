@@ -39,5 +39,5 @@ def preamble_sh(cpu, ram, h, m, s, *args):
                     f"#SBATCH --mem={ram}G",
                     f"#SBATCH --time={h}:{m}:{s}",
                     "#SBATCH --output=/dev/null",
-                    "#SBATCH --partition=optimum"
+                    "#SBATCH --partition=optimum",
                     ] + list(args)

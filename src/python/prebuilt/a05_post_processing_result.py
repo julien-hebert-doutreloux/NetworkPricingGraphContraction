@@ -43,7 +43,7 @@ def main():
 
         elif (i%(batch_size+1) == 0) or (i == len(command_list)):
             
-            estimated_time = 30*60*len(sub_command) + server_time_buffer
+            estimated_time = 15*60*len(sub_command) + server_time_buffer
             h, m, s = '%02d' % (estimated_time // 3600), '%02d' % ((estimated_time % 3600) // 60), '00'
             cpu, ram = 1, 5
             
