@@ -12,7 +12,7 @@ from prebuilt.a01_prepare_sh_original import main as prepare_sh_original
 from prebuilt.a02_time_config import main as time_config
 
 from prebuilt.a03_problem_generation import main as problem_generation   
-from prebuilt.a04_prepare_sh_julia import main as prepare_sh_task
+from prebuilt.a04_prepare_sh_julia import main as prepare_sh_julia
 from prebuilt.a05_post_processing_result import main as prepare_sh_python
 
 from testing.result_processing import post_process, post_process_original

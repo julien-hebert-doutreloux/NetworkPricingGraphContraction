@@ -153,7 +153,7 @@ def post_process_original(directory_input, directory_output, output_name=''):
                     **parameter_kwargs(*params)
                     )
 
-    export_path = os.path.join(directory_output, f'{output_name}'.pkl)
+    export_path = os.path.join(directory_output, f'{output_name}.pkl')
     with open(export_path, 'wb') as f:
         pickle.dump(result_dict, f)
         logger.info(f'File created : {export_path}')

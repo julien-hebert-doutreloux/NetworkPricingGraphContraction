@@ -23,15 +23,15 @@ function FindMN(form_type::Type{GeneralFormulation{P,D}}, probs;
     forms = convert.(Formulation, filter!(!isnothing, assign.(form_type, probs; bigM_difference)))
     # Big M
     Ms = [NetPricing.calculate_bigM(form, threads=nothing) for form in forms]
-    N = max.(collect.(maximum.(Ms, dims=2))...)
-    return Ms, N #formulate!(forms, linearization; kwargs...)
+    Nn = max.(collect.(maximum.(Ms, dims=2))...)
+    return Ms, Nn #formulate!(forms, linearization; kwargs...)
 end
 
 MN(probs; kwargs...) = FindMN(StandardFormulation, probs; kwargs...)
 const cst_mn = MN
 
 
-function projectionN(transformation::Dict, N)
+function projectionN(transformation::Dict, Nn)
     # println("projectionN")
     # N ---> N~
     # NS : vector of subvectors. The values in subvector at position i
@@ -47,7 +47,7 @@ function projectionN(transformation::Dict, N)
     		j=i
     	end
         append!(
-                NS[transformation[i]], N[j]#N[parse(Int, i)]
+                NS[transformation[i]], Nn[j]#N[parse(Int, i)]
         )
     end
     
@@ -73,25 +73,25 @@ function retroprojectionN(transformation::Dict, NT)
     # N : vector representing the maximum value that at least one user is ready to pay
     # in the case that this user have to pass by the edge i. We reuse the transformation
     # to expand the NT vector that come from the contracted space.
-    N = zeros(length(transformation))
+    Nn = zeros(length(transformation))
     for (k, v) in transformation
     	if typeof(k)!=typeof(1)
     		j = parse(Int, k)
     	else
     		j=k
     	end
-        N[j] = NT[v]
+        Nn[j] = NT[v]
     end
     
-    return N
+    return Nn
 end
 
-function projectionM(transformation::Dict, M)
+function projectionM(transformation::Dict, Mm)
     # println("projectionM")
-    MT_min = [[] for _ in 1:length(M)]
-	MT_avg = [[] for _ in 1:length(M)]
-    MT_max = [[] for _ in 1:length(M)]
-    for (i, row) in enumerate(eachrow(M))
+    MT_min = [[] for _ in 1:length(Mm)]
+	MT_avg = [[] for _ in 1:length(Mm)]
+    MT_max = [[] for _ in 1:length(Mm)]
+    for (i, row) in enumerate(eachrow(Mm))
         MT_min[i], MT_avg[i], MT_max[i] = projectionN(transformation, first(row))
     end
     return MT_min, MT_avg, MT_max
@@ -99,11 +99,11 @@ end
 
 function retroprojectionM(transformation::Dict, MT)
     # println("retroprojectionM")
-    M = [[] for _ in 1:length(MT)]
+    Mm = [[] for _ in 1:length(MT)]
     for (i, row) in enumerate(eachrow(MT))
-        M[i] = retroprojectionN(transformation, first(row))
+        Mm[i] = retroprojectionN(transformation, first(row))
     end
-    return M
+    return Mm
 end
 
 
@@ -141,7 +141,7 @@ function save_result_batch(results, filename::AbstractString)
 
 	# Compress the JSON data into a bytes object
 	# Save the compressed data to a file
-	open(filename, "w") do file
+	open(filename, "a") do file
 		write(file, json_data)
 	end
 end
@@ -163,7 +163,7 @@ function import_problem_from_str(str::AbstractString)
 end
 
 
-function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int, M=nothing, N=nothing; option=0)
+function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int, Mm=nothing, Nn=nothing; option=0)
     try
 		# Measure preprocessing time
 		# obligatoire
@@ -172,9 +172,9 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 			pprobs = preprocess(prob, maxpaths = 1000)
 		end
 
-		if M!=nothing && N!=nothing
+		if Mm!=nothing && Nn!=nothing
 			println(option)
-			model, forms = NetPricing.cst_model(pprobs, M, N, option=option)
+			model, forms = NetPricing.cst_model(pprobs, Mm, Nn, option=option)
 		else
 			# Create a model
 			model, forms = std_model(pprobs)
@@ -232,8 +232,8 @@ function experience(M_original, N_original,
 					id::AbstractString, time_limit::Int)
 					
 	random = true
-	retro = true
-	retro_min = true
+	retro = false#true
+	retro_min = false#true
 	retro_avg = false
 	retro_max = false
     
@@ -254,16 +254,17 @@ function experience(M_original, N_original,
 		try
 			#println("RANDOM")
 			NT_rand_min, NT_rand_avg, NT_rand_max  = projectionN(trans, [rand(0:x_i) for x_i in N_original])
-			N_retro = retroprojectionN(trans, NT_rand_max)
+			N_retro_rnd = retroprojectionN(trans, NT_rand_max)
+			
 			# Option 1 - Shortest path
-			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 30, M_original, N_rand, option=1);
+			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 30, M_original, N_retro_rnd, option=1);
 			#println("RANDOM")
 			# Option 2 - Lower bound
 			#result_rand_2 = solve_and_get_values(prob_original, id*"-rnd-2", time_limit, M_original, N_rand, option=2);
 			# Option 3 - Upper bound
 			#result_rand_3 = solve_and_get_values(prob_original, id*"-rnd-3", time_limit, M_original, N_rand, option=3);
 			# Option 4 - Comprehensive lower bound
-			result_rand_4 = solve_and_get_values(prob_original, id*"-rnd-4", time_limit, M_original, N_rand, option=4);
+			result_rand_4 = solve_and_get_values(prob_original, id*"-rnd-4", time_limit, M_original, N_retro_rnd, option=4);
 			#println("RANDOM")
 			# Option 5 - Comprehensive upper bound
 			#result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_rand, option=5);
