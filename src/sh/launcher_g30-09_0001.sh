@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10G
-#SBATCH --time=15:55:00
+#SBATCH --time=20:27:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
@@ -28,4 +28,7 @@ julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000002-000078-0
 julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000048-000050-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000048-000050-g30-09-R.json 10 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000048-000050-g30-09-T.pkl
 julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000003-000070-000022-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000003-000070-000022-g30-09-R.json 10 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000003-000070-000022-g30-09-T.pkl
 julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000074-000050-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000074-000050-g30-09-R.json 10 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000074-000050-g30-09-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000003-000082-000023-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000003-000082-000023-g30-09-R.json 10 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000003-000082-000023-g30-09-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000052-000023-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000052-000023-g30-09-R.json 10 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000052-000023-g30-09-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000002-000075-000051-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000002-000075-000051-g30-09-R.json 10 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000002-000075-000051-g30-09-T.pkl
 sleep 600

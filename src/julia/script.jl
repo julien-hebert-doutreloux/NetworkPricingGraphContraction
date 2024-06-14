@@ -199,8 +199,14 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 		flow = []
 		for k in 1:length(forms)
 			primal_repr = primal(forms[k])              # Primal representation
+			dual_repr = NetPricing.dual(forms[k])       # Dual representation
+			
 			prob_k = problem(primal_repr)               # Preprocessed problem of forms[k]
-			Amap = used_arcs(prob_k)		    # List of edge index of the solution path 
+			Amap = used_arcs(prob_k)		    		# List of edge index of the solution path
+			
+			
+			λvals = value.(dual_repr.λ)                 # Dual prices λ[k] (only for dual-arc)
+			Vmap = used_nodes(prob_k)
 			#println(Amap)
 			append!(flow, Amap)
 		end
@@ -257,25 +263,25 @@ function experience(M_original, N_original,
 			N_retro_rnd = retroprojectionN(trans, NT_rand_max)
 			
 			# Option 1 - Shortest path
-			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 30, M_original, N_retro_rnd, option=1);
+			#result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 30, M_original, N_retro_rnd, option=1);
 			#println("RANDOM")
 			# Option 2 - Lower bound
-			#result_rand_2 = solve_and_get_values(prob_original, id*"-rnd-2", time_limit, M_original, N_rand, option=2);
+			result_rand_2 = solve_and_get_values(prob_original, id*"-rnd-2", time_limit, M_original, N_retro_rnd, option=2);
 			# Option 3 - Upper bound
-			#result_rand_3 = solve_and_get_values(prob_original, id*"-rnd-3", time_limit, M_original, N_rand, option=3);
+			result_rand_3 = solve_and_get_values(prob_original, id*"-rnd-3", time_limit, M_original, N_retro_rnd, option=3);
 			# Option 4 - Comprehensive lower bound
-			result_rand_4 = solve_and_get_values(prob_original, id*"-rnd-4", time_limit, M_original, N_retro_rnd, option=4);
+			#result_rand_4 = solve_and_get_values(prob_original, id*"-rnd-4", time_limit, M_original, N_retro_rnd, option=4);
 			#println("RANDOM")
 			# Option 5 - Comprehensive upper bound
-			#result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_rand, option=5);
+			result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_retro_rnd, option=5);
 			#println("RANDOM")
 			
 			# Storing results
-			push!(result_list, result_rand_1)
-			#push!(result_list, result_rand_2)
-			#push!(result_list, result_rand_3)
-			push!(result_list, result_rand_4)
-			#push!(result_list, result_rand_5)
+			#push!(result_list, result_rand_1)
+			push!(result_list, result_rand_2)
+			push!(result_list, result_rand_3)
+			#push!(result_list, result_rand_4)
+			push!(result_list, result_rand_5)
 		catch
 			println("An error occured in random.", id)
 		end

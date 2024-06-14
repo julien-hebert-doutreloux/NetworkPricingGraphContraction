@@ -1,14 +1,15 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10G
-#SBATCH --time=12:12:00
+#SBATCH --time=28:49:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000002-000051-000051-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000002-000051-000051-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000002-000051-000051-g30-02-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000003-000025-000013-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000003-000025-000013-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000003-000025-000013-g30-02-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000002-000046-000051-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000002-000046-000051-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000002-000046-000051-g30-02-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000001-000016-000050-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000001-000016-000050-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000001-000016-000050-g30-02-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000001-000085-000003-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000001-000085-000003-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000001-000085-000003-g30-02-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000001-000103-000014-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000001-000103-000014-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000001-000103-000014-g30-02-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000001-000084-000003-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000001-000084-000003-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000001-000084-000003-g30-02-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000003-000074-000022-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000003-000074-000022-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000003-000074-000022-g30-02-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000002-000042-000051-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000002-000042-000051-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000002-000042-000051-g30-02-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000003-000028-000017-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000003-000028-000017-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000003-000028-000017-g30-02-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g30-02/000002-000036-000051-g30-02-P.pkl ./data/generated/problems/paper/g30-02/000002-000036-000051-g30-02-R.json 200 ./data/generated/problems/paper/original/000000-000000-g30-02-P.json ./data/generated/problems/paper/g30-02/000002-000036-000051-g30-02-T.pkl
 sleep 600
