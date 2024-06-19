@@ -466,27 +466,28 @@ def prebuilt_a03_problem_generation(name):
     # Problem generation parameters
     parameters['MISC'] = {}
     
-    min_sl = [2, 3, 4, 5, 2,     2, 3, 4, 5, 2,   2, 3, 4, 5, 2,  2, 3, 4, 5, 2,    2, 3, 4, 5, 2, 2,    5, 5, 5, 5, 5,   10, 20, 40, 100]
+    min_sl = [2, 3, 4, 5,    2, 3, 4, 5,    2, 3, 4, 5,    2, 3, 4, 5,     2, 2, 2, 2]
     min_sl += min_sl
 
-    max_sl = [2, 3, 4, 5, 0,     2, 3, 4, 5, 0,   2, 3, 4, 5, 0,  2, 3, 4, 5, 0,    2, 3, 4, 5, 0, 0,    6, 7, 8, 9, 10,  0,  0,  0,  0]
+    max_sl = [2, 3, 4, 5,    2, 3, 4, 5,    2, 3, 4, 5,    2, 3, 4, 5,     0, 0, 0, 0]
     max_sl += max_sl
-    
-    m      = [1, 1, 1, 1, 1,     2, 2, 2, 2, 2,   3, 3, 3, 3, 3,  4, 4, 4, 4, 4,    5, 5, 5, 5, 5, 0,    0, 0, 0, 0, 0,   0,  0,  0,  0]
+
+    m      = [1, 1, 1, 1,    2, 2, 2, 2,    3, 3, 3, 3,    0, 0, 0, 0,     0, 0, 0, 0]
 
     H1 = [1 for _ in m]
     H2 = [1 for _ in m]
     H3 = [1 for _ in m]
-    H4 = [1 for _ in m] + [0 for _ in m]
+    H4 = [1 for _ in m]
 
     H1 += H1
     H2 += H2
     H3 += H3
+    H4 += [0 for _ in m]
     m += m
 
-    n  = [125 for _ in m]
+    n  = [100 for _ in m]
     max_attemp = [1500 for _ in m]
-    batch_size = 50
+    batch_size = 100
 
     parameters['MISC']['n'] = n
     parameters['MISC']['min_sl'] = min_sl

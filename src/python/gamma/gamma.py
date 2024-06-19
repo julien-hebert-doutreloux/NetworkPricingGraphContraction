@@ -45,7 +45,8 @@ class Function(dict):
         try:
             image = self[x]
         except Exception as e:
-            logger.exception(f"{x} does not exist in the domain")    
+            logger.exception(f"{x} does not exist in the domain")
+            print(type(x))
         else:
             return image
             
@@ -176,7 +177,7 @@ class Algebra(Function):
         phi_T_A = Function({ej: i for i, ej in enumerate(sorted(filter(lambda x: x.toll, A), key=phi_A), start=1)}) # T_A -> I_T_A
         phi_A_ = Function({edge : i for i, edge in enumerate(dict.fromkeys(map(gamma, sorted(A, key=phi_A))), start=1)}) # A_ -> I_A_  
         phi_V_ = Function({node : i for i, node in enumerate(dict.fromkeys(map(gamma, sorted(V, key=phi_V))), start=1)}) # V_ -> I_V_
-        
+
         # domain
         T_A = phi_T_A.domain    # edge set
         A_ = phi_A_.domain      # edge set
@@ -476,8 +477,8 @@ class GammaNPP(Gamma):
         # Prepare to export
         nodes = [Node(v) for v in self.phi_V_.values()]
         edges = [Edge(
-                    src = nodes[self.phi_V_(k.src)-1],
-                    dst = nodes[self.phi_V_(k.dst)-1],
+                    src = nodes[self.phi_V_(k.src)-1], # correction index 
+                    dst = nodes[self.phi_V_(k.dst)-1], # correction index 
                     label = v,
                     cost = k.cost,
                     toll = k.toll) 
@@ -487,8 +488,8 @@ class GammaNPP(Gamma):
         problems = []
         for k in self.problems_image:
             problems.append({})
-            problems[-1]['orig'] = nodes[self.phi_V_(k['orig'])-1]
-            problems[-1]['dest'] = nodes[self.phi_V_(k['dest'])-1]
+            problems[-1]['orig'] = nodes[self.phi_V_(k['orig'])-1] # correction index 
+            problems[-1]['dest'] = nodes[self.phi_V_(k['dest'])-1] # correction index 
             problems[-1]['demand'] = k['demand']
             
             
