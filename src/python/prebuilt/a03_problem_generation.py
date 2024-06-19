@@ -8,7 +8,7 @@ def main():
     H1, H2, H3, H4,\
     max_attemp, batch_size,\
     directory_input, directory_output, directory_original, directory_sh,\
-    server_time_buffer, args= PARAMETERS['MISC'].values()
+    server_time_buffer, partition, args= PARAMETERS['MISC'].values()
     
     command_list, mkdir_list = [], []
     
@@ -48,7 +48,7 @@ def main():
                         command_list.append(f"python src/python/main.py option5 5-1 {str_kwargs}")
                         
                         if len(command_list)%batch_size == 0 and command_list != []:
-                            content = '\n'.join(preamble_sh(1, 1, '00', '30', '00', *args) + command_list + [f'sleep {server_time_buffer}',])
+                            content = '\n'.join(preamble_sh(1, 1, '00', '15', '00', partition, *args) + command_list + [f'sleep {server_time_buffer}',])
                             numberk = '%04d' % k
                             numberi = '%04d' % i
                             k+=1
@@ -63,7 +63,7 @@ def main():
     if command_list != []:
         numberk = '%04d' % (k+1)
         numberi = '%04d' % (i+1)
-        content = '\n'.join(preamble_sh(1, 5, '00', '30', '00', *args) + command_list + [f'sleep {server_time_buffer}',])
+        content = '\n'.join(preamble_sh(1, 5, '00', '15', '00', partition, *args) + command_list + [f'sleep {server_time_buffer}',])
         file_sh = os.path.join(directory_sh, f'generation_{numberi}-{numberk}.sh')
             
         with open(file_sh, 'w') as f:
@@ -72,5 +72,5 @@ def main():
         command_list = []
         
     with open(os.path.join(directory_sh, '0000_mkdir_prepare.sh'), 'w') as f:
-        content = '\n'.join(preamble_sh(1, 1, '00', '10', '30') + mkdir_list + [f'sleep {server_time_buffer}',])
+        content = '\n'.join(preamble_sh(1, 1, '00', '15', '00', partition) + mkdir_list + [f'sleep {server_time_buffer}',])
         f.write(content)

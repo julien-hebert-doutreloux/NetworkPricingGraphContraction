@@ -24,7 +24,7 @@ import os
 import re
 
 
-def preamble_sh(cpu, ram, h, m, s, *args):
+def preamble_sh(cpu, ram, h, m, s, partition='optimum', *args):
 
             # h,m,s must be in forme '00' digit in str
             # args exemple 1
@@ -39,5 +39,5 @@ def preamble_sh(cpu, ram, h, m, s, *args):
                     f"#SBATCH --mem={ram}G",
                     f"#SBATCH --time={h}:{m}:{s}",
                     "#SBATCH --output=/dev/null",
-                    "#SBATCH --partition=optimum",
+                    f"#SBATCH --partition={partition}",
                     ] + list(args)
