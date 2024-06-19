@@ -3,7 +3,8 @@
 #SBATCH --mem=10G
 #SBATCH --time=27:05:00
 #SBATCH --output=/dev/null
-#SBATCH --partition=module load julia
+#SBATCH --partition=optimum
+module load julia
 module load gurobi
 julia src/julia/script.jl ./data/generated/problems/paper/g45-03/000001-000013-000034-g45-03-P.pkl ./data/generated/problems/paper/g45-03/000001-000013-000034-g45-03-R.json 200 ./data/generated/problems/paper/original/000000-000000-g45-03-P.json ./data/generated/problems/paper/g45-03/000001-000013-000034-g45-03-T.pkl
 julia src/julia/script.jl ./data/generated/problems/paper/g45-03/000001-000032-000076-g45-03-P.pkl ./data/generated/problems/paper/g45-03/000001-000032-000076-g45-03-R.json 200 ./data/generated/problems/paper/original/000000-000000-g45-03-P.json ./data/generated/problems/paper/g45-03/000001-000032-000076-g45-03-T.pkl

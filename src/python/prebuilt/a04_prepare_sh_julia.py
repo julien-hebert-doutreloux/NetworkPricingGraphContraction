@@ -13,6 +13,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
     max_time = 24*3600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]
+    partition = 'optimum'
     
     command_time_list_tuple_sh = []
     for root, dirs, files in os.walk(directory_npp):
@@ -44,7 +45,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                         
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                         with open(file_sh, 'w') as f:
-                            f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + [command,] + [f'sleep {server_time_buffer}', ] ))
+                            f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, partition, *args) + [command,] + [f'sleep {server_time_buffer}', ] ))
                             logger.info(f'File created : {file_sh}')
                             
                         command_time_list_tuple_sh.append((f'sbatch {file_sh}', estimated_time))
@@ -78,7 +79,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
             
             if len(stack_command)>0:
                 with open(file_sh, 'w') as f:
-                    f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + stack_command+[f'sleep {server_time_buffer}', ] ))
+                    f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, partition, *args) + stack_command+[f'sleep {server_time_buffer}', ] ))
                     logger.info(f'File created : {file_sh}')
                 
                 stack_time = 0
