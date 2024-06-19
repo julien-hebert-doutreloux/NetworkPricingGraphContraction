@@ -238,7 +238,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 		#end
 		
 		finish = (solve_time <= time_limit)
-		return OptimizationResult(id, tvals, λvals, xvals, Amap, Vmap, b, flow,  obj_value, preprocess_time, solve_time, finish)
+		return OptimizationResult(id, tvals, λvals, xvals, Amap, Vmap, b, flow, obj_value, preprocess_time, solve_time, finish)
 
     catch
     	println("Infeasible ", id)
