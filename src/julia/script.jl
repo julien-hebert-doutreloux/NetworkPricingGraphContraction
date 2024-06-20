@@ -254,8 +254,8 @@ function experience(M_original, N_original,
 					prob_original::Problem, prob_trans::Problem, 
 					id::AbstractString, time_limit::Int)
 					
-	random = true
-	retro = false
+	random = false
+	retro = true
 	retro_min = false
 	retro_avg = false
 	retro_max = false
@@ -303,6 +303,7 @@ function experience(M_original, N_original,
 	
     if retro
     	try
+    		print("RETRO")
 			# Solving in transformed space
 			result_trans = solve_and_get_values(prob_trans, id*"-zip-x", time_limit);
 			N_retro = retroprojectionN(trans, result_trans.tvals);

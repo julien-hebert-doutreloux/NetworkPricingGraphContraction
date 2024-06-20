@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10G
-#SBATCH --time=35:02:00
+#SBATCH --time=28:19:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
+julia src/julia/script.jl ./data/generated/problems/paper/g45-10/000001-000006-000049-g45-10-P.pkl ./data/generated/problems/paper/g45-10/000001-000006-000049-g45-10-R.json 142 ./data/generated/problems/paper/original/000000-000000-g45-10-P.json ./data/generated/problems/paper/g45-10/000001-000006-000049-g45-10-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g45-10/000001-000000-000027-g45-10-P.pkl ./data/generated/problems/paper/g45-10/000001-000000-000027-g45-10-R.json 142 ./data/generated/problems/paper/original/000000-000000-g45-10-P.json ./data/generated/problems/paper/g45-10/000001-000000-000027-g45-10-T.pkl
 julia src/julia/script.jl ./data/generated/problems/paper/g45-10/000001-000007-000050-g45-10-P.pkl ./data/generated/problems/paper/g45-10/000001-000007-000050-g45-10-R.json 142 ./data/generated/problems/paper/original/000000-000000-g45-10-P.json ./data/generated/problems/paper/g45-10/000001-000007-000050-g45-10-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g45-10/000001-000013-000063-g45-10-P.pkl ./data/generated/problems/paper/g45-10/000001-000013-000063-g45-10-R.json 142 ./data/generated/problems/paper/original/000000-000000-g45-10-P.json ./data/generated/problems/paper/g45-10/000001-000013-000063-g45-10-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g45-10/000001-000004-000081-g45-10-P.pkl ./data/generated/problems/paper/g45-10/000001-000004-000081-g45-10-R.json 142 ./data/generated/problems/paper/original/000000-000000-g45-10-P.json ./data/generated/problems/paper/g45-10/000001-000004-000081-g45-10-T.pkl
 sleep 600
