@@ -45,6 +45,10 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                         
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                         with open(file_sh, 'w') as f:
+                            if int(h) > 45:
+                                partition = 'optimumlong'
+                            else:
+                                partition = 'optimum'
                             f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, partition, *args) + [command,] + [f'sleep {server_time_buffer}', ] ))
                             logger.info(f'File created : {file_sh}')
                             
@@ -75,7 +79,10 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
             stack_time = min(int(round(2.5*max_time,0)), stack_time)
             h, m, s = '%02d' % (stack_time // 3600), '%02d' % ((stack_time % 3600) // 60), '00'
             cpu, ram = 1, (grouped*9+1)
-            
+            if int(h) > 45:
+                partition = 'optimumlong'
+            else:
+                partition = 'optimum'
             
             if len(stack_command)>0:
                 with open(file_sh, 'w') as f:
