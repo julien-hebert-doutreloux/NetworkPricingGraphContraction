@@ -271,8 +271,8 @@ function experience(M_original, N_original,
 					prob_original::Problem, prob_trans::Problem, 
 					id::AbstractString, time_limit::Int)
 					
-	random = false
-	retro = true
+	random = true
+	retro = false
 	retro_min = false
 	retro_avg = false
 	retro_max = false

@@ -6,7 +6,7 @@ logger = config.log(**PARAMETERS['logger'])
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     # original directory as a subfolder of directory_npp
     # n experience 10
-    n_exp = 5
+    n_exp = 4
     n_eval = 1
     eval_time = 30
     min_time = 600
@@ -45,7 +45,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                         
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                         with open(file_sh, 'w') as f:
-                            if int(h) > 45:
+                            if int(h) > 46:
                                 partition = 'optimumlong'
                             else:
                                 partition = 'optimum'
@@ -97,7 +97,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
 def main():
 
     #file_time_config = './result/time_limit_config.pkl'
-    file_time_config = './result/config_file_1000.pkl'
+    file_time_config = './result/time_config_g_200.pkl' #'./result/config_file_1000.pkl'
     directory_npp = './data/generated/problems/paper/'
     directory_original = './data/generated/problems/paper/original'
     directory_sh = './src/sh/'
