@@ -504,7 +504,7 @@ def prebuilt_a03_problem_generation(name):
     parameters['MISC']['directory_original'] = './data/generated/problems/paper/original'
     parameters['MISC']['directory_sh'] = './src/sh'
     parameters['MISC']['server_time_buffer'] = 600
-    parameters['MISC']['partition'] = 'testing'
+    parameters['MISC']['partition'] = 'optimum'
     parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"]
     
     return parameters

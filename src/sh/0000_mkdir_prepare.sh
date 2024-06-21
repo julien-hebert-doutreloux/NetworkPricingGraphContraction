@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=1G
-#SBATCH --time=00:15:00
+#SBATCH --time=00:20:00
 #SBATCH --output=/dev/null
-#SBATCH --partition=testing
+#SBATCH --partition=optimum
 mkdir ./data/generated/problems/paper/g30-10
 mkdir ./data/generated/problems/paper/g35-03
 mkdir ./data/generated/problems/paper/g30-06

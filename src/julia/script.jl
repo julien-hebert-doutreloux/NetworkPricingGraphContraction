@@ -147,8 +147,25 @@ function save_result_batch(results, filename::AbstractString)
 
 	# Compress the JSON data into a bytes object
 	# Save the compressed data to a file
-	open(filename, "w") do file
-		write(file, json_data)
+	#open(filename, "a") do file
+	#	write(file, json_data)
+	#end
+	
+	
+	# Check if the file exists
+	if isfile(filename)
+		# If the file exists, open it in append mode
+		open(filename, "a") do file
+		    # Write some data to the file
+		    write(file, json_data)
+		    println("EXISTING FILE")
+		end
+	else
+		# If the file does not exist, create it and write some data to it
+		open(filename, "w") do file
+		    write(file, json_data)
+		    println("NEW FILE")
+		end
 	end
 end
 

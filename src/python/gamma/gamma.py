@@ -96,9 +96,9 @@ class Algebra(Function):
         T_A_   := tolled edge set (subset of A_AP)
         I_T_A_ := natural index for T_AP
 
-        conv_1 = phi_AP * gamma * phi_AV^-1
-        alpha  = phi_AV * phi_T_AV^-1
-        beta   = phi_AP * phi_T_AP^-1
+        conv_1 = phi_A_ * gamma * phi_I_A^-1
+        alpha  = phi_A * phi_T_A^-1
+        beta   = phi_A_ * phi_T_A_^-1
         conv_2 = beta^-1 * conv_1 * alpha
 
         V  ---gamma---> V_
@@ -113,7 +113,11 @@ class Algebra(Function):
         V_   := node set after transformation by gamma
         I_V_ := natural index for V_V_
 
-        conv_3 = phi_VP * gamma * phi_VV^-1
+        conv_3 = phi_V_ * gamma * phi_I_V^-1
+        
+        
+        M ---------> M_ 
+
     """
     __slots__ = (
                 'T_A', 'A', 'A_', 'T_A_',
@@ -195,7 +199,22 @@ class Algebra(Function):
         # image
         I_T_A_ = phi_T_A_.image # index set
         
+        # incidence matrix
+        M = np.zeros((len(V), len(A)))
         
+        # Fill in the incidence matrix based on the edges
+        for i, edge in enumerate(sorted(A, key=phi_A)):
+            src, dst = phi_V(edge.src), phi_V(edge.dst)
+            M[src-1][i] = 1
+            M[dst-1][i] = -1
+            
+        M_ = np.zeros((len(V_), len(A_)))
+        for i, edge in enumerate(sorted(A_, key=phi_A_)):
+            src, dst = phi_V_(edge.src), phi_V_(edge.dst)
+            M_[src-1][i] = 1
+            M_[dst-1][i] = -1
+        
+
         # inverse function
         phi_A_inv = Function({phi_A(edge) : edge for edge in A})            # I_A -> A
         phi_V_inv = Function({phi_V(node) : node for node in V})            # I_V -> V
@@ -246,12 +265,14 @@ class Algebra(Function):
         
         # domain
         self.A = A
-        self.A_ = A_ 
+        self.A_ = A_
+        self.M = M
+        self.M_ = M_
         self.V = V
         self.V_ = V_
         self.T_A = T_A
         self.T_A_ = T_A_
-        
+    
         # image
         self.I_T_A = I_T_A
         self.I_T_A_ = I_T_A_
@@ -421,6 +442,9 @@ class Gamma(Algebra):
                                         )
                                     ) for cls in self.P_A
                                 ]
+                                
+        transformation['M'] = self.M.tolist()                   
+        transformation['M_'] = self.M_.tolist()
         
         return transformation
         
