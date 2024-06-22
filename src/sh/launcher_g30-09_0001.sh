@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10G
-#SBATCH --time=24:23:00
+#SBATCH --time=24:45:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
@@ -16,6 +16,4 @@ julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000017-0
 julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000006-000080-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000006-000080-g30-09-R.json 9 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000006-000080-g30-09-T.pkl
 julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000016-000075-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000016-000075-g30-09-R.json 9 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000016-000075-g30-09-T.pkl
 julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000007-000074-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000007-000074-g30-09-R.json 9 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000007-000074-g30-09-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000014-000066-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000014-000066-g30-09-R.json 9 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000014-000066-g30-09-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g30-09/000001-000001-000029-g30-09-P.pkl ./data/generated/problems/paper/g30-09/000001-000001-000029-g30-09-R.json 9 ./data/generated/problems/paper/original/000000-000000-g30-09-P.json ./data/generated/problems/paper/g30-09/000001-000001-000029-g30-09-T.pkl
 sleep 600

@@ -271,8 +271,8 @@ function experience(M_original, N_original,
 					prob_original::Problem, prob_trans::Problem, 
 					id::AbstractString, time_limit::Int)
 					
-	random = true
-	retro = false
+	random = false # 21 juin
+	retro = true # 22 juin
 	retro_min = false
 	retro_avg = false
 	retro_max = false
