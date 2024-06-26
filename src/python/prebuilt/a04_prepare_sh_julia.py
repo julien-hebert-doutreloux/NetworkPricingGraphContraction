@@ -45,7 +45,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                         
                         file_sh = os.path.join(directory_sh, f"{filename.replace(f'-P{ext}', '.sh')}")
                         with open(file_sh, 'w') as f:
-                            if int(h) > 46:
+                            if int(h) >= 48:
                                 partition = 'optimumlong'
                             else:
                                 partition = 'optimum'

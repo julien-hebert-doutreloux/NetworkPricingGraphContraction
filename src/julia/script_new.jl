@@ -401,7 +401,7 @@ function experience(M_original, N_original,
 
 
 		# Option 6 - Margarida
-		result_retro_6_avg = solve_and_get_values(prob_original, id*"-avg-6", time_limit, M_original, N_retro_avg, option=6, rtrans=result_trans_avg, trans=transformation);
+		result_retro_6_avg = solve_and_get_values(prob_original, id*"-avg-6", time_limit, M_original, N_original, option=6, rtrans=result_trans_avg, trans=transformation);
 		println("HERE")
 		
 		# Storing result
