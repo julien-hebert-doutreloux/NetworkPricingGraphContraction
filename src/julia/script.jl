@@ -271,11 +271,11 @@ function experience(M_original, N_original,
 					prob_original::Problem, prob_trans::Problem, 
 					id::AbstractString, time_limit::Int)
 					
-	random = false # 21 juin
+	random = true # 27 juin
 	retro = false # 24 juin
 	retro_min = false #24 juin
 	retro_avg = false # 25 juin
-	retro_max = true # 26 juin
+	retro_max = false # 26 juin
     
     result_list = []
     
