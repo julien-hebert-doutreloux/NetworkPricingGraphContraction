@@ -293,8 +293,11 @@ function experience(M_original, N_original,
     if random
 		try
 			println("RANDOM")
-			NT_rand_min, NT_rand_avg, NT_rand_max  = projectionN(trans, [rand(0:x_i) for x_i in N_original])
-			N_retro_rnd = retroprojectionN(trans, NT_rand_max)
+			
+			result_trans_rnd = solve_and_get_values(prob_trans, id*"-rnd-x", time_limit, M_original, [rand(0:x_i) for x_i in NT_max], option=0);
+			N_retro_rnd = retroprojectionN(trans, result_trans_rnd.tvals);
+			#NT_rand_min, NT_rand_avg, NT_rand_max  = projectionN(trans, [rand(0:x_i) for x_i in N_original])
+			#N_retro_rnd = retroprojectionN(trans, NT_rand_max)
 			
 			# Option 1 - Shortest path
 			result_rand_1 = solve_and_get_values(prob_original, id*"-rnd-1", 30, M_original, N_retro_rnd, option=1);
@@ -308,6 +311,7 @@ function experience(M_original, N_original,
 			result_rand_5 = solve_and_get_values(prob_original, id*"-rnd-5", time_limit, M_original, N_retro_rnd, option=5);
 		
 			# Storing results
+			push!(result_list, result_trans_rnd)
 			push!(result_list, result_rand_1)
 			push!(result_list, result_rand_2)
 			push!(result_list, result_rand_3)
