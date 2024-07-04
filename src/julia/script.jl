@@ -273,10 +273,10 @@ function experience(M_original, N_original,
 					prob_original::Problem, prob_trans::Problem, 
 					id::AbstractString, time_limit::Int)
 					
-	random = true
-	retro = true
-	retro_min = false
-	retro_avg = false
+	random = false
+	retro = false
+	retro_min = true
+	retro_avg = true
 	retro_max = false
     
     result_list = []
