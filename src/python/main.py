@@ -99,9 +99,6 @@ if '__main__' == __name__:
             prepare_sh_python()
             
                         
-            
-            
-            
     elif selected_option == 'option5':
         selected_option_5 = args.pop('selected_option_5')
         
@@ -119,62 +116,3 @@ if '__main__' == __name__:
                         
     if selected_option == 'option8':
         test()
-        
-        
-        
-        #shortest_path_rewind(verbose)
-
-# xxxxxx-NPP-yyyyyy         := normal npp problem
-# xxxxxx-NPP-yyyyyy-R       := revised npp problem
-# xxxxxx-NPP-yyyyyy-T       := transformation file
-# xxxxxx-NPP-yyyyyy-(R-)RR  := raw result
-# xxxxxx-NPP-yyyyyy-(R-)PR  := process result that compare the original problem with the transformed one
-
-
-
-
-
-
-
-
-
-
-
-# il faut adapter le code pour que la borne inferieur de n'importe quelle arcs soient 1
-# en plus des autres changements ...
-#./src/components/graphmodel.jl:        set_lower_bound(x[a], 0)
-#./src/components/graphmodel.jl:        set_lower_bound(x[a], 1)
-#./src/models/dual-representation.jl:    dual.λ = λ = @variable(model, [1:nv], lower_bound = 0, base_name="λ[$k]")
-#./src/models/dual-representation.jl:    dual.L = L = @variable(model, lower_bound = 0, base_name="L[$k]")
-#./src/models/linearizations/commodity-linearization.jl:    tx = @variable(model, [a=a1], lower_bound = 0, base_name="tx[$k]") <--- changement ici
-#./src/models/primal-representation.jl:    primal.x = x = @variable(model, [1:na], lower_bound = 0, upper_bound = 1, base_name="x[$k]")
-#./src/models/primal-representation.jl:    primal.z = z = @variable(model, [1:np], lower_bound = 0, upper_bound = 1, base_name="z[$k]")
-#./src/models/primal-representation.jl:    primal.x = x = @variable(model, [a1], lower_bound = 0, upper_bound = 1, base_name="x[$k]")
-
-
-
-# il faut changer 
-#.src/models/linearizations/commodity-linearization.jl line 33
-# Julien : if else statement is not in the original code 
-#    if isempty(tx)
-#        sumtx = 0.0
-#    else
-#        sumtx = sum(tx)
-#    end
-
-
-# One batch 
-# 2 gb RAM + 1 CPU
-
-# 1) Generation (home)
-# 1000 transformations ---> 2 MB
-# 1000 npp graphs    ---> 4.5 MB
-# 1000 results         ---> 4.5 MB
-
-# 2) Computing (RAM)
-# 1000 transformations ---> 2 MB
-# 1000 results         ---> 4.5 MB
-
-# Total in home : 11 MB
-
-# Max number of batch : ~2000

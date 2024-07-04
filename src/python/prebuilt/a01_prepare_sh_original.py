@@ -29,10 +29,12 @@ def main():
 
 
     time_limit_sh = len_group * time_limit_jl + server_time_buffer
+    
     h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
     cpu, ram = 1, 10
+    
     split_list = [command_list[i:i+len_group] for i in range(0, len(command_list), len_group)]
-    #print(*split_list, sep='\n')
+    
     for i, commands in enumerate(split_list, start=1):
         n = '%02d' % i
         file_sh = os.path.join(directory_sh, f'original_batch_{n}.sh')
