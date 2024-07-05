@@ -48,7 +48,7 @@ def main():
             
             file_sh = os.path.join(directory_sh, f'post_process_{"%04d" % j}.sh')
             with open(file_sh, 'w') as f:
-                f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, *args) + sub_command + [f'sleep {server_time_buffer}', ] ))
+                f.write('\n'.join(preamble_sh(cpu, ram, h, m, s, partition, *args) + sub_command + [f'sleep {server_time_buffer}', ] ))
                 logger.info(f'File created : {file_sh}')
             sub_command = []
             j+=1
