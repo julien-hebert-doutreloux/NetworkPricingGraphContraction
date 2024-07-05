@@ -248,8 +248,8 @@ function experience(M_original, N_original,
 					
 	random = true
 	retro = true
-	retro_min = true
-	retro_avg = true
+	retro_min = false
+	retro_avg = false
 	retro_max = true
     
     result_list = []
