@@ -2,7 +2,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5G
 #SBATCH --time=00:15:00
-#SBATCH --output=/dev/null
+#SBATCH --output=./tmp/testing_log.txt
 #SBATCH --partition=testing
 module load python/3.12.0
 source venev/bin/activate
