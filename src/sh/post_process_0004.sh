@@ -6,6 +6,12 @@
 #SBATCH --partition=testing
 module load python/3.12.0
 source venev/bin/activate
-python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g40-07 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g40-07
-python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-02 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g50-02
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g35-03 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g35-03
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-05 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g50-05
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g45-02 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g45-02
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g50-09
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-07 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g50-07
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g45-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g45-09
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g45-08 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g45-08
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g30-09 --directory_output ./tmp/result/ --directory_original ./data/generated/problems/paper/original --output_name result_g30-09
 sleep 100
