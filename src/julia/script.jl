@@ -212,7 +212,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 		xvals = Dict()
 		b = Dict()
 		flow = Dict()
-		
+
 		for k in 1:length(forms)
 			primal_repr = primal(forms[k])              # Primal representation
 			dual_repr = NetPricing.dual(forms[k])       # Dual representation
@@ -224,7 +224,7 @@ function solve_and_get_values(prob::Problem, id::AbstractString, time_limit::Int
 			λvals[real_k] = value.(dual_repr.λ)                 # Dual prices λ[k] (only for dual-arc)
 			xvals[real_k] = value.(primal_repr.x)               # Path vector
 			b[real_k] = NetPricing.sourcesink_vector(prob_k)    # Source sink vector
-			flow[real_k] = Amap[real_k][xvals[real_k] .== 1.0]
+			flow[real_k] = Amap[real_k][xvals[real_k] .== 1.0]  # edge flow (vector) by original index
 		end
 		
 		finish = (solve_time <= time_limit)
@@ -246,11 +246,11 @@ function experience(M_original, N_original,
 					prob_original::Problem, prob_trans::Problem, 
 					id::AbstractString, time_limit::Int)
 					
-	random = false
-	retro = false
+	random = true
+	retro = true
 	retro_min = true
 	retro_avg = true
-	retro_max = false
+	retro_max = true
     
     result_list = []
     

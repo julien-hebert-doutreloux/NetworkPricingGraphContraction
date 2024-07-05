@@ -5,7 +5,7 @@ logger = config.log(**PARAMETERS['logger'])
 
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     
-    n_exp = 4
+    n_exp = 6
     n_eval = 0
     eval_time = 30
     min_time = 10*3600

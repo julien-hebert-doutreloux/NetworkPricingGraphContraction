@@ -20,15 +20,43 @@ def post_process_result(
     
     tvals = result['tvals']
     flow_ = result['flow']
-    flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
+    #flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
     
-    if set(flow) != set(range(1, len(g_gamma)+1)):
-        logger.warning('Flow result incomplete. NaN completion')
-            
-        diff = set(range(1, len(g_gamma)+1)) - set(flow)
+    
+    if 'x' == parameter_kwargs['heuristic']:
+        # number of vertex in the transformed graph
+        nv = max(list(transformation['V'].values()))
+        # number of edge in the transformed graph
+        na = max(list(transformation['A'].values()))
         
-        for i in sorted(diff):
-            flow[i] = np.nan
+    else:
+        # number of vertex in the transformed graph
+        nv = len(transformation['V'])
+        # number of edge in the transformed graph
+        na = len(transformation['A'])
+    
+    total_flow = np.zeros(na)
+    
+    #for user, f in flow_.items():
+    #    ff = np.zeros(na)
+    #    for i in f:
+    #        ff[i-1] = 1
+    #    total_flow+=ff
+    for f in flow_.values():
+        if not 0 in f: # Bui code failed to find a path or this is just a bug
+            f = np.array(f)-1
+            f = f.astype(int)
+
+            total_flow += np.bincount(f, minlength=na)
+        else:
+            print(f)
+    #if set(flow) != set(range(1, len(g_gamma)+1)):
+    #    logger.warning('Flow result incomplete. NaN completion')
+    #        
+    #    diff = set(range(1, len(g_gamma)+1)) - set(flow)
+    #    
+    #    for i in sorted(diff):
+    #        flow[i] = np.nan
         
     # function graph bridge
     #T_A       ⊆     A  ---gamma---> A_      ⊇       T_A_      
@@ -43,12 +71,12 @@ def post_process_result(
     
     # (i) based on the index from I_T_AV
     edge_av = lambda i : g_gamma.alpha(i) 
-    opt_val_av = lambda i : tvals_0[i-1] # index correction and value correction 
-    opt_flow_av = lambda i : flow_0[i] 
+    #opt_val_av = lambda i : tvals_0[i-1] # index correction and value correction 
+    #opt_flow_av = lambda i : flow_0[i] 
     
     edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
     opt_val_ap = lambda i : tvals[g_gamma.conv2(i)-1]  # index correction and value correction 
-    opt_flow_ap = lambda i : flow[g_gamma.conv1(g_gamma.alpha(i))]
+    opt_flow_ap = lambda i : total_flow[g_gamma.conv1(g_gamma.alpha(i))]
     
     reduce_row_fun = (edge_av, edge_ap, opt_val_ap, opt_flow_ap)
     reduce_row = lambda i: [fun(i) for fun in reduce_row_fun]
@@ -168,7 +196,7 @@ def post_process(directory_input, directory_output, directory_original, output_n
     directory_npp = directory_input
     problem_name = directory_npp.split(os.sep)[-1]
     if output_name == '':
-        output_name = problem_name 
+        output_name = problem_name
     ptr = {}
     for root, dirs, files in os.walk(directory_npp):
         for filename in files:
@@ -188,11 +216,9 @@ def post_process(directory_input, directory_output, directory_original, output_n
     p = os.path.join(directory_original, f'000000-000000-{problem_name}-P.json')
     t = os.path.join(directory_original, f'000000-000000-{problem_name}-T.json')
     r = os.path.join(directory_original, f'000000-000000-{problem_name}-R.json')
-    
     o_nodes, o_edges, o_problems = npp_from_json(p)
                         
     for batch_id, (p, t, r) in ptr.items():
-        
         with open(t, 'rb') as f:
             transformations = pickle.load(f)
         
@@ -207,7 +233,6 @@ def post_process(directory_input, directory_output, directory_original, output_n
             
             _, *params = id_.replace(problem_name, '').split('-')
             params.pop(-3) # pop the redundant empty string '' from params (resulting from the replace below)
-            
             result_dict[id_] = post_process_result(
                         o_nodes, o_edges, o_problems,
                         transformations[transformation_id], results[id_],
