@@ -14,6 +14,7 @@ def main():
     batch_size = PARAMETERS['MISC']['batch_size']
     server_time_buffer = PARAMETERS['MISC']['server_time_buffer']
     args = PARAMETERS['MISC']['preamble_args']
+    partition = PARAMETERS['MISC']['partition']
     command_list = []
     
     # original
@@ -37,13 +38,11 @@ def main():
     j = 1
     for i, command in enumerate(command_list, start=0):
 
-
-
         sub_command.append(command)
 
         if ((i%(batch_size) == 0) and (i!=0)) or (i == len(command_list)) or batch_size==1:
             
-            estimated_time = 20*60*len(sub_command) + server_time_buffer
+            estimated_time = 15*60#20*60*len(sub_command) + server_time_buffer
             h, m, s = '%02d' % (estimated_time // 3600), '%02d' % ((estimated_time % 3600) // 60), '00'
             cpu, ram = 1, 5
             

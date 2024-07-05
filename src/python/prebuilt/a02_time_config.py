@@ -9,6 +9,8 @@ def main():
     ## Will be use to set up the time limit for every transformation
     directory_npp, time_filename = PARAMETERS['MISC'].values()
     config = {}
+    
+    # Iterate through files in the directory_npp and process *R.pkl files
     for root, dirs, files in os.walk(directory_npp):
         
         for filename in files:
@@ -25,5 +27,6 @@ def main():
                 config[problem_name] = (result['solve_time'], result['finish'])
                 
     with open(time_filename, 'wb') as f:
+        # Writing file
         pickle.dump(config, f)
         logger.info(f'File created : {time_filename}')

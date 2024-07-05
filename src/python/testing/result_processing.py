@@ -1,7 +1,7 @@
 from preamble.preamble import *
 from gamma.common import npp_from_json, npp_from_dict
 from gamma.gamma import Function, Algebra, Gamma, GammaNPP
-from testing.shortest_path_rewind import shortest_path_rewind 
+#from testing.shortest_path_rewind import shortest_path_rewind 
 
 PARAMETERS = config.test_result_processing(__name__)
 logger = config.log(**PARAMETERS['logger'])
@@ -120,7 +120,9 @@ def post_process_original(directory_input, directory_output, output_name=''):
     directory_npp = directory_input
     if output_name == '':
         output_name = 'original'
+        
     ptr = {}
+    # Iterate through files in the directory_npp and process *R.json files
     for root, dirs, files in os.walk(directory_npp):
         for filename in files:
             if filename.endswith("-R.json"):
@@ -154,7 +156,9 @@ def post_process_original(directory_input, directory_output, output_name=''):
                     )
 
     export_path = os.path.join(directory_output, f'{output_name}.pkl')
+    
     with open(export_path, 'wb') as f:
+        # Writing file
         pickle.dump(result_dict, f)
         logger.info(f'File created : {export_path}')
     

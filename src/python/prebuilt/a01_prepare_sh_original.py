@@ -16,7 +16,8 @@ def main():
     args = ["module load julia", "module load gurobi"]
 
     command_list = []
-
+    
+    # Iterate through files in the directory_npp and process *P.json
     for root, dirs, files in os.walk(directory_npp):
         for filename in files:
             if filename.endswith("P.json"):
@@ -30,6 +31,7 @@ def main():
 
     time_limit_sh = len_group * time_limit_jl + server_time_buffer
     
+    # Preamble argument
     h, m, s = '%02d' % (time_limit_sh // 3600), '%02d' % ((time_limit_sh % 3600) // 60), '00'
     cpu, ram = 1, 10
     
@@ -39,9 +41,10 @@ def main():
         n = '%02d' % i
         file_sh = os.path.join(directory_sh, f'original_batch_{n}.sh')
         
+        commands = preamble_sh(cpu, ram, h, m, s, *args) + commands + [f'sleep {server_time_buffer}',]
+        code = '\n'.join(commands)
         with open(file_sh, 'w') as f:
-            commands = preamble_sh(cpu, ram, h, m, s, *args) + commands + [f'sleep {server_time_buffer}',]
-            code = '\n'.join(commands)
+            # Writing file
             f.write(code)
             logger.info(f'File created : {file_sh}')
 

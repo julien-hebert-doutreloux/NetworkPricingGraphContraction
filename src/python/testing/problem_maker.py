@@ -80,8 +80,7 @@ def problem_maker(
     trivial_partition = set_of_frozenset([(e, ) for e in edges])
     all_contraction[(0, 0, 0, 0, 0, 0, 0, 0, 0)] = [GammaNPP(nodes, edges, trivial_partition, problems), ]
 
-
-
+    # 4) Problem generation with each parameters combination
     for params in zip(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp):
         all_contraction[params] = []
         
@@ -108,7 +107,6 @@ def problem_maker(
         if not partitions:
             logger.debug(f"Parameters n-min_sl-max_sl-m-H1-H2-H3-H4 : {'-'.join(map(str, params))} have no partitions")
             logger.debug(f"file : {file_npp}")
-            #input()
         else:
             # Adding missing elements
             for partition in partitions:
@@ -147,14 +145,15 @@ def problem_maker(
             if len(current_problems_dict)>0:
             
                 number1 ="%06d" %  count_files_ending_with("P.pkl", directory_npp)
-                
                 length = "%06d" % len(current_problems_dict)
+                
                 filename = f"{number2}-{number1}-{length}-{basename}"            
                 with open(os.path.join(directory_npp, filename+'-P.pkl'), 'wb') as f:
                     pickle.dump(current_problems_dict, f)
                     
                 with open(os.path.join(directory_npp, filename+'-T.pkl'), 'wb') as f:
                     pickle.dump(current_transformations_dict, f)
+                    
                 print(len(current_problems_dict))
                 current_problems_dict = {}
                 current_transformations_dict = {}
