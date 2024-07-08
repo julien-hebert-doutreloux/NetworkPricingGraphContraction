@@ -425,8 +425,10 @@ def prebuilt_a01_prepare_sh_original(name):
     parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
     parameters['MISC']['directory_sh'] = './src/sh'
     parameters['MISC']['time_limit'] = 200
-    parameters['MISC']['lenght_batch'] = 25 # must divide the number of problem in directory_npp
+    parameters['MISC']['lenght_batch'] = 10 # must divide the number of problem in directory_npp
     parameters['MISC']['server_time_buffer'] = 600
+    parameters['MISC']['preamble_args'] = ["module load julia", "module load gurobi"]
+    parameters['MISC']['partition'] = 'optimum'
     
     return parameters
     

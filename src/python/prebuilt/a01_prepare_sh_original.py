@@ -13,8 +13,8 @@ def main():
     time_limit_jl = PARAMETERS['MISC']['time_limit']
     server_time_buffer = PARAMETERS['MISC']['server_time_buffer']
     len_group = PARAMETERS['MISC']['lenght_batch'] 
-    args = ["module load julia", "module load gurobi"]
-
+    args = PARAMETERS['MISC']['preamble_args']
+    partition = PARAMETERS['MISC']['partition']
     command_list = []
     
     # Iterate through files in the directory_npp and process *P.json
@@ -41,7 +41,7 @@ def main():
         n = '%02d' % i
         file_sh = os.path.join(directory_sh, f'original_batch_{n}.sh')
         
-        commands = preamble_sh(cpu, ram, h, m, s, *args) + commands + [f'sleep {server_time_buffer}',]
+        commands = preamble_sh(cpu, ram, h, m, s, partition, *args) + commands + [f'sleep {server_time_buffer}',]
         code = '\n'.join(commands)
         with open(file_sh, 'w') as f:
             # Writing file
