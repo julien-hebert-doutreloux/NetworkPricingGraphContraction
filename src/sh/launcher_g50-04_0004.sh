@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10G
-#SBATCH --time=34:16:00
+#SBATCH --time=24:55:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-julia src/julia/script.jl ./data/generated/problems/paper/g50-04/000001-000037-000072-g50-04-P.pkl ./data/generated/problems/paper/g50-04/000001-000037-000072-g50-04-R.json 74 ./data/generated/problems/paper/original/000000-000000-g50-04-P.json ./data/generated/problems/paper/g50-04/000001-000037-000072-g50-04-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g50-04/000001-000034-000075-g50-04-P.pkl ./data/generated/problems/paper/g50-04/000001-000034-000075-g50-04-R.json 74 ./data/generated/problems/paper/original/000000-000000-g50-04-P.json ./data/generated/problems/paper/g50-04/000001-000034-000075-g50-04-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g50-04/000001-000028-000093-g50-04-P.pkl ./data/generated/problems/paper/g50-04/000001-000028-000093-g50-04-R.json 74 ./data/generated/problems/paper/original/000000-000000-g50-04-P.json ./data/generated/problems/paper/g50-04/000001-000028-000093-g50-04-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g50-04/000001-000034-000075-g50-04-P.pkl ./data/generated/problems/paper/g50-04/000001-000034-000075-g50-04-R.json 74 0 ./data/generated/problems/paper/original/000000-000000-g50-04-P.json ./data/generated/problems/paper/g50-04/000001-000034-000075-g50-04-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g50-04/000001-000028-000093-g50-04-P.pkl ./data/generated/problems/paper/g50-04/000001-000028-000093-g50-04-R.json 74 0 ./data/generated/problems/paper/original/000000-000000-g50-04-P.json ./data/generated/problems/paper/g50-04/000001-000028-000093-g50-04-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g50-04/000001-000019-000026-g50-04-P.pkl ./data/generated/problems/paper/g50-04/000001-000019-000026-g50-04-R.json 74 0 ./data/generated/problems/paper/original/000000-000000-g50-04-P.json ./data/generated/problems/paper/g50-04/000001-000019-000026-g50-04-T.pkl
 sleep 600

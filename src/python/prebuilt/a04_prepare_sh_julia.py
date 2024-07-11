@@ -5,14 +5,14 @@ logger = config.log(**PARAMETERS['logger'])
 
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     
-    n_exp = 6
-    n_eval = 0
+    n_exp = 5
+    n_eval = 1
     eval_time = 30
     min_time = 10*3600
     max_time = 24*3600 - 600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]
-    
+    julia_compute_option = 0
     command_time_list_tuple_sh = []
     
     
@@ -38,7 +38,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
                     original_file = os.path.join(directory_original, f'000000-000000-{problem_name}-P.json')
                     transformation_file = os.path.join(root, filename.replace(f"-P{ext}", "-T.pkl"))
                     
-                    command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit} {original_file} {transformation_file}'
+                    command = f'julia src/julia/script.jl {input_file} {output_file} {time_limit} {julia_compute_option} {original_file} {transformation_file}'
                     
                     estimated_time = n_problems*((time_limit+10)*n_exp + n_eval*eval_time) + server_time_buffer
                     
