@@ -5,14 +5,14 @@ logger = config.log(**PARAMETERS['logger'])
 
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
     
-    n_exp = 5
+    n_exp = 6
     n_eval = 1
     eval_time = 30
     min_time = 10*3600
     max_time = 24*3600 - 600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]
-    julia_compute_option = 0
+    julia_compute_option = 1
     command_time_list_tuple_sh = []
     
     
