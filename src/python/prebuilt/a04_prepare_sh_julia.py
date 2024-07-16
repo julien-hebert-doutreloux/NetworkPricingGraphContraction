@@ -12,7 +12,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
     max_time = 24*3600 - 600
     server_time_buffer = 600
     args = ["module load julia", "module load gurobi"]
-    julia_compute_option = 4#15 juil
+    julia_compute_option = 5#16 juil
     command_time_list_tuple_sh = []
     
     

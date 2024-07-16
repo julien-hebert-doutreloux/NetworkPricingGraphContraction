@@ -6,6 +6,6 @@
 #SBATCH --partition=optimum
 module load julia
 module load gurobi
-julia src/julia/script.jl ./data/generated/problems/paper/g35-07/000001-000028-000081-g35-07-P.pkl ./data/generated/problems/paper/g35-07/000001-000028-000081-g35-07-R.json 98 4 ./data/generated/problems/paper/original/000000-000000-g35-07-P.json ./data/generated/problems/paper/g35-07/000001-000028-000081-g35-07-T.pkl
-julia src/julia/script.jl ./data/generated/problems/paper/g35-07/000001-000030-000081-g35-07-P.pkl ./data/generated/problems/paper/g35-07/000001-000030-000081-g35-07-R.json 98 4 ./data/generated/problems/paper/original/000000-000000-g35-07-P.json ./data/generated/problems/paper/g35-07/000001-000030-000081-g35-07-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g35-07/000001-000028-000081-g35-07-P.pkl ./data/generated/problems/paper/g35-07/000001-000028-000081-g35-07-R.json 98 5 ./data/generated/problems/paper/original/000000-000000-g35-07-P.json ./data/generated/problems/paper/g35-07/000001-000028-000081-g35-07-T.pkl
+julia src/julia/script.jl ./data/generated/problems/paper/g35-07/000001-000030-000081-g35-07-P.pkl ./data/generated/problems/paper/g35-07/000001-000030-000081-g35-07-R.json 98 5 ./data/generated/problems/paper/original/000000-000000-g35-07-P.json ./data/generated/problems/paper/g35-07/000001-000030-000081-g35-07-T.pkl
 sleep 600
