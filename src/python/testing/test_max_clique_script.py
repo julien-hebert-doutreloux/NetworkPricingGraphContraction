@@ -12,12 +12,14 @@ def find_json_files(directory):
 
 
 
-directory = '/home/fiftyfour/Documents/NetworkPricingGraphContraction/data/from_github/'
-json_files = find_json_files(directory)
+directory = './data/from_github/problems/paper'
+export_path = './result/max_clique/initial/'
 
+json_files = find_json_files(directory)
 
 for path in json_files:
     print(path)
-    shell_command = f"seq 50 | parallel -j 10 python ./src/python/main.py option2 --input_file '{path}'"+" "+"--option '1' --iteration {} --export_path '/home/fiftyfour/Documents/NetworkPricingGraphContraction/result/distribution'"
+    shell_command = f"seq 100 | parallel -j 10 python ./src/python/main.py option2 --input_file '{path}'" + " " + "--option '1' --iteration {}" + " " + f"--export_path '{export_path}'"
+    
     # Run the shell command and capture the output
     subprocess.check_output(shell_command, shell=True)
