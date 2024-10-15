@@ -26,7 +26,7 @@ def option_2(subparsers_):
                                 )
 
     parser_.add_argument('-f', '--input_file', type=str, help='NPP JSON problem')
-    parser_.add_argument('-r', '--formula_option', choices=['0', '1','2','3','4','5','6','7'], type=str, help='Rules affinity score formula option. See the Rules class')
+    #parser_.add_argument('-r', '--option', choices=['0', '1','2','3','4','5','6','7'], type=str, help='Rules affinity score formula option. See the Rules class')
     parser_.add_argument('-i', '--iteration', type=str, help='Iteration number')
     parser_.add_argument('-e', '--export_path', type=str, help='Result export path')
     

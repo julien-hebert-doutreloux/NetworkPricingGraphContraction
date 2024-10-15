@@ -81,10 +81,9 @@ class Rules(dict):
     Class for compatibility dictionary
     In other word, the dictionary where vertices are keys and neighbours are values.
     """
-    __slots__ = ('valid', 'complement_rules', 'option')
-    def __init__(self, rules, option=1):
+    __slots__ = ('valid', 'complement_rules')
+    def __init__(self, rules, option=1): # option deprecated
         super().__init__(rules)
-        self.option = option
         
         self.valid = True
         for vertex in self:
@@ -102,10 +101,37 @@ class Rules(dict):
     def ordered_keys_cardinality(self, reverse=False):
         return sorted(list(self), key=lambda x: len(self[x]), reverse=reverse)
     
+    
+    
+    def ordered_values_by_affinity_initial(self, reverse=False):
+        lenght_dict = {k:len(v) for k,v in self.items()}
+        affinity_number = lambda k1, k2 : sum(map(lambda x: ((k1 in self[x]) / lenght_dict[x]), self[k2])) # initial
+        res = {
+                    a: sorted(list(self[a]),
+                            key=lambda b: affinity_number(b, a), reverse=reverse)
+                        for a in self
+                }
+        return res
+        
+    def ordered_values_by_affinity_best(self, reverse=False):
+        lenght_dict = {k:len(v) for k,v in self.items()}
+        affinity_number = lambda k1, k2 : sum(map(lambda x: (lenght_dict[x])**(-(k1 in self[x])), self[k2]))
+        res = {
+            a: sorted(list(self[a]),
+                    key=lambda b: affinity_number(a,b), reverse=reverse)
+                for a in self
+        }
+        return res
+        
     def ordered_values_by_affinity(self, reverse=False):
+        return self.ordered_values_by_affinity_best(reverse)
+        
+        
+        
+    #def ordered_values_by_affinity(self, reverse=False):
         # Deep L1
         #  0) rien
-        #** 1) /(len(self[x])+1)
+        #** 1) /(len(self[x])+1) best
         #  2) * len(self[k1])
         #* 3) * len(self.complement_rules[x])
         #  4) /(len(self.complement_rules[x])+1)
@@ -116,14 +142,14 @@ class Rules(dict):
         
         
         # number of other value in the rules[k2] for which k1 is compatible
-        option = self.option
-        complement_rules = self.complement_rules
-        lenght_dict = {k:len(v) for k,v in self.items()}
+        #option = self.option
+        #complement_rules = self.complement_rules
+        #lenght_dict = {k:len(v) for k,v in self.items()}
         
         #if str(option) == str(0):
         #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]), self[k2]))
-        if str(option) == str(1):
-            affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) / (lenght_dict[x]), self[k2]))
+        #if str(option) == str(1):
+        #    affinity_number = lambda k1, k2 : sum(map(lambda x: ((k1 in self[x]) / lenght_dict[x]), self[k2])) # initial
         #elif str(option) == str(2):
         #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[k1], self[k2]))
         #elif str(option) == str(3):
@@ -138,17 +164,16 @@ class Rules(dict):
         #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(set(self[k1])&set(self[x])), self[k2]))
         #elif str(option) == str(8):
         #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x], self[k2]))
-            
-        res = {
-                key: sorted(list(self[key]),
-                        key=lambda x: affinity_number(x, key), reverse=reverse)
-                    for key in self
-            }
         
-        
-        return res
+        #res = {
+        #        a: sorted(list(self[a]),
+        #                key=lambda b: affinity_number(b, a), reverse=reverse)
+        #            for a in self
+        #    }
+    
+       # return res
      
-    def approx_max_clique(self, return_all=False, reverse=False):
+    def approx_max_clique_initial(self, return_all=False, reverse=False):
         """
         Not an exact algorithm that finds an approximate largest clique if we interpret the rules as a graph.
         
@@ -201,15 +226,12 @@ class Rules(dict):
             ")
         """
         
-        res = self.ordered_values_by_affinity(reverse=reverse)
+        res = self.ordered_values_by_affinity_initial(reverse=reverse)
         complement_rules = self.complement_rules
-        
-        unions = []
-        max_len, max_clique = 0, {}
-        
+        max_len, max_clique, unions= 0, {}, []
+
         for k in self:
             clique = set()
-            
             for e in res[k]: #neigbours
                 if not (complement_rules[e] & clique):
                     clique.add(e)
@@ -219,13 +241,31 @@ class Rules(dict):
             len_clique = len(clique) 
             if len_clique > max_len:
                 max_len, max_clique = len_clique, clique
-                
-            
-        if return_all:
-            return unions, max_clique
+
+        return max_clique
         
+    def approx_max_clique_best(self, return_all=False, reverse=False):
+        res = self.ordered_values_by_affinity_best(reverse=reverse)
+        complement_rules = self.complement_rules
+        max_len, max_clique, unions= 0, {}, []
+
+        for k in self:
+            clique = set()
+            for e in res[k]: #neigbours
+                if not (complement_rules[e] & clique):
+                    clique.add(e)
+            
+            unions.append(clique)
+            
+            len_clique = len(clique) 
+            if len_clique > max_len:
+                max_len, max_clique = len_clique, clique
+
         return max_clique
     
+    def approx_max_clique(self, return_all=False, reverse=False):
+        return self.approx_max_clique_best(return_all, reverse)
+        
     # TO DO : unit test
     def random_partition(self, n:int, min_sl:int, max_sl:int, m:int, max_attemp:int):
         # n      : number of transformations
