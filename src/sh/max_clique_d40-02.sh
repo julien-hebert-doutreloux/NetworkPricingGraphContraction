@@ -1,10 +1,9 @@
-
 #!/bin/bash
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=1
 #SBATCH --mem=5G
 #SBATCH --time=1:25:00
-#SBATCH --output=/tmp/logging.txt
-#SBATCH --partition=testing
+#SBATCH --output=null
+#SBATCH --partition=optimum
 module load python/3.12.0
 source venev/bin/activate
 for ((i=1; i<=240; i++)); do
