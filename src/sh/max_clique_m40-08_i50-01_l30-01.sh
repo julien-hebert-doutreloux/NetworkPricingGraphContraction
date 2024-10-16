@@ -8,8 +8,8 @@ module load python/3.12.0
 source venev/bin/activate
 for ((i=1; i<=240; i++)); do
     python ./src/python/main.py option2 --input_file './data/from_github/problems/progressive/m40-08.json' --iteration $i --export_path './result/max_clique/'
-python ./src/python/main.py option2 --input_file './data/from_github/problems/progressive/i50-01.json' --iteration $i --export_path './result/max_clique/'
-python ./src/python/main.py option2 --input_file './data/from_github/problems/progressive/l30-01.json' --iteration $i --export_path './result/max_clique/'
+	python ./src/python/main.py option2 --input_file './data/from_github/problems/progressive/i50-01.json' --iteration $i --export_path './result/max_clique/'
+	python ./src/python/main.py option2 --input_file './data/from_github/problems/progressive/l30-01.json' --iteration $i --export_path './result/max_clique/'
 done
-sleep 60
+sleep 300
     

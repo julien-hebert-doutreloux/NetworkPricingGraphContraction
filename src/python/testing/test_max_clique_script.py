@@ -23,7 +23,7 @@ json_files = find_json_files(directory)
 for paths in chunk_list_to_tuples(json_files, 3):
     
     command = lambda path : f"python ./src/python/main.py option2 --input_file '{path}' --iteration $i --export_path '{export_path}'"
-    commands = '\n'.join([command(path) for path in paths])
+    commands = '\n\t'.join([command(path) for path in paths])
     content = f"""#!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
@@ -35,7 +35,7 @@ source venev/bin/activate
 for ((i=1; i<=240; i++)); do
     {commands}
 done
-sleep 60
+sleep 300
     """
     names = [os.path.splitext(os.path.basename(path))[0] for path in paths]
     name = '_'.join(names)
