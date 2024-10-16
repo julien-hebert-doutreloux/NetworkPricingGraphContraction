@@ -8,7 +8,8 @@ from gamma.common import npp_from_json
 def main(input_file, iteration, export_path):
     #lock = threading.Lock()
     #lock.acquire()
-    
+    random.seed(42+iteration)
+
     if export_path:
         # Export path
         filename = os.path.basename(input_file)
