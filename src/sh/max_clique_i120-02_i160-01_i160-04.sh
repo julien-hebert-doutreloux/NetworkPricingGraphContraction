@@ -6,7 +6,7 @@
 #SBATCH --partition=optimum
 module load python/3.12.0
 source venev/bin/activate
-for ((i=1; i<=240; i++)); do
+for i in $(seq 1 240); do
     python ./src/python/main.py option2 --input_file './data/from_github/problems/comm-heavy/i120-02.json' --iteration $i --export_path './result/max_clique/'
 	python ./src/python/main.py option2 --input_file './data/from_github/problems/comm-heavy/i160-01.json' --iteration $i --export_path './result/max_clique/'
 	python ./src/python/main.py option2 --input_file './data/from_github/problems/comm-heavy/i160-04.json' --iteration $i --export_path './result/max_clique/'

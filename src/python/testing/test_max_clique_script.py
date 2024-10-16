@@ -32,7 +32,7 @@ for paths in chunk_list_to_tuples(json_files, 3):
 #SBATCH --partition=optimum
 module load python/3.12.0
 source venev/bin/activate
-for ((i=1; i<=240; i++)); do
+for i in $(seq 1 240); do
     {commands}
 done
 sleep 300
