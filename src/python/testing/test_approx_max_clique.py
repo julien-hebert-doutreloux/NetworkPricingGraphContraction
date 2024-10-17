@@ -13,7 +13,8 @@ def main(input_file, iteration, export_path):
     if export_path:
         # Export path
         filename = os.path.basename(input_file)
-        name = os.path.splitext(filename)[0]
+        basedir = os.path.dirname(file_path)
+        name = f"{basedir}_{os.path.splitext(filename)[0]}"
         path1 = os.path.join(export_path, f"{name}_my_max_clique_approx_best.txt")
         path2 = os.path.join(export_path, f"{name}_my_max_clique_approx_initial.txt")
         path3 = os.path.join(export_path, f"{name}_nx_max_clique_approx.txt")
@@ -45,14 +46,14 @@ def main(input_file, iteration, export_path):
             print(f"\
                 [{approx_function_wrapped}]\n\
                 \tTime : {round(ft, 6)} sec\n\
-                \tLenght : {len(result)}\n\
+                \tLength : {len(result)}\n\
                 \tCompatible : {compatible(result, test_rules)}\n\
                 \tResult : {result}\
             ")
             
         if export_path:
             if not os.path.exists(export_path):
-                to_write = f'lenght\ttime\titeration\n{len(result)}\t{ft}\t{iteration}\n'
+                to_write = f'length\ttime\titeration\n{len(result)}\t{ft}\t{iteration}\n'
             else:
                 to_write = f'{len(result)}\t{ft}\t{iteration}\n'
                 

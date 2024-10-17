@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
-#SBATCH --time=01:30:00
+#SBATCH --time=01:25:00
 #SBATCH --output=null
 #SBATCH --partition=optimum
 module load python/3.12.0
