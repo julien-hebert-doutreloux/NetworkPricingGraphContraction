@@ -13,7 +13,7 @@ def main(input_file, iteration, export_path):
     if export_path:
         # Export path
         filename = os.path.basename(input_file)
-        basedir = os.path.dirname(file_path)
+        basedir =  os.path.basename(os.path.dirname(input_file))
         name = f"{basedir}_{os.path.splitext(filename)[0]}"
         path1 = os.path.join(export_path, f"{name}_my_max_clique_approx_best.txt")
         path2 = os.path.join(export_path, f"{name}_my_max_clique_approx_initial.txt")
