@@ -549,9 +549,9 @@ def prebuilt_a05_post_processing_result(name):
     
     parameters['MISC']['batch_size'] = 3
     parameters['MISC']['directory_sh'] = './src/sh'
-    parameters['MISC']['server_time_buffer'] = 600
+    parameters['MISC']['server_time_buffer'] = 200
     parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"]
-    parameters['MISC']['partition'] = 'optimum'
+    parameters['MISC']['partition'] = 'testing'
     
     
     

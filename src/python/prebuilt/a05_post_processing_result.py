@@ -42,9 +42,9 @@ def main():
 
         if ((i%(batch_size) == 0) and (i!=0)) or (i == len(command_list)) or batch_size==1:
             
-            estimated_time = 20*60*len(sub_command) + server_time_buffer
+            estimated_time = 15*60 #20*60*len(sub_command) + server_time_buffer
             h, m, s = '%02d' % (estimated_time // 3600), '%02d' % ((estimated_time % 3600) // 60), '00'
-            cpu, ram = 1, 5
+            cpu, ram = 1, 3
             
             file_sh = os.path.join(directory_sh, f'post_process_{"%04d" % j}.sh')
             with open(file_sh, 'w') as f:
