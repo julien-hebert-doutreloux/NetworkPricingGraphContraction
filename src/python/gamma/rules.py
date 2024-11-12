@@ -241,7 +241,10 @@ class Rules(dict):
             len_clique = len(clique) 
             if len_clique > max_len:
                 max_len, max_clique = len_clique, clique
-
+                
+        if return_all:
+            return unions, max_clique
+        
         return max_clique
         
     def approx_max_clique_best(self, return_all=False, reverse=False):
@@ -260,7 +263,10 @@ class Rules(dict):
             len_clique = len(clique) 
             if len_clique > max_len:
                 max_len, max_clique = len_clique, clique
-
+                
+        if return_all:
+            return unions, max_clique
+            
         return max_clique
     
     def approx_max_clique(self, return_all=False, reverse=False):
@@ -303,7 +309,6 @@ class Rules(dict):
             while union != full_set and attempt < max_attemp:
                 attempt += 1
                 random_generator = random.sample(generators, 1)[-1] - union
-                
                 if random_generator:
                     max_length = min(len(self) - len(union), len(random_generator), max_sl)
                     min_length = max(1, min(min_sl, max_length))

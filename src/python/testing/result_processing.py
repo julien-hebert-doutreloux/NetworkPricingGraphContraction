@@ -194,9 +194,10 @@ def post_process_original(directory_input, directory_output, output_name=''):
 def post_process(directory_input, directory_output, directory_original, output_name=''):
     
     directory_npp = directory_input
-    problem_name = directory_npp.split(os.sep)[-1]
+    problem_name = directory_npp.split(os.sep)[-1] # attention if directory_input ends with .../ it will not work 
     if output_name == '':
         output_name = problem_name
+        
     ptr = {}
     for root, dirs, files in os.walk(directory_npp):
         for filename in files:
@@ -219,6 +220,7 @@ def post_process(directory_input, directory_output, directory_original, output_n
     o_nodes, o_edges, o_problems = npp_from_json(p)
                         
     for batch_id, (p, t, r) in ptr.items():
+
         with open(t, 'rb') as f:
             transformations = pickle.load(f)
         
@@ -227,13 +229,15 @@ def post_process(directory_input, directory_output, directory_original, output_n
             results = {r.pop('id'): r for r in results}
         
         for id_ in tqdm(results.keys(), desc=f'Processing batch : {batch_id}'): 
-            # id_ ex. 000840-50-2-5-0-1-1-1-0-1500-d30-07
+            # id_ ex. batch_id1-batch_id2-000840-50-2-5-0-1-1-1-0-1500-d30-07
             transformation_id = id_.split(problem_name)[0]+problem_name
             
             
             _, *params = id_.replace(problem_name, '').split('-')
+            unique_id = batch_id+'-'+id_         
             params.pop(-3) # pop the redundant empty string '' from params (resulting from the replace below)
-            result_dict[id_] = post_process_result(
+            
+            result_dict[unique_id] = post_process_result(
                         o_nodes, o_edges, o_problems,
                         transformations[transformation_id], results[id_],
                         **parameter_kwargs(*params)
