@@ -6,7 +6,6 @@
 #SBATCH --partition=testing
 module load python/3.12.0
 source venev/bin/activate
-python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g45-05 --directory_output ./scratch/hebjul --directory_original ./data/generated/problems/paper/original --output_name result_g45-05
-python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g50-10 --directory_output ./scratch/hebjul --directory_original ./data/generated/problems/paper/original --output_name result_g50-10
-python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g30-01 --directory_output ./scratch/hebjul --directory_original ./data/generated/problems/paper/original --output_name result_g30-01
-sleep 200
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g35-08 --directory_output ~/scratch/hebjul --directory_original ./data/generated/problems/paper/original --output_name result_g35-08
+python ./src/python/main.py option5 5-3 --directory_input ./data/generated/problems/paper/g40-08 --directory_output ~/scratch/hebjul --directory_original ./data/generated/problems/paper/original --output_name result_g40-08
+sleep 5
