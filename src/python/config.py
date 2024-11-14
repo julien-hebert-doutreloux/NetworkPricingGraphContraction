@@ -544,7 +544,7 @@ def prebuilt_a05_post_processing_result(name):
     parameters['MISC'] = {}
     parameters['MISC']['directory_npp'] = './data/generated/problems/paper/'
     parameters['MISC']['directory_original'] = os.path.join(parameters['MISC']['directory_npp'], 'original')
-    parameters['MISC']['directory_output'] = '~/scratch/hebjul'
+    parameters['MISC']['directory_output'] = '/scratch/hebjul'
     parameters['MISC']['output_name_prefix'] = 'result'
     
     parameters['MISC']['batch_size'] = 2

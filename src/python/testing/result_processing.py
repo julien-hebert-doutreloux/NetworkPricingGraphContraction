@@ -43,13 +43,14 @@ def post_process_result(
     #        ff[i-1] = 1
     #    total_flow+=ff
     for f in flow_.values():
-        if not 0 in f: # Bui code failed to find a path or this is just a bug
+        if not 0 in f: # Bui code failed to find a path or this is just a bug, the flow is an vector of arc index, so 0 should not be there
             f = np.array(f)-1
             f = f.astype(int)
 
             total_flow += np.bincount(f, minlength=na)
         else:
             print(f)
+            print('here')
     #if set(flow) != set(range(1, len(g_gamma)+1)):
     #    logger.warning('Flow result incomplete. NaN completion')
     #        
