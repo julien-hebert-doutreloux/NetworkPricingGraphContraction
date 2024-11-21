@@ -16,8 +16,8 @@ def option_1(subparsers_):
     
 def option_2(subparsers_):
     name = 'option2'
-    description = textwrap.dedent("""Test performance of nx.approximation.max_clique vs my approx_max_clique. This script can be parallelize as follow\n```seq number_of_iteration | parallel -j number_of_threads python src/main.py option2 -f 'path_to_your_json' -r 1 -i {} -e 'export_path'```""")
-    help = 'test.test_approx_max_clique.py'
+    description = textwrap.dedent("""Test performance of nx.approximation.max_clique vs my approx_max_clique.""")
+    help = 'testing.experience_approx_max_clique_sh.py'
     parser_ = subparsers_.add_parser(
                                     name=name,
                                     description=description,
@@ -26,7 +26,6 @@ def option_2(subparsers_):
                                 )
 
     parser_.add_argument('-f', '--input_file', type=str, help='NPP JSON problem')
-    #parser_.add_argument('-r', '--option', choices=['0', '1','2','3','4','5','6','7'], type=str, help='Rules affinity score formula option. See the Rules class')
     parser_.add_argument('-i', '--iteration', type=str, help='Iteration number')
     parser_.add_argument('-e', '--export_path', type=str, help='Result export path')
     
@@ -51,17 +50,21 @@ def option_3(subparsers_):
     # key : name, values: (description:str, help:str)   
     options = {}
     
+    options['3-0'] = (
+                'Prepare maximum clique experience (parameters in config.prebuilt_a00_prepare_max_clique_script_sh)',
+                'prebuilt.a00_prepare_max_clique_script_sh.py'
+            )
     options['3-1'] = (
-                    'Prepare original (parameters in config.prebuilt_a01_prepare_sh_original)',
-                    'prebuilt.a01_prepare_sh_original.py'
+                'Problem generation (parameters in config.prebuilt_a03_problem_generation)',
+                'prebuilt.a01_problem_generation.py'
                 )
     options['3-2'] = (
                 'Time config original problem (parameters in config.prebuilt_a02_time_config)',
                 'prebuilt.a02_time_config.py'
                 )
     options['3-3'] = (
-                'Problem generation (parameters in config.prebuilt_a03_problem_generation)',
-                'prebuilt.a03_problem_generation.py'
+                'Prepare original (parameters in config.prebuilt_a01_prepare_sh_original)',
+                'prebuilt.a03_prepare_sh_original.py'
                 )
     options['3-4'] = (
                 'Prepare sh task (parameters in config.prebuilt_a04_prepare_sh_task)',
@@ -177,16 +180,3 @@ def option_7(subparsers_):
                                     help=help
                                 )
     parser_.add_argument('--input_file', type=str, help='input the NPP json file')
-    
-    
-def option_8(subparsers_):
-    name = "option8"
-    description = textwrap.dedent("""test""")
-    help='test.test.py'
-    parser_ = subparsers_.add_parser(
-                                    name=name,
-                                    description=description,
-                                    formatter_class=argparse.RawTextHelpFormatter,
-                                    help=help
-                                )
-                                

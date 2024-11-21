@@ -4,6 +4,7 @@
 #SBATCH --time=00:20:00
 #SBATCH --output=/dev/null
 #SBATCH --partition=optimum
+mkdir ./data/generated/problems/paper/original
 mkdir ./data/generated/problems/paper/g30-10
 mkdir ./data/generated/problems/paper/g35-03
 mkdir ./data/generated/problems/paper/g30-06

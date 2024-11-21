@@ -11,11 +11,6 @@ def make_rules(edges_list:iter, H1:bool, H2:bool, H3:bool, H4:bool) -> dict:
     # H3 : Tolled element equivalence class hypothesis (True by default)
     # H4 : Local element only (False by default)
     
-    #H1, H2, H3, H4 = True, True, True, 
-    #for edge in edges_list:
-    #    if edge.toll:
-    #        logger.debug(f"{edge.src}, {edge.dst}, {edge.label}, {edge.cost}, {edge.toll}")
-    #input()
     def H1_condition(edge1:Edge, edge2:Edge) -> bool:
         # Not continuous
         return (edge1.dst != edge2.src) and (edge2.dst != edge1.src)
@@ -59,16 +54,12 @@ def make_rules(edges_list:iter, H1:bool, H2:bool, H3:bool, H4:bool) -> dict:
         prepartition = [prepartition, ]
     
     if H1:
-        #print(*[str(set(map(str, cls))) for cls in prepartition], sep='\n')
-        # s'il y a plusieurs element non vide dans prepartition, il faudra faire toutes les combinaisons entre les partitions possibles
-        # de chaque element de prepartition (par default, prepartition contient un element sous les hypotheses 1,2,3)
+        # if there are several non-empty elements in prepartition, all possible combinations between partitions must be made
+        # of each element in prepartition (by default, prepartition contains an element under hypotheses 1,2,3)
         rules = {}
         for sub in prepartition:
             rules.update({elem:set(filter(lambda x: are_compatible(x, elem), sub)) for elem in sub})
-            #print(*rules.items(), sep='\n')
-            # compatibility rules
-        #print(*readable_rules(rules).items(), sep='\n')
-            # python unit_test.py | sed 's/frozenset//g'
+
     return rules
         
 def readable_rules(rules):
@@ -125,54 +116,7 @@ class Rules(dict):
         
     def ordered_values_by_affinity(self, reverse=False):
         return self.ordered_values_by_affinity_best(reverse)
-        
-        
-        
-    #def ordered_values_by_affinity(self, reverse=False):
-        # Deep L1
-        #  0) rien
-        #** 1) /(len(self[x])+1) best
-        #  2) * len(self[k1])
-        #* 3) * len(self.complement_rules[x])
-        #  4) /(len(self.complement_rules[x])+1)
-        #* 5) * len(self.complement_rules[x])/(len(self[x])+1)
-        #  6) * len(self[x])/(len(self.complement_rules[x])+1)
-        #  7) * len(set(self[k1])&set(self[x]))
-        #  8) *len(self[x])
-        
-        
-        # number of other value in the rules[k2] for which k1 is compatible
-        #option = self.option
-        #complement_rules = self.complement_rules
-        #lenght_dict = {k:len(v) for k,v in self.items()}
-        
-        #if str(option) == str(0):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]), self[k2]))
-        #if str(option) == str(1):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: ((k1 in self[x]) / lenght_dict[x]), self[k2])) # initial
-        #elif str(option) == str(2):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[k1], self[k2]))
-        #elif str(option) == str(3):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(complement_rules[x]), self[k2]))
-        #elif str(option) == str(4):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) / (len(complement_rules[x])+1), self[k2]))
-        #elif str(option) == str(5):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(complement_rules[x])/(lenght_dict[x]), self[k2]))
-        #elif str(option) == str(6):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x]/(len(complement_rules[x])+1), self[k2]))
-        #elif str(option) == str(7):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * len(set(self[k1])&set(self[x])), self[k2]))
-        #elif str(option) == str(8):
-        #    affinity_number = lambda k1, k2 : sum(map(lambda x: (k1 in self[x]) * lenght_dict[x], self[k2]))
-        
-        #res = {
-        #        a: sorted(list(self[a]),
-        #                key=lambda b: affinity_number(b, a), reverse=reverse)
-        #            for a in self
-        #    }
-    
-       # return res
-     
+             
     def approx_max_clique_initial(self, return_all=False, reverse=False):
         """
         Not an exact algorithm that finds an approximate largest clique if we interpret the rules as a graph.
@@ -272,7 +216,6 @@ class Rules(dict):
     def approx_max_clique(self, return_all=False, reverse=False):
         return self.approx_max_clique_best(return_all, reverse)
         
-    # TO DO : unit test
     def random_partition(self, n:int, min_sl:int, max_sl:int, m:int, max_attemp:int):
         # n      : number of transformations
         # min_sl : minimum length allowed for an element of a partition
@@ -316,8 +259,8 @@ class Rules(dict):
                     random_size = random.randint(min_length, max_length)
                     random_subset = set(random.sample(list(random_generator), random_size))
                         
-                    # correction des duplicats
-                    random_subset -= union #set().union(*partition)
+                    # delete duplicates
+                    random_subset -= union
                     
                     if random_subset != set():
                         m_ctn += 1 if random_size>=2 else 0
@@ -336,11 +279,7 @@ class Rules(dict):
                 union = full_set
                 
             if ((m_ctn == m) or ((m == -1) and (m_ctn!=0))):
-                #partition = set_of_frozenset(partition)
                 if not partition in partitions:
-                    #length = len(set(chain.from_iterable(partition)))
-                    #readable_partition = list(map(lambda x: list(map(str, x)), partition))
-                    #logger.debug(f"Lenght: {length};")# Partition: {readable_partition}")
                     partitions.append(partition)
         logger.debug(f"number of partition found: {len(partitions)}")
         return partitions

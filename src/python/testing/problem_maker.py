@@ -26,7 +26,7 @@ def problem_maker(
                 batch_size          
                 ):
     
-    # Parameter
+    # Parameters
     
     # File and folder
     # file_npp       : ./data/from_github/problems/progressive-2/problem.json
@@ -95,18 +95,19 @@ def problem_maker(
         if not rules:
             logger.debug(f"Parameters n-min_sl-max_sl-m-H1-H2-H3-H4 : {'-'.join(map(str, params))} have no rules")
             partitions = []
+            
         else:
             # Singleton are element only compatible with themselves within the parameters
             # they need to be added to each partition generated
             rules = Rules(rules)
             difference = set(edges) - set(rules)       # {x1, x2, ...}
             singleton = set_of_frozenset([(x,) for x in difference])   # {{x1, }, {x2, }, ...}
-            
             partitions = rules.random_partition(*params[:4], params[-1])
     
         if not partitions:
             logger.debug(f"Parameters n-min_sl-max_sl-m-H1-H2-H3-H4 : {'-'.join(map(str, params))} have no partitions")
             logger.debug(f"file : {file_npp}")
+            
         else:
             # Adding missing elements
             for partition in partitions:
@@ -154,7 +155,6 @@ def problem_maker(
                 with open(os.path.join(directory_npp, filename+'-T.pkl'), 'wb') as f:
                     pickle.dump(current_transformations_dict, f)
                     
-                #print(len(current_problems_dict))
                 current_problems_dict = {}
                 current_transformations_dict = {}
                 j+=1

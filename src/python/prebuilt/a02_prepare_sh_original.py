@@ -1,6 +1,6 @@
 from preamble.preamble import *
 
-PARAMETERS = config.prebuilt_a01_prepare_sh_original(__name__)
+PARAMETERS = config.prebuilt_a02_prepare_sh_original(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 

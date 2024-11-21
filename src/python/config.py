@@ -407,13 +407,12 @@ def test_test_approx_max_clique(name):
 ##############
 ## PREBUILT ##
 ##############
-
-def prebuilt_a01_prepare_sh_original(name):
+def prebuilt_a00_prepare_max_clique_script_sh(name):
     parameters = {}
-
+    
     # LOGGER PARAMETERS
     parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.prepare_a01_sh_original.log')
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a00_prepare_max_clique_script_sh.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
     parameters['logger']['stream_handler_level'] = logging.ERROR
@@ -422,42 +421,34 @@ def prebuilt_a01_prepare_sh_original(name):
     
     # OTHER PARAMETERS
     parameters['MISC'] = {}
-    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
-    parameters['MISC']['directory_sh'] = './src/sh'
-    parameters['MISC']['time_limit'] = 200
-    parameters['MISC']['lenght_batch'] = 10 # must divide the number of problem in directory_npp
-    parameters['MISC']['server_time_buffer'] = 600
-    parameters['MISC']['preamble_args'] = ["module load julia", "module load gurobi"]
-    parameters['MISC']['partition'] = 'optimum'
+    
+    parameters['MISC']['directory_problem'] = './data/from_github/problems/'    # folder where NPP problem can be found 
+    parameters['MISC']['export_path'] = './result/max_clique/'                  # export folder for maximum clique result
+    parameters['MISC']['directory_sh'] = './src/sh/'                            # output for sh generated file
+    
+    # server setttings
+    parameters['MISC']['cpu'] = 1
+    parameters['MISC']['ram'] = 2
+    parameters['MISC']['h'] = 1
+    parameters['MISC']['m'] = 25
+    parameters['MISC']['s'] = 0
+    
+    parameters['MISC']['n_try'] = 240                                           # number of times the algorithm to find the maximum clique is running
+    parameters['MISC']['batch_size'] = 3                                        # number of commands in the same sh file
+    
+    parameters['MISC']['server_time_buffer'] = 300                              # time buffer for server
+    parameters['MISC']['partition'] = 'optimum'                                 # setting for server
+    parameters['MISC']['preamble_args'] = ['module load python/3.12.0', 'source venev/bin/activate']    # preamble args for sh file
     
     return parameters
     
-def prebuilt_a02_time_config(name):
+    
+def prebuilt_a01_problem_generation(name):
     parameters = {}
 
     # LOGGER PARAMETERS
     parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a02_time_config.log')
-    parameters['logger']['logger_name'] = name
-    parameters['logger']['logger_level'] = logging.WARNING
-    parameters['logger']['stream_handler_level'] = logging.ERROR
-    parameters['logger']['file_handle_level'] = logging.WARNING
-    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-    
-    # OTHER PARAMETERS
-    parameters['MISC'] = {}
-    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
-    parameters['MISC']['time_filename'] = 'time_config.pkl'
-  
-    return parameters
-    
-    
-def prebuilt_a03_problem_generation(name):
-    parameters = {}
-
-    # LOGGER PARAMETERS
-    parameters['logger'] = {}
-    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a03_problem_generation.log')
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a01_problem_generation.log')
     parameters['logger']['logger_name'] = name
     parameters['logger']['logger_level'] = logging.WARNING
     parameters['logger']['stream_handler_level'] = logging.ERROR
@@ -491,26 +482,74 @@ def prebuilt_a03_problem_generation(name):
     max_attemp = [2500 for _ in m]
     batch_size = 100
 
-    parameters['MISC']['n'] = n
-    parameters['MISC']['min_sl'] = min_sl
-    parameters['MISC']['max_sl'] = max_sl
-    parameters['MISC']['m'] = m
-    parameters['MISC']['H1'] = H1
-    parameters['MISC']['H2'] = H2 
-    parameters['MISC']['H3'] = H3
-    parameters['MISC']['H4'] = H4
+    parameters['MISC']['n'] = n                     # number of transformations to generates
+    parameters['MISC']['min_sl'] = min_sl           # minimum length for all none trivial arcs equivalence class
+    parameters['MISC']['max_sl'] = max_sl           # maximum length for all none trivial arcs equivalence class
+    parameters['MISC']['m'] = m                     # number of none trivial arc equivalence class
+    parameters['MISC']['H1'] = H1                   # continuity-free edge equivalence class hypothesis (0,1)
+    parameters['MISC']['H2'] = H2                   # Equivalence class assumption for elements of equal value (0,1)
+    parameters['MISC']['H3'] = H3                   # Tolled element equivalence class hypothesis (0,1)
+    parameters['MISC']['H4'] = H4                   # Local element only (0,1)
     parameters['MISC']['max_attemp'] = max_attemp
     parameters['MISC']['batch_size'] = batch_size
-    parameters['MISC']['directory_input'] = './data/from_github/problems/paper'
-    parameters['MISC']['directory_output'] = './data/generated/problems/paper'
-    parameters['MISC']['directory_original'] = './data/generated/problems/paper/original'
-    parameters['MISC']['directory_sh'] = './src/sh'
-    parameters['MISC']['server_time_buffer'] = 600
-    parameters['MISC']['partition'] = 'optimum'
-    parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"]
+    
+    parameters['MISC']['directory_input'] = './data/from_github/problems/paper'             # input folder where github original problems can be found
+    parameters['MISC']['directory_output'] = './data/generated/problems/paper'              # output folder for transformed problems
+    parameters['MISC']['directory_original'] = './data/generated/problems/paper/original'   # input folder where original problems can be found
+    parameters['MISC']['directory_sh'] = './src/sh'                                         # output for sh generated file
+    
+    parameters['MISC']['server_time_buffer'] = 600          # time buffer for server
+    parameters['MISC']['partition'] = 'optimum'             # setting for server
+    parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"] # preamble args for sh file
     
     return parameters
     
+    
+def prebuilt_a02_prepare_sh_original(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.prepare_a02_sh_original.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    
+    # OTHER PARAMETERS
+    parameters['MISC'] = {}
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
+    parameters['MISC']['directory_sh'] = './src/sh'
+    parameters['MISC']['time_limit'] = 200
+    parameters['MISC']['lenght_batch'] = 10 # must divide the number of problem in directory_npp
+    parameters['MISC']['server_time_buffer'] = 600
+    parameters['MISC']['preamble_args'] = ["module load julia", "module load gurobi"]
+    parameters['MISC']['partition'] = 'optimum'
+    
+    return parameters
+    
+def prebuilt_a03_time_config(name):
+    parameters = {}
+
+    # LOGGER PARAMETERS
+    parameters['logger'] = {}
+    parameters['logger']['filename'] = os.path.join('.', 'log', 'prebuilt.a03_time_config.log')
+    parameters['logger']['logger_name'] = name
+    parameters['logger']['logger_level'] = logging.WARNING
+    parameters['logger']['stream_handler_level'] = logging.ERROR
+    parameters['logger']['file_handle_level'] = logging.WARNING
+    parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+    
+    # OTHER PARAMETERS
+    parameters['MISC'] = {}
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/original'
+    parameters['MISC']['time_filename'] = 'time_config.pkl'
+  
+    return parameters
+    
+    
+
 
 def prebuilt_a04_prepare_sh_julia(name):
     parameters = {}
@@ -525,6 +564,24 @@ def prebuilt_a04_prepare_sh_julia(name):
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     
     # OTHER PARAMETERS
+    parameters['MISC'] = {}
+    
+    parameters['MISC']['file_time_config'] = './result/time_config_g_200.pkl'               # input timetable used to impose time constraints
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/'                # input folder where transformed problems can be found
+    parameters['MISC']['directory_original'] = './data/generated/problems/paper/original'   # input folder where original problems can be found
+    parameters['MISC']['directory_sh'] = './src/sh/'                                        # output folder for generated sh files
+    parameters['MISC']['grouped'] = True                                                    # for batching commands (should not be changed unless for good reason)
+    
+    parameters['MISC']['prepare_sh_file'] = {}
+    parameters['MISC']['prepare_sh_file']['n_exp'] = 6                 # number of experiences (strategy number see ./src/julia/script.jl) 
+    parameters['MISC']['prepare_sh_file']['n_eval'] = 1                # number of evaluations (should not be changed unless for good reason)
+    parameters['MISC']['prepare_sh_file']['eval_time'] = 30            # evaluation time (in seconds)
+    parameters['MISC']['prepare_sh_file']['min_time'] = 10*3600        # minimum time (in seconds)
+    parameters['MISC']['prepare_sh_file']['max_time'] = 24*3600 - 600  # maximum time (in seconds)
+    parameters['MISC']['prepare_sh_file']['server_time_buffer'] = 600  # time buffer for server
+    parameters['MISC']['prepare_sh_file']['julia_compute_option'] = 5  # option number (strategy number see ./src/julia/script.jl) 
+    parameters['MISC']['prepare_sh_file']['preamble_args'] = ["module load julia", "module load gurobi"]   # preamble args for sh file
+    
     return parameters
     
     
@@ -541,24 +598,17 @@ def prebuilt_a05_post_processing_result(name):
     parameters['formatter'] = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
     
     
-    parameters['MISC'] = {}
-    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/'
-    parameters['MISC']['directory_original'] = os.path.join(parameters['MISC']['directory_npp'], 'original')
-    parameters['MISC']['directory_output'] = '/scratch/hebjul'
-    parameters['MISC']['output_name_prefix'] = 'result'
-    
-    parameters['MISC']['batch_size'] = 1
-    parameters['MISC']['directory_sh'] = './src/sh'
-    parameters['MISC']['server_time_buffer'] = 5
-    parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"]
-    parameters['MISC']['partition'] = 'testing'
-    
-    
-    
     # OTHER PARAMETERS
+    parameters['MISC'] = {}
+    parameters['MISC']['directory_npp'] = './data/generated/problems/paper/'                # input folder where transformed problems can be found
+    parameters['MISC']['directory_original'] = './data/generated/problems/paper/original'   # input folder where original problems can be found
+    parameters['MISC']['directory_output'] = '/scratch/hebjul'                              # output folder for data
+    parameters['MISC']['directory_sh'] = './src/sh'                                         # output for sh generated file
+    parameters['MISC']['output_name_prefix'] = 'result'                                     # prefix for file naming
+    
+    parameters['MISC']['batch_size'] = 1                                                    # number of processing in the batch
+    parameters['MISC']['server_time_buffer'] = 5                                            # time buffer for server
+    parameters['MISC']['partition'] = 'testing'                                             # setting for server
+    parameters['MISC']['preamble_args'] = ["module load python/3.12.0", "source venev/bin/activate"]    # preamble args for sh file
+    
     return parameters
-    
-    
-    
-###################################
-# plot

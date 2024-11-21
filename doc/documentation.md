@@ -1,12 +1,11 @@
 ## How to use main.py
 
 ### Option 1 - unit_test
-Run this command to verify every modules is working as intended:
+Run this command to verify every module is working as intended:
 ```
     $ python src/main.py option1
 ```
-It is possible that the Rules module isn't working if it was change. If there is changes in the rules.make_rules() function, please make sure to reflect those changes into the ```unit_test.unit_test_rules.py```
-
+It is possible that the Rules module isn't working if it was changed. If there are changes in the rules.make_rules() function, please make sure to reflect those changes into the ```unit_test.unit_test_rules.py```
 
 
 ### Option 2 - test_approx_max_clique.py
@@ -14,286 +13,223 @@ To get information about this script:
 ```
     $ python src/main.py option2 --help
 ```
-
-To in parallel with the parallel (2 cores in the following example) package
+It will return:
 ```
-    $ seq 10 | parallel -j 2 python src/main.py 2 -f 'path_to_your_json' -o 1 -i {} -e 'export_path'
-```
-
-Package *parallel* references:
-Tange, O. (2023, August 22). GNU Parallel 20230822 ('Chandrayaan').
-Zenodo. https://doi.org/10.5281/zenodo.8278274
-
-To watch in real time single tread without write out the result
-```
-    $ watch -n 1 python src/main.py 2 -f 'path_to_your_json' -o 1 -i 1
+options:
+  -h, --help            show this help message and exit
+  -f INPUT_FILE, --input_file INPUT_FILE
+                        NPP JSON problem
+  -i ITERATION, --iteration ITERATION
+                        Iteration number
+  -e EXPORT_PATH, --export_path EXPORT_PATH
+                        Result export path
 ```
 
 
-### Option 3 - Compute grid
-The compute grid is a txt file with bash terminal commands like this
+### Option 3 - Maximum clique and NPP step
+Be sure to have the data from https://github.com/minhcly95/NetPricing.jl/tree/master/problems. We will use them to generate all transformations as well as every modified original (the same but with integer value). If the data are placed in ```/data/from_github/problems/``` then the following command should be run to create every folder needed later
 ```
-python script.py args1
-python script.py args2
-python script.py args3
-...
-python script.py argsn
-```
-
-The suboptions are the following:
-
-#### 3-3. Problem generation
-The necessary arguments are
-____________________________________________________________________________________________________________________
-| Parameter                     | Description                                                                      |
-|-------------------------------|----------------------------------------------------------------------------------|
-| num_partitions                | The maximum number of partition to compute                                       |
-| max_sub_length                | The maximum length that element in partition are allowed to be                   |
-| input_folder                  | The parent folder of every NPP problems                                          |
-| export_folder_grid            | The folder to export the compute grid                                            |
-| export_folder_problems        | The parent folder to export generated problems when process compute grid         |
-| export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
-| output_filename               | The name of the compute grid file                                                |
-____________________________________________________________________________________________________________________
-
-##### Example
-```bash
-python src/python/main.py option3 3-1 \
- --input_folder './data/from_github/problems' \
- --export_folder_grid './data/modified' \
- --export_folder_problems './data/modified/problems' \
- --export_folder_transformations './data/modified/transformations' \
- --output_filename 'compute_grid_problem_generation'
+sh ./src/sh/0000_mkdir_prepare.sh
 ```
 
 
-#### 3-2. Julia commands (1-batch)
-This option produce an txt file with julia commands of the form:
-```bash
-julia src/julia/script.jl 'input_file.json' 'output_file.json'
+#### 3-0. Maximum clique experience (generate sh files)
+To prepare the maximum clique experience run the following command:
 ```
-_________________________________________________________________________________________________
-| Parameter             | Description                                                           |
-|-----------------------|-----------------------------------------------------------------------|
-| input_folder          | The parent folder containing json NPP problem                         |
-| export_folder_grid    | The folder to export the compute grid                                 |
-| export_folder_results | The parent folder to export future results when process compute grid  |
-| output_filename       | The name of the compute grid file                                     |
-_________________________________________________________________________________________________
-
-##### Example
-```bash
-python src/python/main.py option3 3-2 \
- --input_folder './data/modified/problems' \
- --export_folder_grid './data/modified' \
- --export_folder_results './data/modified/results' \
- --output_filename 'compute_grid_julia'
+python ./src/python/main.py option3 3-0
 ```
 
+All the parameters for the experiment are in the ```./src/python/config.py``` at the function ```prebuilt_a00_prepare_max_clique_script_sh```. 
+__________________________________________________________________________________
+| Parameter                    | Description                                      |
+|------------------------------|--------------------------------------------------|
+| `directory_problem`          | Folder where NPP problem can be found           |
+| `export_path`                | Export folder for maximum clique result         |
+| `directory_sh`               | Output folder for shell script generated files  |
+| `cpu`                        | Number of CPU cores allocated                    |
+| `ram`                        | Amount of RAM (in GB) allocated                  |
+| `h`                          | Number of hours              |
+| `m`                          | Number of minutes               |
+| `s`                          | Number of seconds               |
+| `n_try`                      | Number of independent executions for the algorithm to find the maximum clique |
+| `batch_size`                 | Number of commands in the same shell script file |
+| `server_time_buffer`         | Time buffer for server (in seconds)             |
+| `partition`                  | Partition setting for the server                 |
+| `preamble_args`              | Pre-execution commands in the shell script      |
+___________________________________________________________________________________
 
-#### 3-3. Julia commands (n-batch)
-This option works with the same arguments the previous one. The exception is that the julia command forms are:
-```bash
-julia src/julia/script.jl 'csv_grid.csv'
+
+#### 3-1. Prepare sh files to generate transformed NPP problems
+To prepare the generation of transformations run the following command :
+```
+python ./src/python/main.py option3 3-1
+```
+Then run :
+```
+find $directory_sh -type f -name "generation*" -exec sbatch {} \;
 ```
 
-_________________________________________________________________________________________________
-| Parameter             | Description                                                           |
-|-----------------------|-----------------------------------------------------------------------|
-| input_folder          | The parent folder containing json NPP problem                         |
-| export_folder_grid    | The folder to export the compute grid                                 |
-| export_folder_results | The parent folder to export future results when process compute grid  |
-| output_filename       | The name of the compute grid file                                     |
-| batch_size            | Number of problem inside one batch                                    |
-_________________________________________________________________________________________________
-The csv grid as two columns: one for the input and one for the output. This is done because the time that Julia needs to initialize is substantial. So by grouping 100 problems and looping over them directly in Julia save initialization time.
+All the parameters are in the ```./src/python/config.py``` at the function ```prebuilt_a01_problem_generation```.
+__________________________________________________________________________________
+| Parameter                   | Description                                      |
+|-----------------------------|--------------------------------------------------|
+| `n`                          | Maximum number of transformations to generate            |
+| `min_sl`                     | Minimum length for all non-trivial arcs equivalence class |
+| `max_sl`                     | Maximum length for all non-trivial arcs equivalence class |
+| `m`                          | Number of non-trivial arc equivalence classes    |
+| `H1`                         | Continuity-free edge equivalence class hypothesis (0,1) |
+| `H2`                         | Equivalence class assumption for elements of equal value (0,1) |
+| `H3`                         | Tolled element equivalence class hypothesis (0,1) |
+| `H4`                         | Local element only (0,1)                         |
+| `max_attemp`                 | Maximum number of attempts                       |
+| `batch_size`                 | Number of commands in the same shell script file |
+| `directory_input`            | Input folder where GitHub original problems can be found |
+| `directory_output`           | Output folder for transformed problems          |
+| `directory_original`         | Input folder where original problems can be found |
+| `directory_sh`               | Output folder for shell script generated files  |
+| `server_time_buffer`         | Time buffer for server (in seconds)             |
+| `partition`                  | Partition setting for the server                 |
+| `preamble_args`              | Pre-execution commands in the shell script      |
+____________________________________________________________________________________
 
-##### Example
-```bash
-python src/python/main.py option3 3-3 \
- --input_folder './data/modified/problems' \
- --export_folder_grid './data/modified' \
- --export_folder_results './data/modified/results' \
- --output_filename 'compute_grid_julia' \
- --batch_size 100
+#### 3-2. Prepare sh file to solve original NPP problems
+To prepare the original problem to be solve run the following command :
+```
+python ./src/python/main.py option3 3-2
+```
+Then run :
+```
+find $directory_sh -type f -name "original_batch_*" -exec sbatch {} \;
+```
+All the parameters are in the ```./src/python/config.py``` at the function ```prebuilt_a02_prepare_sh_original```.
+
+___________________________________________________________________________________
+| Parameter                   | Description                                      |
+|-----------------------------|--------------------------------------------------|
+| `directory_npp`              | Input folder for the original NPP problems      |
+| `directory_sh`               | Output folder for shell script generated files  |
+| `time_limit`                 | Time limit for execution (in seconds)           |
+| `lenght_batch`               | Batch length (must divide the number of problems in `directory_npp`) |
+| `server_time_buffer`         | Time buffer for server (in seconds)             |
+| `preamble_args`              | Pre-execution commands in the shell script (e.g., module loads) |
+| `partition`                  | Partition setting for the server                |
+______________________________________________________________________________________
+
+
+#### 3-3. Create original NPP timetable
+To create the timetable for the original problems run the following command :
+```
+python ./src/python/main.py option3 3-3
 ```
 
+All the parameters are in the ```./src/python/config.py``` at the function ```prebuilt_a03_time_config```.
+___________________________________________________________________________________
+| Parameter                   | Description                                      |
+|-----------------------------|--------------------------------------------------|
+| `directory_npp`              | Input folder for the original NPP problems      |
+| `time_filename`              | Filename for storing time configuration (e.g., `time_config.pkl`) |
+________________________________________________________________________________________
 
-#### 3-4. Result process
-This option produce a txt file with commands of the form:
-```bash
-python src/python/main.py option5 5-2 \
- --before_graph_file 'path/to/original_problem.json' \
- --after_graph_result_file 'path/to/transformed_problem_raw_result.json' \
- --transformation_file 'path/to/transformation_file.pkl' \
- --export_folder 'path/to/export_folder' \
- --output_filename 'filename.pkl'
+#### 3-4. Prepare sh files to solve transformed NPP problems
+To generate script that solved transformed NPP problems run the following command :  
 ```
-The option 5-2 is detailed below.
-
-_______________________________________________________________________________________________
-| Parameter                    | Description                                                  |
-|------------------------------|--------------------------------------------------------------|
-| input_folder_graphs          | The parent folder containing the json npp problem            |
-| input_folder_results         | The parent folder containing the json raw results            |
-| input_folder_transformations | The parent folder containing the pkl transformations         |
-| export_folder_grid           | The folder to export compute grid                            |
-| export_folder_results        | The parent folder to export future processed results         |
-| output_filename              | The name of the compute grid file                            |
-_______________________________________________________________________________________________
-
-##### Example
-```bash
-python src/python/main.py option3 3-4 \
- --input_folder_graphs 'path/to/graphs_folder' \
- --input_folder_transformations 'path/to/transformations_folder' \
- --input_folder_results 'path/to/raw_results' \
- --export_folder_grid 'path/to/export_folder' \
- --export_folder_results 'path/where/process/are/export_folder' \
- --output_filename 'filename.txt'
+python ./src/python/main.py option3 3-4
 ```
-
-
-#### 3-5. Result stacking
-This option produce a txt file with commands of the form:
-```bash
-python src/python/main.py option5 5-3 \
- --input_process_result_file_before 'path/to/original_problem_processed_result.pkl' \
- --input_process_result_file_after 'path/to/transformed_problem_processed_result.pkl' \
- --export_edge_dataframe_file 'path/to/edge_dataframe_file.pkl' \
- --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl'
+Then run :
 ```
-The option 5-3 is detailed below.
-
-
-##### Example
-```bash
-python src/python/main.py option3 3-5 \
- --input_folder_processed_results './other/result_processing/result_process' \
- --export_folder_dataframes './other/result_processing' \
- --export_folder_grid './other/result_processing' \
- --output_filename 'compute_grid_stack_result.txt'
+find $directory_sh -type f -name "launcher_*" -exec sbatch {} \;
 ```
-
-### Option 4 - Processing compute grid 
-...
-
-
-
-### Option 5 - Individual process
-
-#### 5-1. Problem generation
-This option generate NPP graph transformation.
-____________________________________________________________________________________________________________________
-| Parameter                     | Description                                                                      |
-|-------------------------------|----------------------------------------------------------------------------------|
-| num_partitions                | The maximum number of partition to compute                                       |
-| max_sub_length                | The maximum length that element in partition are allowed to be                   |
-| min_not_trivial_class         | The minimum number of not trivial equivalence class in partition                 |
-| max_not_trivial_class         | The maximum number of not trivial equivalence class in partition                 |
-| input_folder                  | The parent folder of every NPP problems                                          |
-| export_folder_problems        | The parent folder to export generated problems when process compute grid         |
-| export_folder_transformations | The parent folder to export generated transformations when process compute grid  |
-____________________________________________________________________________________________________________________
-
-
-##### Example
-```bash
-python src/python/main.py option5 5-1 \
- --num_partitions 100 \
- --min_sub_length 4 \
- --max_sub_length 4 \
- --min_not_trivial_class 3 \
- --max_not_trivial_class 3 \
- --H4 True\
- --batch_size 10 \
- --input_file './data/from_github/problems/progressive/i30-06.json' \
- --export_folder_problems './tmp/i30-06/graphs/' \
- --export_folder_transformations './tmp/i30-06/transformations/'
+To do all strategies `prepare_sh_file.julia_compute_option` need to be set in the config file. After that he last two commands can be rerun (but you should wait until the first process is finished).
+When all strategies have been solved, run the following command to correct the raw solution file. **This is because the data are stacked on the same file for each strategy.**
 ```
-
-#### 5-2. Process result
-This option is meant to process the raw result from a problem in the perspective of the original problem.
-_______________________________________________________________________________________________
-| Parameter                    | Description                                                  |
-|------------------------------|--------------------------------------------------------------|
-| before_graph_file            | File path of the NPP problem before transformation           |
-| after_graph_result_file      | Raw result file path of the transformed NPP problem          |
-| transformation_file          | File path of the pkl transformation                          |
-| export_folder_results        | The parent folder to export processed results                |
-_______________________________________________________________________________________________
-
-##### Example
-```bash
-python src/python/main.py option5 5-2 \
- --before_graph_file 'path/to/original_graph.json' \
- --after_graph_result_file 'path/to/transformed_graph_raw_result.json' \
- --transformation_file 'path/to/transformation_file.pkl' \
- --export_folder_results 'path/to/export_folder'
+find $directory_npp -type f -name "*R.json" -not -path "*/original/*" -exec sed -i "s|\}\]\[{|\},\{|g" {} \;
 ```
+All the parameters are in the ```./src/python/config.py``` at the function ```prebuilt_a04_prepare_sh_julia```.
+ ____________________________________________________________________________________________
+| Parameter                           | Description                                        |
+|-------------------------------------|----------------------------------------------------|
+| `file_time_config`                  | Input timetable used to impose time constraints (e.g., `time_config_g_200.pkl`) |
+| `directory_npp`                     | Input folder where transformed problems can be found |
+| `directory_original`                | Input folder where original problems can be found  |
+| `directory_sh`                      | Output folder for generated shell script files     |
+| `grouped`                           | Flag for batching commands (should not be changed unless for a good reason) |
+| `prepare_sh_file.n_exp`             | Number of experiences (strategy number, see `./src/julia/script.jl`) |
+| `prepare_sh_file.n_eval`            | Number of evaluations (should not be changed unless for a good reason) |
+| `prepare_sh_file.eval_time`         | Evaluation time in seconds                         |
+| `prepare_sh_file.min_time`          | Minimum time (in seconds)                          |
+| `prepare_sh_file.max_time`          | Maximum time (in seconds)                          |
+| `prepare_sh_file.server_time_buffer`| Time buffer for server (in seconds)               |
+| `prepare_sh_file.julia_compute_option` | Option number (strategy number, see `./src/julia/script.jl`) |
+| `prepare_sh_file.preamble_args`     | Pre-execution commands in the shell script (e.g., module loads) |
+___________________________________________________________________________________________________________
 
-
-
-#### 5-3. Result stack
-This option is meat to stack processed result into two dataframe. The first dataframe contain optimal values for the tolled edge of the transformed problem. The second dataframe contain time date and the optimal objective.
-______________________________________________________________________________________________________________
-| Parameter                         | Description                                                            |
-|-----------------------------------|------------------------------------------------------------------------|
-| input_process_result_file_before  | Processed result file path of the NPP problem before transformation    |
-| input_process_result_file_after   | Processed result file path of the NPP problem after transformation     |
-| export_edge_dataframe_file        | File path for the edge dataframe                                       |
-| export_meta_dataframe_file        | File path of the meta dataframe                                        |
-______________________________________________________________________________________________________________
-
-
-##### Example
-```bash
-python src/python/main.py option5 5-3 \
- --input_process_result_file_before 'path/to/original_problem_processed_result.pkl' \
- --input_process_result_file_after 'path/to/transformed_problem_processed_result.pkl' \
- --export_edge_dataframe_file 'path/to/edge_dataframe_file.pkl' \
- --export_meta_dataframe_file 'path/to/meta_dataframe_file.pkl'
+#### 3-5. Prepare sh files to post-process data from transformed NPP problems
+To prepare script that process the date from the solved transformed NPP run the following command :
 ```
+python ./src/python/main.py option3 3-5
+```
+Then run : 
+```
+find $directory_sh -type f -name "post_process*" -exec sbatch {} \;
+```
+All the parameters are in the ```./src/python/config.py``` at the function ```prebuilt_a05_post_processing_result```.
+___________________________________________________________________________________
+| Parameter                   | Description                                      |
+|-----------------------------|--------------------------------------------------|
+| `directory_npp`              | Input folder where transformed problems can be found |
+| `directory_original`         | Input folder where original problems can be found |
+| `directory_output`           | Output folder for data                          |
+| `directory_sh`               | Output folder for shell script generated files  |
+| `output_name_prefix`         | Prefix for file naming                          |
+| `batch_size`                 | Number of processing in the batch               |
+| `server_time_buffer`         | Time buffer for server (in seconds)             |
+| `partition`                  | Partition setting for the server                |
+| `preamble_args`              | Pre-execution commands in the shell script (e.g., module loads) |
+___________________________________________________________________________________
 
+## Create plots
+To create a plot for the NPP experiment use the Jupyter Lab ```/notebook/result_compile.ipynb```. For the maximum clique, use ```/notebook/max_clique.ipynb```.
+# Structure
 
+```
+./src/python
+├── config.py			# Parameter configuration file for all python files
+├── main.py			# Main call script
+├── gamma
+│   ├── common.py		# Useful functions to bridge the gap between NPP problems and graph transformation
+│   ├── gamma.py		# Implementing graph transformation by identifying arcs
+│   ├── partition.py		# Algorithm for constructing arc partitions required for graph transformation sampling
+│   └── rules.py		# To determine the NPP compatibility graph and find the maximum cliques
+├── graph
+│   └── graph.py		# Implementing the Node and Edge classes
+├── menu
+│   └── menu.py			# Code to configure the main.py menu
+├── preamble
+│   └── preamble.py		# List of libraries to import
+├── prebuilt
+│   ├── a00_prepare_max_clique_script_sh.py	# Generates server sh files for maximum click experiments
+│   ├── a01_prepare_sh_original.py		# Generates sh files for the server to solve original NPP problems
+│   ├── a02_time_config.py			# Generates a table of solving times for each original problem to estimate and 
+│   │						# limit the solving time of transformed problems
+│   │
+│   ├── a03_problem_generation.py		# Generates sh files for the server to randomly generate graph transformations 
+│   │						# for all original problems and then transform problems with these 
+│   │						# transformations
+│   ├── a04_prepare_sh_julia.py			# Generates sh files for the server to resolve transformed problems
+│   └── a05_post_processing_result.py		# Generates sh files for the server to gather all the results of each 
+│						# transformed problem related to an original problem into one file
+├── testing
+│   ├── experience_approx_max_clique_sh.py	# Script for testing maximum clique algorithms (V1, V2, networkx)
+│   ├── problem_maker.py			# Script to generate transformed NPP problems
+│   └── result_processing.py			# Script for processing Julia's NPP output results
+└── unit_test
+    ├── examples.py				# Hard coded graph for unit tests
+    ├── tools.py				# Utils function for unit tests
+    ├── unit_test_common.py			# Unit tests on the gamma/common.py file
+    ├── unit_test_gamma.py			# Unit tests on the gamma/gamma.py file
+    ├── unit_test_graph.py			# Unit tests on the graph/graph.py file
+    ├── unit_test_partition.py			# Unit tests on the gamma/partition.py file
+    ├── unit_test.py				# Script to run tests
+    └── unit_test_rules.py			# Unit tests on the gamma/rules.py file
 
-
-# Modules
-
-## /gamma
-The main class that map graph to graph is in the gamma.py. The other file are tools and useful combinatorials algorithms.
- 
-## /unit_test
-Unit test are needed during the developement.
-
-## /test
-Use as a playground before unit testing component.
-
-## /preamble
-Handle every external library import.
-
-## /graph
-Custom made class for nodes and edges.
-
-## /plot
-Every function that plot things.
-
-## /analysis
-This module is use to bridge the result from the julia's solver NetPricing (https://github.com/minhcly95/NetPricing.jl) and the different transformation produce by the gamma module. 
-
-
-
-## File naming scheme
-
-_______________________________________________________________________________________________________
-|Naming                    | Description                                                               |
-|--------------------------|---------------------------------------------------------------------------|
-|xxxxxx-NPP-yyyyyy         | normal npp problem                                                        |
-|xxxxxx-NPP-yyyyyy-R       | revised npp problem                                                       |
-|xxxxxx-NPP-yyyyyy-T       | transformation file                                                       |
-|xxxxxx-NPP-yyyyyy-(R-)RR  | raw result                                                                |
-|xxxxxx-NPP-yyyyyy-(R-)PR  | process result that compare the original problem with the transformed one |
-|(R)                       | Revised problem                                                           |
-|xxxxx                     | unique id from 0 to 10000                                                 |
-|yyyyy                     | problem name                                                              |
-_______________________________________________________________________________________________________
+   ```

@@ -45,8 +45,6 @@ def npp_from_json(input_file:str):
         
     return npp_from_dict(loaded_data)
     
-
-
 ## Tested
 def to_json(
     json_dict:dict,
@@ -98,8 +96,6 @@ def import_partition(input_file:str):
     with open('file.pkl', 'rb') as f:
         data = pickle.load(f)
     return data
-
-
 
 
 def json_compression(id_problem_lt:list, output_file:str):

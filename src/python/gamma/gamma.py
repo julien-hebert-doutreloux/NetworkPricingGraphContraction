@@ -2,12 +2,9 @@ from preamble.preamble import *
 from gamma.common import print_columns, npp_from_json, to_json
 from graph.graph import Node, Edge
 
-
 ## From config.py
 PARAMETERS = config.gamma_gamma(__name__)
-## Logger
 logger = config.log(**PARAMETERS['logger'])
-
 
 class Function(dict):
     """
@@ -221,17 +218,17 @@ class Algebra(Function):
         phi_A__inv = Function({phi_A_(edge) : edge for edge in A_})         # I_A_ -> A_
         phi_V__inv = Function({phi_V_(node) : node for node in V_})         # I_V_ -> V_
         
-        phi_T_A_inv = Function({phi_T_A(edge) : edge for edge in T_A})        # I_T_A -> T_A
+        phi_T_A_inv = Function({phi_T_A(edge) : edge for edge in T_A})      # I_T_A -> T_A
         phi_T_A__inv = Function({phi_T_A_(edge) : edge for edge in T_A_})   # I_T_A_ -> T_A_
         
         alpha = Function({i : phi_A(phi_T_A_inv(i)) for i in I_T_A})        # I_T_A -> I_A
-        alpha_inv = Function({alpha(i) : i for i in alpha.domain})           # I_A -> I_T_A
+        alpha_inv = Function({alpha(i) : i for i in alpha.domain})          # I_A -> I_T_A
         beta = Function({i : phi_A_(phi_T_A__inv(i)) for i in I_T_A_})      # I_T_A_ -> I_A_
-        beta_inv = Function({beta(i) : i for i in beta.domain})              # I_A_ -> I_T_A_
+        beta_inv = Function({beta(i) : i for i in beta.domain})             # I_A_ -> I_T_A_
         
-        conv1 = Function({i : phi_A_(gamma(phi_A_inv(i))) for i in I_A})     # I_A -> I_A_
+        conv1 = Function({i : phi_A_(gamma(phi_A_inv(i))) for i in I_A})    # I_A -> I_A_
         conv2 = Function({i : beta_inv(conv1(alpha(i))) for i in I_T_A})    # I_T_A -> I_T_A_
-        conv3 = Function({i : phi_V_(gamma(phi_V_inv(i))) for i in I_V})
+        conv3 = Function({i : phi_V_(gamma(phi_V_inv(i))) for i in I_V})    # I_V -> I_V_
         
         #############################################################################################
         # function
@@ -296,18 +293,18 @@ class Algebra(Function):
         
         V_quotient = set()
         
-        # Construire l'ensemble quotient partiel V/~
+        # Construct the partial quotient set V/~
         for equiv_cls in edge_partition:
-            # Couplage des sommets initiaux
+            # Initial vertex coupling
             start_nodes = frozenset([elem.src for elem in equiv_cls])
-            # Couplage des sommets finaux
+            # Final vertex coupling
             end_nodes = frozenset([elem.dst for elem in equiv_cls])
            
             V_quotient.add(start_nodes)
             V_quotient.add(end_nodes)
             
-        # Suppression des sommets deja present dans un classe
-        # d'equivalence partielle plus grande
+        # Deleting vertices already present in a greater
+        # partial equivalence class
         def remove_already_represented_singleton(S, union=None):
             S = set(S)
             if type(union) == type(None):
@@ -321,7 +318,7 @@ class Algebra(Function):
             return list(S)
         
         
-        # Ordonne par taille d'ensemble                        
+        # Order by set size                 
         V_quotient = list(map(frozenset, V_quotient))
         def chain_step(S):
             chain = []
@@ -339,7 +336,7 @@ class Algebra(Function):
                         chain = chain_step(chain)
                         break
                 
-                if any(map(lambda x: (x & e1) != frozenset(), chain)):# filter
+                if any(map(lambda x: (x & e1) != frozenset(), chain)):
                    return chain
                    
                 else:
@@ -380,21 +377,15 @@ class Algebra(Function):
             )
             
         # object-index
-        # V -> I_V
-        c1 = [f"{k}->{v}" for k,v in self.phi_V.items()]
-        # ~V -> I_{~V}
-        c2 = [f"{k}->{v}" for k,v in self.phi_V_.items()]
-        
-        # A -> I_A
-        c3 = [f"{k}->{v}" for k,v in self.phi_A.items()]
-        # ~A -> I_{~A}
-        c4 = [f"{k}->{v}" for k,v in self.phi_A_.items()]
-        
+        # vertex
+        c1 = [f"{k}->{v}" for k,v in self.phi_V.items()] # V -> I_V
+        c2 = [f"{k}->{v}" for k,v in self.phi_V_.items()] # ~V -> I_{~V}
+        # edge
+        c3 = [f"{k}->{v}" for k,v in self.phi_A.items()]  # A -> I_A
+        c4 = [f"{k}->{v}" for k,v in self.phi_A_.items()] # ~A -> I_{~A}
         # index-index
-        # I_V -> I_{~V}
-        c5 = [f"{k}->{v}" for k,v in self.conv3.items()]
-        # I_A -> I_{~A}
-        c6 = [f"{k}->{v}" for k,v in self.conv1.items()]
+        c5 = [f"{k}->{v}" for k,v in self.conv3.items()] # I_V -> I_{~V}
+        c6 = [f"{k}->{v}" for k,v in self.conv1.items()] # I_A -> I_{~A}
         
         print_columns(c1, c2, c3, c4, c5, c6, headers=['V -> I_V', '~V -> I_{~V}', 'A -> I_A', '~A -> I_{~A}', 'I_V -> I_{~V}', 'I_A -> I_{~A}'])
             
@@ -403,7 +394,6 @@ class Gamma(Algebra):
     def __init__(self, nodes, edges, edge_partition=None):
         super().__init__(nodes, edges, edge_partition)
     
-    ## To Do : unit test
     @classmethod
     def from_transformation(cls, nodes, edges, transformation, **kwargs):
         ## Transformation as the method transformation_to_dict
@@ -412,7 +402,6 @@ class Gamma(Algebra):
         edge_partition = [tuple(map(index_edge, x)) for x in transformation['RA']]
         return cls(nodes, edges, edge_partition=edge_partition, **kwargs)
         
-    ## To Do : unit test
     def transformation_to_dict(self):
         transformation = {'V':{}, 'A':{}, 'RV':{}, 'RA':{}}
         
@@ -449,13 +438,11 @@ class Gamma(Algebra):
         return transformation
         
     
-    ## To Do : unit test
     def to_networkx(self, graph_image=True, formatted_edge=False):
         G = nx.MultiDiGraph()
         
         A = self.A_ if graph_image else self.A
         phi = self.phi_A_ if graph_image else self.phi_A
-        #A = sorted(A, key=lambda x: int(x.label))
         edge_format = lambda e: (str(e.src), str(e.dst), str(phi(e)), e.cost, e.toll)
         
         for edge in A:
@@ -516,7 +503,6 @@ class GammaNPP(Gamma):
             problems[-1]['dest'] = nodes[self.phi_V_(k['dest'])-1] # correction index 
             problems[-1]['demand'] = k['demand']
             
-            
         json_dict = {'problem': {}}
 
         # Nodes
@@ -531,50 +517,3 @@ class GammaNPP(Gamma):
         json_dict['problem']['K'] = [fct(problem) for problem in problems]
             
         return json_dict
-        
-    
-if __name__ == "__main__": 
-    pass
-        
-    
-    
-#, preprocess=True):
-        #logger.debug(f'preprocess problem : {preprocess}')
-        
-        #def preprocessing(nodes, edges, problems):
-        #    for edge in edges:
-        #        # every tolled arc starting cost is 1
-        #        if edge.toll:
-        #            edge.cost = 1
-        #        # only integer cost
-        #        else:
-        #            edge.cost = max(round(edge.cost, 0), 1)
-                
-            # Problems structures
-            #[...,
-            #    {
-            #        "orig": 1,
-            #        "dest": 4,
-            #        "demand": 1.0
-            #    },... 
-            #]
-            # only integer demand
-            #for problem in problems:
-            #    problem['demand'] = max(round(problem['demand'], 0), 1)
-        
-        #if preprocess:
-        #    preprocessing(nodes, edges, problems)
-        
-# import import after result
-#with open(after_result, 'rb') as f:
-#res = json.load(f)
-
-
-#@classmethod
-#def from_transformation_file(cls, nodes, edges, transformation_file, **kwargs):
-#    with open(transformation_file, 'rb') as f:
-#        transformation = json.load(f)
-#    
-#    index_edge = Function({i:edge for i, edge in enumerate(edges, start=1)})
-#    edge_partition = [tuple(map(index_edge, cls)) for cls in transformation['RA']]
-#    return cls(nodes, edges, edge_partition, **kwargs)

@@ -11,33 +11,14 @@ import Pkg; Pkg.add("Gurobi")
 ```
 
 ### Julia prerequisites
-#### JSON
 ```bash
 julia
 import Pkg; Pkg.add("JSON")
-```
-#### CSV
-```bash  
-import Pkg; Pkg.add("CSV")  
-```
-#### FileIO
-```bash
+import Pkg; Pkg.add("CSV")
 import Pkg; Pkg.add("FileIO")
-```
-#### Unmarshal
-```bash
 import Pkg; Pkg.add("Unmarshal")
-```
-#### Pickle
-```bash
 import Pkg; Pkg.add("Pickle")
-```
-#### DataFrames
-```bash  
-import Pkg; Pkg.add("DataFrames")  
-```
-#### BenchmarkTools
-```bash
+import Pkg; Pkg.add("DataFrames")
 import Pkg; Pkg.add("BenchmarkTools")
 ```
 
@@ -55,9 +36,7 @@ import Pkg; Pkg.add("JuMP")
 
 
 ### Python
-
 #### Install virtualenv
-
 If you don't have `virtualenv` installed, you can install it using the following command:
 
 ```bash
@@ -65,7 +44,6 @@ pip install virtualenv
 ```
 
 #### Create a virtual environment
-
 Navigate to your project directory and create a new virtual environment named venv:
 
 ```bash
@@ -74,7 +52,6 @@ virtualenv venv
 ```
 
 #### Activate the virtual environment
-
 Activate the virtual environment using the appropriate command for your operating system:
 
 - On Windows:
@@ -91,7 +68,6 @@ source venv/bin/activate
 When the virtual environment is activated, your shell prompt will change to show the name of the activated environment.
 
 ### Install dependencies
-
 Install the project dependencies using pip:
 
 ```bash

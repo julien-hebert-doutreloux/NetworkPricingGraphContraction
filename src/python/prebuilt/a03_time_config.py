@@ -1,12 +1,12 @@
 from preamble.preamble import *
 
-PARAMETERS = config.prebuilt_a02_time_config(__name__)
+PARAMETERS = config.prebuilt_a03_time_config(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 
 def main():
     ## Gather time needed to solve original problem in a dictionary of the form dict[pb_name] = (time:float, finish:bool)
-    ## Will be use to set up the time limit for every transformation
+    ## Will be used to set up the time limit for every transformation
     directory_npp, time_filename = PARAMETERS['MISC'].values()
     config = {}
     

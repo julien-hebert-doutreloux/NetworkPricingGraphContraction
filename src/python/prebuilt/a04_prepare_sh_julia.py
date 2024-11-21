@@ -4,15 +4,9 @@ PARAMETERS = config.prebuilt_a04_prepare_sh_julia(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, time_limit):
-    
-    n_exp = 6
-    n_eval = 1
-    eval_time = 30
-    min_time = 10*3600
-    max_time = 24*3600 - 600
-    server_time_buffer = 600
-    args = ["module load julia", "module load gurobi"]
-    julia_compute_option = 5#16 juil
+
+    n_exp, n_eval, eval_time, min_time, max_time,\
+    server_time_buffer, julia_compute_option, args = PARAMETERS['MISC']['prepare_sh_file'].values()
     command_time_list_tuple_sh = []
     
     
@@ -108,12 +102,7 @@ def prepare_sh_file(directory_npp, directory_original, grouped, directory_sh, ti
 
 def main():
 
-    #file_time_config = './result/time_limit_config.pkl'
-    file_time_config = './result/time_config_g_200.pkl' #'./result/config_file_1000.pkl'
-    directory_npp = './data/generated/problems/paper/'
-    directory_original = './data/generated/problems/paper/original'
-    directory_sh = './src/sh/'
-    grouped = True
+    file_time_config, directory_npp, directory_original, directory_sh, grouped, _ = PARAMETERS['MISC'].values()
     
     with open(file_time_config,'rb') as f:
         config = pickle.load(f)
@@ -121,7 +110,7 @@ def main():
     for pb_name, (time_limit, finish) in tqdm(config.items(), desc='Creating SH script'):
         if 'g' in pb_name:
             time_limit = min(200, int(round(time_limit,0)))
-            print(pb_name, time_limit)
+            #print(pb_name, time_limit)
             directory_pb = os.path.join(directory_npp, pb_name)
             prepare_sh_file(directory_pb, directory_original, grouped, directory_sh, time_limit)
                 

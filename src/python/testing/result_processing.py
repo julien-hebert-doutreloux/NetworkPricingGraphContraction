@@ -6,7 +6,6 @@ from gamma.gamma import Function, Algebra, Gamma, GammaNPP
 PARAMETERS = config.test_result_processing(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
-
 def post_process_result(
                         nodes,
                         edges,
@@ -20,28 +19,18 @@ def post_process_result(
     
     tvals = result['tvals']
     flow_ = result['flow']
-    #flow = {k: flow_[str(k)] for k in sorted(map(int, flow_))}
-    
     
     if 'x' == parameter_kwargs['heuristic']:
-        # number of vertex in the transformed graph
-        nv = max(list(transformation['V'].values()))
-        # number of edge in the transformed graph
-        na = max(list(transformation['A'].values()))
+        nv = max(list(transformation['V'].values())) # number of vertex in the transformed graph
+        na = max(list(transformation['A'].values())) # number of edge in the transformed graph
         
     else:
-        # number of vertex in the transformed graph
-        nv = len(transformation['V'])
-        # number of edge in the transformed graph
-        na = len(transformation['A'])
+        nv = len(transformation['V']) # number of vertex in the transformed graph
+        na = len(transformation['A']) # number of edge in the transformed graph
     
     total_flow = np.zeros(na)
     
-    #for user, f in flow_.items():
-    #    ff = np.zeros(na)
-    #    for i in f:
-    #        ff[i-1] = 1
-    #    total_flow+=ff
+
     for f in flow_.values():
         if not 0 in f: # Bui code failed to find a path or this is just a bug, the flow is an vector of arc index, so 0 should not be there
             f = np.array(f)-1
@@ -49,15 +38,8 @@ def post_process_result(
 
             total_flow += np.bincount(f, minlength=na)
         else:
-            print(f)
-            print('here')
-    #if set(flow) != set(range(1, len(g_gamma)+1)):
-    #    logger.warning('Flow result incomplete. NaN completion')
-    #        
-    #    diff = set(range(1, len(g_gamma)+1)) - set(flow)
-    #    
-    #    for i in sorted(diff):
-    #        flow[i] = np.nan
+            logger.debug(str(f))
+   
         
     # function graph bridge
     #T_A       ⊆     A  ---gamma---> A_      ⊇       T_A_      
@@ -72,8 +54,7 @@ def post_process_result(
     
     # (i) based on the index from I_T_AV
     edge_av = lambda i : g_gamma.alpha(i) 
-    #opt_val_av = lambda i : tvals_0[i-1] # index correction and value correction 
-    #opt_flow_av = lambda i : flow_0[i] 
+
     
     edge_ap = lambda i : g_gamma.phi_A_(g_gamma(g_gamma.phi_T_A_inv(i)))
     opt_val_ap = lambda i : tvals[g_gamma.conv2(i)-1]  # index correction and value correction 
@@ -85,10 +66,10 @@ def post_process_result(
     
     # tolled edges
     headers = ('edge', '(edge)', '(opt. value)', '(opt. flow)')
-    #logger.debug('\n'+tabulate(data, headers=headers))
+    logger.debug('\n'+tabulate(data, headers=headers))
     
     
-    # other result
+    # other result (deprecated)
     compression_factors = {}
     compression_factors['cf1'] = len(g_gamma.phi_A.domain)/len(g_gamma.phi_A_)
     compression_factors['cf2'] = len(g_gamma.phi_V.domain)/len(g_gamma.phi_V_)
@@ -96,9 +77,7 @@ def post_process_result(
     compression_factors['cf4'] = len(g_gamma.domain)/len(g_gamma.image)
     for i in range(5, 10):
         compression_factors[f'cf{i}'] = 2**compression_factors[f'cf{i-4}']
-    
-    #rewind_optimal_2, rewind_time_2 = shortest_path_rewind(g_gamma, result, option=2)
-    #rewind_optimal_1, rewind_time_1 = shortest_path_rewind(g_gamma, result, option=1)
+
     finish = result['finish']
     return {
                 'edge':data,
@@ -108,17 +87,10 @@ def post_process_result(
                 'n_vertex':len(g_gamma.V_),
                 'n_edge':len(g_gamma.A_),
                 'n_tolled':len(g_gamma.I_T_A_),
-                #'compression_factors':compression_factors,
-                #'rewind_optimal_1':rewind_optimal_1,
-                #'rewind_time_1':rewind_time_1,
-                #'rewind_optimal_2':rewind_optimal_2,
-                #'rewind_time_2':rewind_time_2,
                 'finish':finish,
                 **parameter_kwargs,
                 **compression_factors
-                #'n_simple_path_for_od':0,
                 }
-    
     
 def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, heuristic):
     # n
@@ -130,8 +102,8 @@ def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, h
     # H3
     # H4
     # max_attemp
-    # option
-    # heuristic : the way of going back to original space
+    # option (method)     
+    # heuristic (strategy)
     
     return {
     'n':n, 'min_sl':min_sl, 'max_sl':max_sl, 'm':m,
@@ -140,8 +112,6 @@ def parameter_kwargs(n, min_sl, max_sl, m, H1, H2, H3, H4, max_attemp, option, h
     'option':option,
     'heuristic':heuristic
     }
-    
-
 
 def post_process_original(directory_input, directory_output, output_name=''):
     # Post-process original problem data
@@ -195,7 +165,7 @@ def post_process_original(directory_input, directory_output, output_name=''):
 def post_process(directory_input, directory_output, directory_original, output_name=''):
     
     directory_npp = directory_input
-    problem_name = directory_npp.split(os.sep)[-1] # attention if directory_input ends with .../ it will not work 
+    problem_name = directory_npp.split(os.sep)[-1] # attention if directory_input ends with "/" it will not work 
     if output_name == '':
         output_name = problem_name
         

@@ -221,7 +221,3 @@ def UNIT_TEST_Rules_approx_max_clique():
         logger.warning('UNIT_TEST_Rules_approx_max_clique failed')
     else:
         logger.info('UNIT_TEST_Rules_approx_max_clique succeeded')
-        
-        
-def UNIT_TEST_Rules_random_partitions():
-    ...

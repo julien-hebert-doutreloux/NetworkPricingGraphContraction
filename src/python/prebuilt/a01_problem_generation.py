@@ -1,6 +1,6 @@
 from preamble.preamble import *
 
-PARAMETERS = config.prebuilt_a03_problem_generation(__name__)
+PARAMETERS = config.prebuilt_a01_problem_generation(__name__)
 logger = config.log(**PARAMETERS['logger'])
 
 def main():
@@ -11,7 +11,6 @@ def main():
     server_time_buffer, partition, args= PARAMETERS['MISC'].values()
     
     command_list, mkdir_list = [], []
-    
     
     
     k = 1
