@@ -189,6 +189,11 @@ ________________________________________________________________________________
 
 ## Create plots
 To create a plot for the NPP experiment use the Jupyter Lab ```/notebook/result_compile.ipynb```. For the maximum clique, use ```/notebook/max_clique.ipynb```.
+
+# Results
+The result data are situated at ```/data/compressed/```. All the problems and their raw data are stored in ```/data/compressed/full_data.tar.xz```. It should be extracted to ```/data/generated/``` (uncompressed the raw data is about 15 Gb).
+The process data are in the file ```/data/compressed/20241114_process_result.tar.xz``` and the final data frame is in the file ```/data/compressed/compile_data_20241121.tar.xz```. This data frame is used in ```/notebook/result_compile.ipynb``` or can be generated with ```/data/compressed/20241114_process_result.tar.xz```.
+
 # Structure
 
 ```

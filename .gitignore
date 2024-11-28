@@ -7,4 +7,6 @@ tmp/
 data/generated/
 *.pkl
 result/
-
+data/compressed/20241114_process_result.tar.xz
+data/compressed/compile_data_20241121.tar.xz
+data/compressed/full_data.tar.xz
